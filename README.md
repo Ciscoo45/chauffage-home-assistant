@@ -1,3 +1,10 @@
+. main : with different mode names, and single Absence mode
+. branch : with 2 different program for the Presence mode, Weekdays Vs Weekend
+
+Thanks Argonaute for this beautiful work and tuto!!
+
+############################################## ORIGINAL README ################
+
 ## Home Assistant - Gestion de bout en bout du chauffage
 
 This repository contains the files of a post in HACF french forum.
