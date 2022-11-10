@@ -17,14 +17,14 @@ blueprint:
         entity:
           domain: input_select
     entity_schedule_presence:
-      name: Schedule mode presence
-      description: Entité générée par schedule pour la planification du mode presence (switch)
+      name: Schedule mode Presence
+      description: Entité générée par schedule pour la planification du mode Presence (switch)
       selector:
         entity:
           domain: switch
-    entity_schedule_abscence:
-      name: Schedule mode absence
-      description: Entité générée par schedule pour la planification du mode absence (switch)
+    entity_schedule_absence:
+      name: Schedule mode Absence
+      description: Entité générée par schedule pour la planification du mode Absence (switch)
       selector:
         entity:
           domain: switch
@@ -62,7 +62,7 @@ action:
           - service: switch.turn_off
             target:
               entity_id:
-                - !input entity_schedule_abscence
+                - !input entity_schedule_absence
                 - !input entity_schedule_presence
           - service: automation.turn_off
             target:
@@ -84,7 +84,7 @@ action:
           - service: switch.turn_off
             target:
               entity_id:
-                - !input entity_schedule_abscence
+                - !input entity_schedule_absence
                 - !input entity_schedule_presence
       # ----- Mode Presence
       - conditions:
@@ -101,7 +101,7 @@ action:
           - service: switch.turn_off
             target:
               entity_id:
-                - !input entity_schedule_abscence
+                - !input entity_schedule_absence
       # ----- Mode Absence
       - conditions:
           - condition: state
