@@ -1,6 +1,6 @@
 Forks here:
 
-. Presence-Absence (default, this one): with different mode names, and single Absence mode [ProdOk]
+. Presence-Absence (default, this one): with different mode names, and single Absence mode, and radiateur entities instead of chauffage [ProdOk]
 
 . Week-Vs-WE (branch): support for multiple schedules for the Presence mode (ex Weekdays & Weekend) [WorkInProgress]
 
