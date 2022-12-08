@@ -2,7 +2,7 @@ Forks here:
 
 . Presence-Absence (default, this one): with different mode names, and single Absence mode, and 'radiateur' switch name instead of 'chauffage' [ProdOk]
 
-. Week-Vs-WE (branch): support for multiple schedules for the Presence mode (ex Weekdays & Weekend) [WorkInProgress]
+. Week-Vs-WE: based on Presence-Absence, support multiple schedules for Presence mode (ex Weekdays & Weekend) [WorkInProgress]
 
 Thanks Argonaute for this beautiful work and tuto!!
 
