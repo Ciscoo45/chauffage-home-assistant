@@ -1,6 +1,8 @@
-. main : with different mode names, and single Absence mode
+Forks here:
 
-. branch : with 2 different program for the Presence mode, Weekdays Vs Weekend
+. Presence-Absence (default, this one): with different mode names, and single Absence mode [ProdOk]
+
+. Week-Vs-WE (branch): support for multiple schedules for the Presence mode (ex Weekdays & Weekend) [WorkInProgress]
 
 Thanks Argonaute for this beautiful work and tuto!!
 
