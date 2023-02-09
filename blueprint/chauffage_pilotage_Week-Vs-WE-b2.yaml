@@ -1,134 +1,22 @@
 blueprint:
-  name: Pilotage chauffage
-  description: Gestion des différents modes de chauffage - Arret  Hors-gel  Manuel  Absence  Presence
+  name: Switch alternativi
+  description: Rende due switch alternativi
   domain: automation
-
   input:
-    entity_consigne:
-      name: Consigne
-      description: Champs d'entrée de la température de consigne (input number)
-      selector:
-        entity:
-          domain: input_number
-    entity_mode:
-      name: Sélection du mode
-      description: Entité de gestion du mode de gestion du chauffage (input_select)
-      selector:
-        entity:
-          domain: input_select
-    entity_schedule_presence:
-      name: Schedule mode presence
-      description: Entité(s) générée(s) par Scheduler pour la planification du mode presence (switch)
+    switchList:
+      name: List of switches
       selector:
         entity:
           domain: switch
           multiple: true
-    entity_schedule_absence:
-      name: Schedule mode absence
-      description: Entité générée par Scheduler pour la planification du mode absence (switch)
-      selector:
-        entity:
-          domain: switch
-    entity_thermostat_tpi:
-      name: Thermostat
-      description: Entité de gestion du thermostat TPI (automation)
-      selector:
-        entity:
-          domain: automation
-
-
 variables:
-  temperature_hg: 10   # Température pour le Hors-gel
-  switcheslist_presence: !input entity_schedule_presence   # Pour essayer d'agir d'un coup sur de multiples Schedules Presence si existent
-
-alias: Pilotage salon
-description: ''
+  switches: !input switchList
 trigger:
   - platform: state
-    entity_id: !input entity_mode
-condition: []
+    entity_id: !input switchList
+    to: "on"
 action:
-  - choose:
-      # ----- Mode Arret
-      - conditions:
-          - condition: state
-            entity_id: !input entity_mode
-            state: Arret
-        sequence:
-          - service: input_number.set_value
-            data:
-              value: 0
-            target:
-              entity_id: !input entity_consigne
-
-          - service: switch.turn_off
-            target:
-              entity_id:
-                - !input entity_schedule_absence
-                - '{{ expand(switcheslist_presence) | selectattr("entity_id", "!=", trigger.entity_id) | map(attribute="entity_id") | list }}'
-
-          - service: automation.turn_off
-            target:
-              entity_id: !input entity_thermostat_tpi
-      # ----- Mode Hors-gel
-      - conditions:
-          - condition: state
-            entity_id: !input entity_mode
-            state: Hors-gel
-        sequence:
-          - service: automation.turn_on
-            target:
-              entity_id: !input entity_thermostat_tpi
-          - service: input_number.set_value
-            data:
-              value: '{{temperature_hg}}'
-            target:
-              entity_id: !input entity_consigne
-          - service: switch.turn_off
-            target:
-              entity_id:
-                - !input entity_schedule_absence
-                - !input '{{switcheslist_presence}}'
-      # ----- Mode Presence
-      - conditions:
-          - condition: state
-            entity_id: !input entity_mode
-            state: Presence
-        sequence:
-          - service: automation.turn_on
-            target:
-              entity_id: !input entity_thermostat_tpi
-          - service: switch.turn_on
-            target:
-              entity_id: !input entity_schedule_presence
-          - service: switch.turn_off
-            target:
-              entity_id:
-                - !input entity_schedule_absence
-      # ----- Mode Absence
-      - conditions:
-          - condition: state
-            entity_id: !input entity_mode
-            state: 'Absence'
-        sequence:
-          - service: automation.turn_on
-            target:
-              entity_id: !input entity_thermostat_tpi
-          - service: switch.turn_off
-            target:
-              entity_id:
-                - !input entity_schedule_presence
-          - service: switch.turn_on
-            target:
-              entity_id: !input entity_schedule_absence
-    # ----- Mode Manuel
-    default:
-      - service: switch.turn_off
-        target:
-          entity_id:
-            - !input entity_schedule_absence
-            - !input entity_schedule_presence
-      - service: automation.turn_on
-        target:
-          entity_id: !input entity_thermostat_tpi
+  - service: switch.turn_off
+    target:
+      entity_id: '{{ expand(switches) | selectattr("entity_id", "!=", trigger.entity_id) | map(attribute="entity_id") | list }}'
 mode: single
