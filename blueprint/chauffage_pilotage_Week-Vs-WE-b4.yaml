@@ -1,5 +1,5 @@
 blueprint:
-  name: Switch alternativi
+  name: Switch alternativi beta 4
   description: Rende due switch alternativi
   domain: automation
   input:
