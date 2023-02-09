@@ -1,5 +1,5 @@
 blueprint:
-  name: Switch alternativi beta 4
+  name: Switch alternativi beta 5
   description: Rende due switch alternativi
   domain: automation
   input:
@@ -20,5 +20,5 @@ action:
     target:
       entity_id:
         - switch.schedule_parents_absence_quo
-        - '{{ expand(switches) | selectattr("entity_id", "!=", trigger.entity_id) | map(attribute="entity_id") | list }}'
+        '{{ expand(switches) | selectattr("entity_id", "!=", trigger.entity_id) | map(attribute="entity_id") | list }}'
 mode: single
