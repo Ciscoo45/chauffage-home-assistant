@@ -1,16 +1,27 @@
 blueprint:
-  name: Switch alternativi beta 5
+  name: Switch alternativi beta 6
   description: Rende due switch alternativi
   domain: automation
+  
   input:
+  
+    entity_schedule_absence:
+      name: Schedule mode absence
+      description: Entité générée par Scheduler pour la planification du mode absence (switch)
+      selector:
+        entity:
+          domain: switch
+          
     switchList:
       name: List of switches
       selector:
         entity:
           domain: switch
           multiple: true
+          
 variables:
   switches: !input switchList
+  
 trigger:
   - platform: state
     entity_id: !input switchList
@@ -21,4 +32,5 @@ action:
       entity_id:
         - switch.schedule_parents_absence_quo
         '{{ expand(switches) | selectattr("entity_id", "!=", trigger.entity_id) | map(attribute="entity_id") | list }}'
+
 mode: single
