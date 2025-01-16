@@ -11,6 +11,7 @@ Forks here:
 
     - based on Presence-Absence version
     - support multiple schedules for Presence mode (ex Week & Weekend)
+    - support inversed relay like SonOff ZBminiR2+diode
 
 Thanks Argonaute for this beautiful work and tuto!!
 
