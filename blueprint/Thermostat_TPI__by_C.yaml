@@ -192,7 +192,7 @@ blueprint:
     
     - évolution des champs descriptifs, notamment pour aider au paramétrage des valeurs de *coeff_c* et *coeff_t*
 
-    - ajout de l'option de passer en mode inversé pour le déclenchement, pour les relais qui nécessitent la position Off pour déclencher la chauffe (ex. SonOff ZBminiR2 + diode)
+    - ajout de l'option de passer en mode inversé pour le déclenchement, pour les relais qui nécessiteraient la position Off pour déclencher la chauffe (ex. SonOff ZBmini + diode)
     
     
     . **autres parties du projet Gestion bout en bout du chauffage** :
@@ -314,7 +314,7 @@ blueprint:
           domain: switch
     entity_mode_inverse:
       name: Inversé
-      description: Si activé, le chauffage sera allumé lorsque le switch est Off, et éteint lorsque le switch est sur On. L'activer permet la compatibilité avec les relais type OnOff ZBminiR2.
+      description: Si activé, le chauffage sera allumé lorsque le switch est Off, et éteint lorsque le switch est sur On. L'activer permet la compatibilité avec les relais type SonOff ZBmini.
       default: false
       selector:
         boolean: {}
