@@ -422,6 +422,8 @@ trigger:
 
 # Actions déclenchées par le Blueprint
 action:
+
+  # Récupération des données et calcul de la puissance de chauffe
   - alias: récupération des données
     variables:
       entity_consigne: !input entity_consigne
@@ -435,13 +437,18 @@ action:
         fenetre == 'on' %} {% set val = 0 %}  {% else %} {% set val = ( (val *
         100) | round(0)) %} {% endif %} {{val}}
       temps_chauffe: '{{ puissance * 6 }}'
+
+  # Mise à jour de l'index de chauffe
   - alias: Met à jour l'indicateur de puissance
     service: input_number.set_value
     target:
       entity_id: !input entity_puissance
     data:
       value: '{{puissance}}'  
+
   - choose:
+
+      # Radiateur NE chauffe PAS sur la plage des 10min à venir
       - conditions:
           - condition: template
             value_template: "{{ puissance == 0 }}"
@@ -454,6 +461,7 @@ action:
               entity_id: !input.entity_chauffage
             data: !var(service_off_data)
 
+      # Radiateur chauffe tout le temps sur la plage des 10min à venir
       - conditions:
           - condition: template
             value_template: "{{ puissance > 99 }}"
@@ -465,7 +473,8 @@ action:
             target:
               entity_id: !input.entity_chauffage
             data: !var(service_on_data)
-          
+    
+    # Radiateur chauffe pour le temps calculé sur la plage de 10min à venir      
     default:
       #- service: "{{ service_on }}"
       #  target:
