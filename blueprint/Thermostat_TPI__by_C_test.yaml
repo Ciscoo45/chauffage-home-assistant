@@ -326,7 +326,6 @@ blueprint:
       description: Interrupteur marche / arrêt effectif du chauffage (switch si relais, ou climate si thermostat HA comme en RF via X2D par ex.)
       selector:
         entity:
-          #domain: switch
           
     entity_mode_climate:
       name: Climate
