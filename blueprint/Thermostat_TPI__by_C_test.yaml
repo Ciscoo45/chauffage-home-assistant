@@ -390,15 +390,13 @@ variables:
       {%- endif -%}
     {%- endif -%}
 
-  # Données associées à l'appel de service
+  # Données associées à l'appel de service         # {"hvac_mode": "off"}              # {"hvac_mode": "heat"}           # voir si besoin de minuscule et guillemets 'Comfort'
   service_on_data: >
     {%- if entity_mode_climate -%}
       {%- if entity_mode_inverse -%}
-        # {"hvac_mode": "off"}
-        {"preset_mode": "stop"}
+        {"preset_mode": "Stop"}
       {%- else -%}
-        # {"hvac_mode": "heat"}
-        {"preset_mode": "comfort"}       # voir si besoin de minuscule et guillemets 'comfort'
+        {"preset_mode": "Comfort"}       
       {%- endif -%}
     {%- else -%}
       {}
@@ -407,11 +405,9 @@ variables:
   service_off_data: >
     {%- if entity_mode_climate -%}
       {%- if entity_mode_inverse -%}
-        # {"hvac_mode": "heat"}
-        {"preset_mode": "comfort"}
+        {"preset_mode": "Comfort"}
       {%- else -%}
-        # {"hvac_mode": "off"}
-        {"preset_mode": "stop"}
+        {"preset_mode": "Stop"}
       {%- endif -%}
     {%- else -%}
       {}
