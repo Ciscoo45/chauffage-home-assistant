@@ -2,7 +2,7 @@ blueprint:
   name: Thermostat TPI by C. TESSST
   description: "
 
-    version 0.33
+    version 0.34
     
     ___
     
@@ -368,7 +368,7 @@ variables:
   # Choix du service à appeler
   service_on: >
     {%- if entity_mode_climate -%}
-      #climate.set_hvac_mode
+      # climate.set_hvac_mode
       climate.set_preset_mode
     {%- else -%}
       {%- if entity_mode_inverse -%}
