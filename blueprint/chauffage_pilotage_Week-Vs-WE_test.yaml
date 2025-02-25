@@ -2,7 +2,7 @@ blueprint:
   name: Pilotage chauffage by C. - Semaine et WE/fériés TESSST
   description: "
     
-    version 0.24
+    version 0.25
     
     ___
     
@@ -308,9 +308,6 @@ variables:
   temperature_hg: !input temperature_hg
 
 
-#alias: Pilotage chauffage
-#description: ''
-
 
 # Evènement déclencheur : le changement de Mode de chauffe (via carte Lovelace)
 trigger:
@@ -352,7 +349,6 @@ action:
             target:
               entity_id: !input entity_thermostat_tpi
   
-              
       # ----- Mode Hors-gel
       - conditions:
           - condition: state
@@ -417,5 +413,6 @@ action:
       - service: automation.turn_on
         target:
           entity_id: !input entity_thermostat_tpi
+
           
 mode: single
