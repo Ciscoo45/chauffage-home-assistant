@@ -345,6 +345,7 @@ blueprint:
 
 # Récupération des paramètres
 variables:
+
   coeff_c: !input coeff_c
   coeff_t: !input coeff_t
   entity_temp_int: !input entity_temp_int
@@ -352,18 +353,6 @@ variables:
   entity_fenetre: !input entity_fenetre
   entity_mode_climate: !input entity_mode_climate
   entity_mode_inverse: !input entity_mode_inverse
- # service_off: >
- #   {%- if entity_mode_inverse -%}
- #     switch.turn_off
- #   {%- else -%}
- #     switch.turn_on
- #   {%- endif -%}
- # service_on: >
- #   {%- if entity_mode_inverse -%}
- #     switch.turn_on
- #   {%- else -%}
- #     switch.turn_off
- #   {%- endif -%}
 
   # Choix du service à appeler
   service_on: >
@@ -388,7 +377,7 @@ variables:
       {%- endif -%}
     {%- endif -%}
 
-  # Données associées à l'appel de service         {"hvac_mode": "off"}              {"hvac_mode": "heat"}          voir si besoin de minuscule et guillemets 'Comfort'
+  # Données associées à l'appel de service
   service_on_data: >
     {%- if entity_mode_climate -%}
       {%- if entity_mode_inverse -%}
@@ -455,16 +444,6 @@ action:
           - condition: template
             value_template: "{{ puissance == 0 }}"
         sequence:
-        
-         # - service: "{{ service_off }}"
-          #  target:
-          #    entity_id: !input entity_chauffage
-          
-         # - service: !var(service_off)
-          #  target:
-          #    entity_id: !input.entity_chauffage
-          #  data: !var(service_off_data)
-            
           - service: "{{ service_off }}"
             target:
               entity_id: !input entity_chauffage
@@ -475,15 +454,6 @@ action:
           - condition: template
             value_template: "{{ puissance > 99 }}"
         sequence:
-         # - service: "{{ service_on }}"
-          #  target:
-          #    entity_id: !input entity_chauffage
-          
-         # - service: !var(service_on)
-          #  target:
-          #    entity_id: !input.entity_chauffage
-          #  data: !var(service_on_data)
-            
           - service: "{{ service_on }}"
             target:
               entity_id: !input entity_chauffage
@@ -491,36 +461,16 @@ action:
     
     # Radiateur chauffe pour le temps calculé sur la plage de 10min à venir      
     default:
-    
-     # - service: "{{ service_on }}"
-      #  target:
-      #    entity_id: !input entity_chauffage
-      
-    # - service: !var(service_on)
-      #  target:
-      #    entity_id: !input.entity_chauffage
-      #  data: !var(service_on_data)
-        
       - service: "{{ service_on }}"
         target:
           entity_id: !input entity_chauffage
         data: "{{ service_on_data }}"
-        
       - delay: "{{ temps_chauffe }}"
-      
-     # - service: "{{ service_off }}"
-      #  target:
-      #    entity_id: !input entity_chauffage
-      
-    # - service: !var(service_off)
-      #  target:
-      #    entity_id: !input.entity_chauffage
-      #  data: !var(service_off_data)
-
       - service: "{{ service_off }}"
         target:
           entity_id: !input entity_chauffage
         data: "{{ service_off_data }}"
-          
+
+
 mode: restart
  
