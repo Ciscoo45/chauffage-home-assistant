@@ -368,7 +368,8 @@ variables:
   # Choix du service à appeler
   service_on: >
     {%- if entity_mode_climate -%}
-      climate.set_hvac_mode
+      #climate.set_hvac_mode
+      climate.set_preset_mode
     {%- else -%}
       {%- if entity_mode_inverse -%}
         switch.turn_on
@@ -379,7 +380,8 @@ variables:
 
   service_off: >
     {%- if entity_mode_climate -%}
-      climate.set_hvac_mode
+      #climate.set_hvac_mode
+      climate.set_preset_mode
     {%- else -%}
       {%- if entity_mode_inverse -%}
         switch.turn_off
@@ -392,9 +394,11 @@ variables:
   service_on_data: >
     {%- if entity_mode_climate -%}
       {%- if entity_mode_inverse -%}
-        {"hvac_mode": "off"}
+        #{"hvac_mode": "off"}
+        {"preset_mode": "Stop"}
       {%- else -%}
-        {"hvac_mode": "heat"}
+        #{"hvac_mode": "heat"}
+        {"preset_mode": "Comfort"}  #voir si besoin de minuscule et guillemets 'comfort'
       {%- endif -%}
     {%- else -%}
       {}
@@ -403,9 +407,11 @@ variables:
   service_off_data: >
     {%- if entity_mode_climate -%}
       {%- if entity_mode_inverse -%}
-        {"hvac_mode": "heat"}
+        #{"hvac_mode": "heat"}
+        {"preset_mode": "Comfort"}
       {%- else -%}
-        {"hvac_mode": "off"}
+        #{"hvac_mode": "off"}
+        {"preset_mode": "Stop"}
       {%- endif -%}
     {%- else -%}
       {}
