@@ -2,7 +2,7 @@ blueprint:
   name: Thermostat TPI by C. TESSST
   description: "
 
-    version 0.38
+    version 0.39
     
     ___
     
@@ -330,7 +330,7 @@ blueprint:
         entity:
           
     entity_mode_climate:
-      name: Climate
+      name: [option] mode Climate
       description: "Si activé, le BluePrint pilotera une entité Climate de HA (heat/stop),
       
         comme c'est le cas en RF via X2D,
@@ -341,7 +341,7 @@ blueprint:
         boolean: {}
         
     entity_mode_inverse:
-      name: Inversé
+      name: [option] mode Inversé
       description: "Si activé, le chauffage sera allumé lorsque le switch est Off, 
       
         et éteint lorsque le switch est sur On.
