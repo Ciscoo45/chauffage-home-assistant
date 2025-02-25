@@ -2,7 +2,7 @@ blueprint:
   name: Pilotage chauffage by C. - Semaine et WE/fériés
   description: "
     
-    version 0.23
+    version 0.24
     
     ___
     
@@ -180,7 +180,7 @@ blueprint:
     
     Voir tuto/readme du projet, vous devez avoir déjà mis en place :
 
-    - Etape 1 : le hardware (sondes/switches) sur HA
+    - Etape 1 : le hardware (sondes, switches/dongle RF) sur HA
 
     - Etape 2 : la carte Lovelace Choix du mode de chauffage et état, dont création des inputs
 
@@ -196,6 +196,8 @@ blueprint:
     . **blueprint Thermostat TPI** :
     
     - évolution des champs descriptifs, notamment pour aider au paramétrage des valeurs de *coeff_c* et *coeff_t*
+
+    - ajout de l'option de passer en mode Climate, pour piloter des thermostats virtuels sur HA, plutôt que des relais (ex. utilisation d'un dongle GCE RFplayer 1000 envoyant des ordres vers un radiateur avec récepteur Delta Dore protocole X2D, ou tout autre service Climate sur HA)
 
     - ajout de l'option de passer en mode inversé pour le déclenchement, pour les relais qui nécessitent la position Off pour déclencher la chauffe (ex. SonOff ZBmini+diode)
     
@@ -247,7 +249,10 @@ blueprint:
   source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/chauffage_pilotage_Week-Vs-WE.yaml
   domain: automation
 
+
+# Création du formulaire pour saisie par l'utilisateur des entrées pour le Blueprint
   input:
+  
     temperature_hg:
       name: Température pour le mode Hors-gel
       description: "Défaut 8°C (ne se modifie uniquement qu'ici)"
@@ -257,32 +262,37 @@ blueprint:
           min: 2.0
           max: 14.0
           step: 0.5
+          
     entity_consigne:
       name: Consigne
-      description: Champs d'entrée de la température de Consigne (input_number)
+      description: Entité Température de Consigne (input_number)
       selector:
         entity:
           domain: input_number
+          
     entity_mode:
       name: Sélection du Mode
-      description: Entité de gestion du Mode de gestion du chauffage (input_select)
+      description: Entité de Gestion du Mode de gestion du chauffage (input_select)
       selector:
         entity:
           domain: input_select
+          
     entity_schedule_presence:
       name: Schedule mode Présence
-      description: Entité(s) générée(s) par Scheduler pour la planification du mode Presence (switch)
+      description: Entité(s) générée(s) par le Scheduler pour la planification du mode Presence (switch)
       selector:
         entity:
           domain: switch
           multiple: true
+          
     entity_schedule_absence:
       name: Schedule mode Absence
-      description: Entité(s) générée(s) par Scheduler pour la planification du mode Absence (switch)
+      description: Entité(s) générée(s) par le Scheduler pour la planification du mode Absence (switch)
       selector:
         entity:
           domain: switch
           multiple: true
+          
     entity_thermostat_tpi:
       name: Thermostat
       description: Entité de gestion du Thermostat TPI (automation)
@@ -291,22 +301,29 @@ blueprint:
           domain: automation
 
 
+
+# Récupération des paramètres
 variables:
   temperature_hg: !input temperature_hg
 
 
-alias: Pilotage chauffage
-description: ''
+#alias: Pilotage chauffage
+#description: ''
 
 
+# Evènement déclencheur : le changement de Mode de chauffe (via carte Lovelace)
 trigger:
   - platform: state
     entity_id: !input entity_mode
 
 
+
+# Conditions
 condition: []
 
 
+
+# Actions déclenchées par le Blueprint
 action:
   - choose:
   
