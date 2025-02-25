@@ -466,7 +466,7 @@ action:
             
           - service: "{{ service_off }}"
             target:
-              entity_id: !input.entity_chauffage
+              entity_id: !input entity_chauffage
             data: "{{ service_off_data }}"
 
       # Radiateur chauffe tout le temps sur la plage des 10min à venir
@@ -485,7 +485,7 @@ action:
             
           - service: "{{ service_on }}"
             target:
-              entity_id: !input.entity_chauffage
+              entity_id: !input entity_chauffage
             data: "{{ service_on_data }}"
     
     # Radiateur chauffe pour le temps calculé sur la plage de 10min à venir      
@@ -502,7 +502,7 @@ action:
         
       - service: "{{ service_on }}"
         target:
-          entity_id: !input.entity_chauffage
+          entity_id: !input entity_chauffage
         data: "{{ service_on_data }}"
         
       - delay: "{{ temps_chauffe }}"
@@ -518,7 +518,7 @@ action:
 
       - service: "{{ service_off }}"
         target:
-          entity_id: !input.entity_chauffage
+          entity_id: !input entity_chauffage
         data: "{{ service_off_data }}"
           
 mode: restart
