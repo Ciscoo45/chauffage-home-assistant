@@ -2,7 +2,7 @@ blueprint:
   name: Thermostat TPI by C. TESSST
   description: "
 
-    version 0.34
+    version 0.35
     
     ___
     
@@ -368,7 +368,6 @@ variables:
   # Choix du service à appeler
   service_on: >
     {%- if entity_mode_climate -%}
-      # climate.set_hvac_mode
       climate.set_preset_mode
     {%- else -%}
       {%- if entity_mode_inverse -%}
@@ -380,7 +379,6 @@ variables:
 
   service_off: >
     {%- if entity_mode_climate -%}
-      # climate.set_hvac_mode
       climate.set_preset_mode
     {%- else -%}
       {%- if entity_mode_inverse -%}
@@ -390,7 +388,7 @@ variables:
       {%- endif -%}
     {%- endif -%}
 
-  # Données associées à l'appel de service         # {"hvac_mode": "off"}              # {"hvac_mode": "heat"}           # voir si besoin de minuscule et guillemets 'Comfort'
+  # Données associées à l'appel de service         {"hvac_mode": "off"}              {"hvac_mode": "heat"}          voir si besoin de minuscule et guillemets 'Comfort'
   service_on_data: >
     {%- if entity_mode_climate -%}
       {%- if entity_mode_inverse -%}
