@@ -2,7 +2,7 @@ blueprint:
   name: Pilotage chauffage by C. - Semaine et WE/fériés TESSST
   description: "
     
-    version 0.25
+    version 0.26
     
     ___
     
@@ -193,38 +193,40 @@ blueprint:
     ## Evolutions par Ciscoo45 Vs Argonaute
 
 
-    . **blueprint Thermostat TPI** :
-    
-    - évolution des champs descriptifs, notamment pour aider au paramétrage des valeurs de *coeff_c* et *coeff_t*
-
-    - ajout de l'option de passer en mode Climate, pour piloter des thermostats virtuels sur HA, plutôt que des relais (ex. utilisation d'un dongle GCE RFplayer 1000 envoyant des ordres vers un radiateur avec récepteur Delta Dore protocole X2D, ou tout autre service Climate sur HA)
-
-    - ajout de l'option de passer en mode inversé pour le déclenchement, pour les relais qui nécessitent la position Off pour déclencher la chauffe (ex. SonOff ZBmini+diode)
-    
-        
     . **blueprint Pilotage Chauffage** :
     
-    - évolution des champs descriptifs
+    - évolution des champs descriptifs pour aide au paramétrage
     
     - fonctionnel : suppression du mode *Absence* d'Argonaute (les absences sont gérées sur la planif éco, à savoir le mode *Absence* ici)
     
-    - renommage des modes *Auto - confort* et *Auto - eco* (Argonaute), en *Presence* et *Absence* (C.) : ainsi on essaie de clarifier l'usage prévu par Argonaute, et on simplifie en ayant un seul mode *Absence*
+    - renommage : modes *Auto - confort* et *Auto - eco* (Argonaute), en *Presence* et *Absence* (C.). Ainsi on essaie de clarifier l'usage des modes, et on simplifie en ayant un seul mode *Absence*
     
-    - choix perso : mode *Stop* (Argonaute) renommé en mode *Arret* (mode utilisé l'été)
+    - renommage : mode *Stop* (Argonaute) renommé en mode *Arret* (mode utilisé l'été)
     
-    - choix perso : les entités *fenetre* sont renommées en *ouverture* (peut convenir ainsi pour une fenêtre, un velux, une porte…)
+    - renommage : les entités *fenetre* sont renommées en *ouverture* (peut convenir ainsi pour une fenêtre, un velux, une porte…)
     
-    - choix perso : les entités *chauffage* sont renommées en *radiateur*
+    - renommage : les entités *chauffage* sont renommées en *radiateur*
     
-    - choix perso : icône *mdi:target* pour la consigne
+    - personnalisation : icône *mdi:target* pour la consigne
     
     - **multiples programmations possibles pour le mode Presence** (ou Absence) d'une pièce : par ex. un schedule semaine et un schedule WE & férié, avec le mode Absence qui peut être aligné à 1 ou 2 degrés en-dessous
     
-    - gestion automatique de la bascule en planif WE et jours fériés (ajout possible aussi de période de congés à la maison) : via l'utilisation de l'intégration Workday et des programmations multiples
+    - gestion automatique de la **bascule en planif WE et jours fériés** (ajout possible aussi de période de congés ou télétravail à la maison) : via l'utilisation de l'intégration Workday et des programmations multiples
+    
+    
+    . **blueprint Thermostat TPI** :
+    
+    - évolution des champs descriptifs pour aide au paramétrage, notamment des valeurs de *coeff_c* et *coeff_t*
+
+    - **multiples radiateurs** possible pour une même pièce
+
+    - option : mode Climate, pour piloter des thermostats virtuels sur HA, plutôt que des relais (ex. utilisation d'un dongle GCE RFplayer 1000 envoyant des ordres vers un radiateur avec récepteur Delta Dore protocole X2D, ou tout autre service Climate sur HA)
+
+    - option : mode Inversé, pour le déclenchement des relais qui nécessiteraient la position Off pour déclencher la chauffe (ex. SonOff ZBmini + diode)
  
     - température du mode Hors-gel ajustable (curseur dans le BluePrint)
 
-    - correction d'un bug pouvant apparaître sur les versions précédentes lors du passage en position Arrêt, où le chauffage pouvait continuer à fonctionner (délai ajouté avant de désactiver le Blueprint Thermostat TPI, afin qu'il puisse calculer la fin de chauffe)
+    - correction : bug pouvant apparaître sur les versions 2024 et avant, lors du passage en position Arrêt, où le chauffage pouvait continuer à fonctionner dans certains scénarios (délai ajouté avant de désactiver le Blueprint Thermostat TPI, afin qu'il ait le temps de calculer la fin de chauffe)
     
     
     . **autres parties du projet Gestion bout en bout du chauffage** :
