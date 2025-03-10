@@ -1,33 +1,33 @@
-Forks here:
+Available forks here:
 
-[Old] Presence-Absence: [ProdOk]
+[Based on] Presence-Absence: [ProdOk]
 
-    - based on Argonaute version
+    Based on Argonaute work (thanks for this work!), plus:
     - different mode names (Presence-Absence, instead of AutoConfort-AutoEco)
     - single Absence mode
     - 'radiateur' switch name instead of 'chauffage'
 
 [Actual] Week-Vs-WE: [ProdOk]
 
-    - based on Presence-Absence version
-    - multiple schedules for Presence (or Absence) modes (ex Week & Weekend temp targets)
-    - inverted relay option (ex SonOff ZBmini+diode)
+    Based on Presence-Absence branch, plus:
+    - multiple schedules for Presence (or Absence) modes if needed (ex. different Week & Weekend temp targets) - work-at-home and holidays ready (Workday integration)
+    - fixed: heater do not cut in Stop mode (1sec delay to cut Thermostat TPI so it can calculate the stop)
+    - better explanations for coef c and coef t to easy set each room (heating speed Vs stabilized temperature)
     - adjustable temperature for frost protection mode (blueprint selector)
-    - fixed: heater not cut in Stop mode (1sec delay to cut Thermostat TPI so it can calculate the stop)
-    - tested ok in 0.28
-    - note: multi open-windows sensor still need to group them
+    - multi-heaters for a same room, thermostat and temperature sensor
+    - optional Climate mode, to drive Climate entities in HA instaed of relays (ex. thru GCE RFplayer 1000 to drive heaters with Delta Dore X2D receiver)
+    - optional inverted mode (ex. for SonOff ZBmini relay + diode)
+    - note: still need to create a group of sensors in case of multi open-windows/doors sensors in one room (option)
 
-[More to come] [Work in progress : 0.29+]
+[Later] To do
 
-    - based on Week-Vs-WE version 0.28
-    - add support for multi-heater in a same room / for one thermostat and one temperature sensor
-    - later: add support for a limited time boost period
-    - later: add support for target temperature auto-change option in case of EDF Tempo Red day
-    - later: delay so every Thermostat doesn't start at the same moment (load optimization)
-    - maybe: humidity threshold not to be exceeded (auto-boost)
-    - maybe: develop an option to accept optional laod shedding during peak demand, as a civic act (Voltalis like)
+    - add support for a limited time boost period
+    - add support for target temperature auto-change option in case of EDF Tempo Red day
+    - delay so every Thermostat doesn't start at the same moment (load optimization)
+    - auto-absence mode thru location sharing in case nobody's home, with last status remembered for return
+    - maybe: humidity threshold not to be exceeded (auto sanity boost)
+    - maybe: option to accept optional load shedding during peak demand, as a civic act (Voltalis like)
 
-Thanks Argonaute for this beautiful work and tuto!
 
 ###################################### ORIGINAL README ##############################
 
