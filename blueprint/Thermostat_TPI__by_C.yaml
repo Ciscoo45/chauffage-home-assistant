@@ -1,8 +1,8 @@
 blueprint:
-  name: Thermostat TPI by C. TESSST
+  name: Thermostat TPI by C.
   description: "
 
-    version 0.40
+    version 0.41
     
     ___
     
@@ -224,9 +224,7 @@ blueprint:
     
     # Paramétrage du Blueprint
     "
-  # source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Thermostat_TPI__by_C.yaml
-  source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Thermostat_TPI__by_C_test.yaml
-  # https://github.com/Ciscoo45/chauffage-home-assistant/edit/Week-Vs-WE/blueprint/thermostat_tpi_by_c.yaml
+  source_url: https://github.com/Ciscoo45/chauffage-home-assistant/edit/Week-Vs-WE/blueprint/Thermostat_TPI__by_C.yaml
   domain: automation
 
 
