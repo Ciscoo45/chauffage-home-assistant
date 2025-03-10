@@ -10,14 +10,15 @@ Available forks here:
 [Actual] Week-Vs-WE: [ProdOk]
 
     Based on Presence-Absence branch, plus:
-    - multiple schedules for Presence (or Absence) modes if needed (ex. different Week & Weekend temp targets) - work-at-home and holidays ready (Workday integration)
-    - fixed: heater do not cut in Stop mode (1sec delay to cut Thermostat TPI so it can calculate the stop)
-    - better explanations for coef c and coef t to easy set each room (heating speed Vs stabilized temperature)
+    - multiple schedules for Presence (or Absence) modes if needed (ex. different Week & Weekend temp targets)
+    - fixed: heater do not cut in Stop mode
+    - better explanations for coef c and coef t to easy set each room
     - adjustable temperature for frost protection mode (blueprint selector)
     - multi-heaters for a same room, thermostat and temperature sensor
-    - optional Climate mode, to drive Climate entities in HA instaed of relays (ex. thru GCE RFplayer 1000 to drive heaters with Delta Dore X2D receiver)
+    - optional Climate mode, to drive Climate entities in HA instead of relays
+        (ex. thru GCE RFplayer 1000 to drive heaters with Delta Dore X2D receiver)
     - optional inverted mode (ex. for SonOff ZBmini relay + diode)
-    - note: still need to create a group of sensors in case of multi open-windows/doors sensors in one room (option)
+    - note: still need to create a group of sensors in case of multi open-windows sensors per room
 
 [Later] To do
 
