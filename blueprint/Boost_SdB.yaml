@@ -3,25 +3,25 @@ blueprint:
   description: >
 
     
-    version 0.03
+    version 0.04
 
 
     Active un mode "Boost" de 35 minutes pour le chauffage de la salle de bain.
 
     
     **Déclencheurs** :
-      - Bouton IKEA Styrbar (appui sur "On")
-      - Bouton sur le dashboard (via un input_boolean)
-      - Notification mobile persistante (action "Arrêter")
+        - Bouton IKEA Styrbar (appui sur "On")
+        - Bouton sur le dashboard (via un input_boolean)
+        - Notification mobile persistante (action "Arrêter")
       
     **Actions de démarrage** :
-      - Mode SDB -> Manuel, Consigne -> 21°C
-      - Lance un compte à rebours de 35 min (enregistre l'heure de fin)
-      - Envoie une notification persistante aux téléphones (Michel & Ciscoo) avec bouton "Arrêter"
+        - Mode SDB -> Manuel, Consigne -> 21°C
+        - Lance un compte à rebours de 35 min (enregistre l'heure de fin)
+        - Envoie une notification persistante aux téléphones (Michel & Ciscoo) avec bouton "Arrêter"
       
     **Actions d'arrêt** (fin du boost ou interruption) :
-      - Mode SDB -> Presence, Consigne -> 14°C
-      - Supprime la notification persistante de boost
+        - Mode SDB -> Presence, Consigne -> 14°C
+        - Supprime la notification persistante de boost
       
   source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Boost_SdB.yaml
   domain: automation
