@@ -2,7 +2,7 @@ blueprint:
   name: "Boost Chauffage Salle de Bain - 35min"
   description: >
     
-    version 0.01
+    version 0.02
 
     Active un mode "Boost" de 35 minutes pour le chauffage de la salle de bain.
     **Déclencheurs** :
