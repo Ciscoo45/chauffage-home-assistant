@@ -32,7 +32,7 @@ blueprint:
           
     boost_switch:
       name: Commutateur Boost (Dashboard)
-      description: Entité booléenne (ex: input_boolean) utilisée par le dashboard Lovelace pour activer/arrêter le boost
+      description: "Entité booléenne (ex: input_boolean) utilisée par le dashboard Lovelace pour activer/arrêter le boost"
       default: input_boolean.boost_sdb
       selector:
         entity:
