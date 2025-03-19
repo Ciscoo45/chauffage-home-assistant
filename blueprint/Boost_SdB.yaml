@@ -3,7 +3,7 @@ blueprint:
   description: >
 
     
-    version 0.04
+    version 0.05
 
 
     Active un mode "Boost" de 35 minutes pour le chauffage de la salle de bain.
@@ -15,12 +15,12 @@ blueprint:
         - Notification mobile persistante (action "Arrêter")
       
     **Actions de démarrage** :
-        - Mode SDB -> Manuel, Consigne -> 21°C
+        - Mode SdB -> Manuel, Consigne -> 21°C
         - Lance un compte à rebours de 35 min (enregistre l'heure de fin)
         - Envoie une notification persistante aux téléphones (Michel & Ciscoo) avec bouton "Arrêter"
       
     **Actions d'arrêt** (fin du boost ou interruption) :
-        - Mode SDB -> Presence, Consigne -> 14°C
+        - Mode SdB -> Presence, Consigne -> 14°C
         - Supprime la notification persistante de boost
       
   source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Boost_SdB.yaml
@@ -46,7 +46,7 @@ blueprint:
           domain: input_boolean
           
     mode_entity:
-      name: Mode Chauffage SDB
+      name: Mode Chauffage SdB
       description: Entité input_select du mode de chauffage de la SDB
       default: input_select.mode.sdb
       selector:
@@ -54,8 +54,8 @@ blueprint:
           domain: input_select
           
     consigne_entity:
-      name: Consigne Chauffage SDB
-      description: Entité input_number de la consigne de température de la SDB
+      name: Consigne Chauffage SdB
+      description: Consigne de température de la SDB (input_number)
       default: input_number.consigne_sdb
       selector:
         entity:
@@ -70,7 +70,7 @@ blueprint:
           domain: input_datetime
 
 
-# Automatisation du Boost de chauffage de la SDB (35 minutes)
+# Automatisation du Boost de chauffage de la SdB (35 minutes)
 trigger:
   
   # 1. Bouton physique IKEA Styrbar (appui sur "On" pour démarrer)
@@ -91,7 +91,7 @@ trigger:
       cluster_id: 6
     id: boost_stop_remote
   
-  # 2. Dashboard Lovelace (activation du boost via bouton)
+  # 2. Dashboard Lovelace (activation du boost via bouton virtuel)
   - platform: state
     entity_id: !input boost_switch
     from: "off"
@@ -144,7 +144,7 @@ action:
             data:
               value: 21
               
-          # 3. Démarre le compte à rebours en enregistrant l'heure de fin (maintenant + 35 min)
+          # 3. Démarre le compte à rebours en enregistrant l'heure de fin (maintenant + 35min)
           - service: input_datetime.set_datetime
             target:
               entity_id: !input timer_entity
