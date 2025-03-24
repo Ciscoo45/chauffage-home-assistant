@@ -3,7 +3,7 @@ blueprint:
   description: >
 
     
-    version 0.05
+    version 0.06
 
 
     Active un mode "Boost" de 35 minutes pour le chauffage de la salle de bain.
@@ -44,7 +44,15 @@ blueprint:
       selector:
         entity:
           domain: input_boolean
-          
+
+    timer_entity:
+      name: Horaire de fin de Boost
+      description: Entité input_datetime (date & heure) qui stockera l'heure de fin du boost
+      default: input_datetime.fin_boost_sdb
+      selector:
+        entity:
+          domain: input_datetime
+                    
     mode_entity:
       name: Mode Chauffage SdB
       description: Entité input_select du mode de chauffage de la SDB
@@ -60,14 +68,6 @@ blueprint:
       selector:
         entity:
           domain: input_number
-          
-    timer_entity:
-      name: Horaire de fin de Boost
-      description: Entité input_datetime (date & heure) qui stockera l'heure de fin du boost
-      default: input_datetime.fin_boost_sdb
-      selector:
-        entity:
-          domain: input_datetime
 
 
 # Automatisation du Boost de chauffage de la SdB (35 minutes)
@@ -91,14 +91,14 @@ trigger:
       cluster_id: 6
     id: boost_stop_remote
   
-  # 2. Dashboard Lovelace (activation du boost via bouton virtuel)
+  # 2. Dashboard Lovelace (ACTIVATION du boost via bouton virtuel)
   - platform: state
     entity_id: !input boost_switch
     from: "off"
     to: "on"
     id: boost_start_ui
   
-  # Dashboard Lovelace (arrêt du boost via bouton)
+  # Dashboard Lovelace (ARRET du boost via bouton)
   - platform: state
     entity_id: !input boost_switch
     from: "on"
