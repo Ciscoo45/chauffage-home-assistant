@@ -2,7 +2,7 @@ blueprint:
   name: Pilotage chauffage by C. - Semaine et WE/fériés
   description: "
     
-    version 0.28
+    version 1.01
     
     ___
     
@@ -248,7 +248,7 @@ blueprint:
     
     # Paramétrage du Blueprint
     "
-  source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/chauffage_pilotage_Week-Vs-WE.yaml
+  source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Chauffage_pilotage_Week-Vs-WE.yaml
   domain: automation
 
 
@@ -417,3 +417,4 @@ action:
 
           
 mode: single
+
