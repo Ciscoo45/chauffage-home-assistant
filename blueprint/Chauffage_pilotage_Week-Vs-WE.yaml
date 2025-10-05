@@ -2,7 +2,7 @@ blueprint:
   name: Pilotage chauffage by C. - Semaine et WE/fériés
   description: "
     
-    version Chauff_1.01_2025-10-05
+    version Chauff : v1.01 - 2025-10-05
     
     ___
     
@@ -417,6 +417,7 @@ action:
 
           
 mode: single
+
 
 
 
