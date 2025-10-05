@@ -374,9 +374,9 @@ variables:
       climate.set_preset_mode
     {%- else -%}
       {%- if entity_mode_inverse -%}
-        switch.turn_on
-      {%- else -%}
         switch.turn_off
+      {%- else -%}
+        switch.turn_on
       {%- endif -%}
     {%- endif -%}
 
@@ -385,9 +385,9 @@ variables:
       climate.set_preset_mode
     {%- else -%}
       {%- if entity_mode_inverse -%}
-        switch.turn_off
-      {%- else -%}
         switch.turn_on
+      {%- else -%}
+        switch.turn_off
       {%- endif -%}
     {%- endif -%}
 
