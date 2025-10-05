@@ -10,7 +10,7 @@ blueprint:
     
     de :
   
-    **Pilotage Chauffage** (12/2021)
+    **Pilotage Chauffage** (version 12/2021)
     
     par **Argonaute**
     
@@ -417,5 +417,6 @@ action:
 
           
 mode: single
+
 
 
