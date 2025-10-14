@@ -1,4 +1,4 @@
-Home Assistant - Electric heater management :
+Home Assistant - Electric heating management :
 
 Complete implementation of a heating management system for Home Assistant:
 
