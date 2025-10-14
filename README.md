@@ -1,3 +1,12 @@
+Home Assistant - Electric heater management :
+
+Complete implementation of a heating management system for Home Assistant:
+
+    Proportional thermostat
+    Window opening management
+    Heating modes (Présence, Absence...)
+    Time zones for heating shedule
+    
 Available forks here:
 
 [Based on] Presence-Absence: [ProdOk]
@@ -7,7 +16,7 @@ Available forks here:
     - single Absence mode
     - 'radiateur' switch name instead of 'chauffage'
 
-[Actual] Week-Vs-WE: [ProdOk]
+[Actual branch] Week-Vs-WE: [ProdOk]
 
     Based on Presence-Absence branch, plus:
     - multiple schedules for Presence (or Absence) modes if needed (ex. different Week & Weekend temp targets)
