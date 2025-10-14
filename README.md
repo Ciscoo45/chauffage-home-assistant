@@ -1,4 +1,4 @@
-Home Assistant - Electric heating management :
+Home Assistant - Electric radiator management :
 
 Complete implementation of a heating management system for Home Assistant:
 
