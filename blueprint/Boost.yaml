@@ -2,7 +2,7 @@ blueprint:
   name: Boost Chauffage
   description: >
 
-    version Boost : v0.11 - 2025-10-19
+    version Boost : v0.12 - 2025-10-19
 
 
     Active un mode "Boost" pendant une durée déterminée pour le chauffage de la pièce sélectionnée.
@@ -121,8 +121,28 @@ action:
 
   # Pré-calcul de l'heure de fin du boost (maintenant + 35 minutes)
   - variables:
+      
       boost_end_ts: "{{ (now() + timedelta(minutes=35)).timestamp() | int }}"
+      
+      # Pour éviter les double notif si arrêt depuis notif sur mobiles :
+      # Détecte si le trigger UI a été causé par cette exécution (boucle interne)
+      self_ui_event: >-
+        {{
+          (trigger.id in ['boost_start_ui','boost_stop_ui'])
+          and (trigger.to_state is defined)
+          and (trigger.to_state.context is defined)
+          and (trigger.to_state.context.parent_id == this.context.id)
+        }}
+
+      
   - choose:
+
+      # Arrêt si l'événement UI provient de cette exécution, on stoppe immédiatement pour éviter le double tir
+      - conditions: "{{ self_ui_event }}"
+        sequence:
+          - stop
+      
+      
       # --- DÉMARRAGE DU BOOST (bouton physique ON ou via dashboard) ---
       - conditions:
           - "{{ trigger.id in ['boost_start_remote', 'boost_start_ui'] }}"
