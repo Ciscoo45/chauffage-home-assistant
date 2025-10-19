@@ -2,25 +2,26 @@ blueprint:
   name: Boost Chauffage
   description: >
 
-    version Boost : v0.16 - 2025-10-19
+    version Boost : v0.18 - 2025-10-19
 
     Active un mode "Boost" pendant une durée déterminée pour le chauffage de la pièce sélectionnée.
-    Permet de déroger à la programmation en cours et d'y revenir automatiquement après le délai défini.
+    Paramétrage pilotable via dashboard (consigne & durée) + valeurs par défaut définies au moment d'instancier le blueprint.
     
     **Déclencheurs** :
-        - Bouton Ikea Styrbar ou Rodret (appui sur "On")
-        - Bouton sur le dashboard (via un input_boolean)
+        - Bouton Ikea Styrbar/Rodret (On/Off)
+        - Bouton sur le dashboard (input_boolean)
+        - (optionnel) Au démarrage de Home Assistant / rechargement des automatisations pour initialiser les helpers
       
-    **Actions lors du démarrage** :
-        - Pièce sélectionnée > Chauffage > Mode sur Manuel + Consigne sur la température choisie
-        - Lance un compte à rebours du temps paramétré (enregistre l'heure de fin)
-        - Envoie une notification persistante avec bouton Arrêter sur les appareils des personnes du groupe d'utilisateurs présents dans le foyer
-        - Actualise le tableau de bord pour afficher l'état actif du boost et l'heure de fin automatique
+    **Démarrage** :
+        - Mode -> Manuel + Consigne = valeur du Helper
+        - Enregistre l'heure de fin
+        - Notification persistante avec bouton "Arrêter"
+        - Synchronise l’UI
       
-    **Actions d'arrêt** (fin du boost ou interruption) :
-        - Pièce sélectionnée > Chauffage > Mode sur Presence + Consigne sur 14°C
-        - Supprime la notification persistante de boost sur les appareils
-        - Actualise l'état du tableau de bord
+    **Arrêt** :
+        - Mode -> Presence + Consigne = 14°C
+        - Nettoie la notif
+        - Synchronise l’UI
       
   source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Boost.yaml
   domain: automation
@@ -29,13 +30,13 @@ blueprint:
 
     piece:
       name: Pièce
-      description: Pièce où le chauffage se trouve
+      description: Choisis la pièce concernée
       selector:
-        area: {}          # <- sélecteur de pièce (area)
+        area: {}
 
     remote_button:
-      name: "[Optionnel] Télécommande Ikea Styrbar ou Rodret pour le déclenchement physique"
-      description: Télécommande optionnelle Ikea Styrbar (E2001/E2002) ou Rodret (E2201) appairée via ZHA 
+      name: "[Optionnel] Télécommande Ikea Styrbar / Rodret"
+      description: Appairée via ZHA (E2001/E2002/E2201)
       default: ""
       selector:
         device:
@@ -44,124 +45,190 @@ blueprint:
           
     boost_switch:
       name: Commutateur Boost (Dashboard)
-      description: "Entité On/Off (input_boolean) utilisée par le dashboard Lovelace pour activer/arrêter le boost"
+      description: input_boolean qui active/arrête le boost
       selector:
         entity:
           domain: input_boolean
 
     timer_entity:
       name: Horaire de fin de Boost
-      description: Entité date & heure (input_datetime) qui stockera l'heure de fin du boost
+      description: input_datetime (date+heure) qui stocke l'heure de fin
       selector:
         entity:
           domain: input_datetime
                     
     mode_entity:
       name: Entité Mode du module Chauffage
-      description: Entité de sélection du mode (input_select) pour le chauffage de la pièce 
+      description: input_select du mode chauffage de la pièce 
       selector:
         entity:
           domain: input_select
           
     consigne_entity:
       name: Entité Consigne du module Chauffage
-      description: Consigne de température (input_number) du chauffage de la pièce 
+      description: input_number consigne du chauffage de la pièce 
       selector:
         entity:
           domain: input_number
 
+    # -------- Helpers affichés sur le dashboard --------
+    boost_temp_helper:
+      name: Helper — Consigne de boost (°C)
+      description: input_number affiché sur le dashboard 
+      selector:
+        entity:
+          domain: input_number
 
-# Automatisation du Boost de chauffage (35 minutes)
+    boost_duration_helper:
+      name: Helper — Durée de boost (minutes)
+      description: input_number affiché sur le dashboard 
+      selector:
+        entity:
+          domain: input_number
+
+    # -------- Valeurs par défaut définies au paramétrage --------
+    consigne_boost_valeur_de_depart:
+      name: Consigne par défaut (°C)
+      description: Valeur de départ pour cette pièce copiée dans le helper lors du (re)démarrage/chargement
+      default: 21
+      selector:
+        number:
+          min: 15
+          max: 22
+          step: 0.5
+          mode: slider
+
+    duree_boost_valeur_de_depart:
+      name: Durée par défaut (minutes)
+      description: Valeur de départ copiée dans le helper lors du (re)démarrage/chargement
+      default: 35
+      selector:
+        number:
+          min: 5
+          max: 180
+          step: 5
+          mode: slider
+
+    sync_helpers_on_reload:
+      name: Initialiser les helpers à chaque redémarrage / rechargement
+      description: Si activé, copie les valeurs par défaut ci-dessus vers les helpers au démarrage de HA et lorsqu'on recharge les automatisations
+      default: true
+      selector:
+        boolean: {}
+
+# Déclencheurs
 trigger:
-  
-  # 1. Bouton physique Ikea Styrbar ou Rodret (appui sur "On" pour démarrer)
+  # Physique ON/OFF
   - platform: event
     event_type: zha_event
-    event_data:
-      device_id: !input remote_button
-      command: "on"
-      cluster_id: 6
+    event_data: { device_id: !input remote_button, command: "on", cluster_id: 6 }
     id: boost_start_remote
-  
-  # Arrêt via bouton physique (appui sur "Off")
+
   - platform: event
     event_type: zha_event
-    event_data:
-      device_id: !input remote_button
-      command: "off"
-      cluster_id: 6
+    event_data: { device_id: !input remote_button, command: "off", cluster_id: 6 }
     id: boost_stop_remote
-  
-  # 2. Dashboard Lovelace (ACTIVATION du boost via bouton virtuel)
+
+  # UI ON/OFF
   - platform: state
     entity_id: !input boost_switch
     from: "off"
     to: "on"
     id: boost_start_ui
-  
-  # Dashboard Lovelace (ARRET du boost via bouton)
+
   - platform: state
     entity_id: !input boost_switch
     from: "on"
     to: "off"
     id: boost_stop_ui
-  
-  # 3. Action "Arrêter" depuis la notification persistante sur mobile
-  #    (on NE filtre plus ici pour ne pas dépendre de la templatisation au niveau trigger)
+
+  # Notifs mobiles (on filtre plus loin)
   - platform: event
     event_type: mobile_app_notification_action
     id: boost_stop_notif
 
+  # Initialisation des helpers au démarrage / rechargement (optionnelle)
+  - platform: homeassistant
+    event: start
+    id: init_on_start
 
-# Pas de conditions supplémentaires (le boost se déclenche dès qu'un trigger survient)
+  - platform: event
+    event_type: automation_reloaded
+    id: init_on_reload
+
 condition: []
 
-
-# Script des actions selon le type de déclencheur
 action:
-
-  # Pré-calculs + identifiants uniques dérivés de l'area
+  # Variables & identifiants par pièce
   - variables:
       area_id: !input piece
-      # Nom lisible de la pièce (retombe sur l'ID si non trouvé)
       area_label: >-
         {{ area_name(area_id) if area_name(area_id) is not none else area_id }}
-      # Identifiants uniques par pièce (tag et action)
+
+      # Identifiants uniques par pièce pour les notifs
       notif_tag: >-
         {{ 'boost_' ~ area_id }}
       stop_action_id: >-
         {{ ('STOP_BOOST_' ~ area_id)|upper }}
 
-      # Heure de fin du boost (maintenant + 35 minutes)
-      boost_end_ts: "{{ (now() + timedelta(minutes=35)).timestamp() | int }}"
+      # Valeurs de départ (depuis les selectors)
+      default_minutes: "{{ iif(!input duree_boost_valeur_de_depart is defined, !input duree_boost_valeur_de_depart, 35) }}"
+      default_temp: "{{ iif(!input consigne_boost_valeur_de_depart is defined, !input consigne_boost_valeur_de_depart, 22) }}"
+
+      # Helpers actuels (avec fallback sur défaut)
+      boost_minutes: >-
+        {{ (states(!input boost_duration_helper) | int(default_minutes)) | max(1) }}
+      boost_target_temp: >-
+        {{ states(!input boost_temp_helper) | float(default_temp) }}
+
+      # Heures de fin
+      boost_end_ts: >-
+        {{ (now() + timedelta(minutes=boost_minutes)).timestamp() | int }}
+      boost_end_hhmm: >-
+        {{ (now() + timedelta(minutes=boost_minutes)).strftime('%H:%M') }}
 
   - choose:
 
-      # --- DÉMARRAGE DU BOOST (bouton physique ON ou via dashboard) ---
-      - conditions:
-          - "{{ trigger.id in ['boost_start_remote', 'boost_start_ui'] }}"
+      # =============== INITIALISATION DES HELPERS ===============
+      - conditions: >
+          {{ trigger.id in ['init_on_start','init_on_reload'] and ( !input sync_helpers_on_reload ) }}
         sequence:
-          # 1. Passe le mode de chauffage en "Manuel"
-          - service: input_select.select_option
-            target:
-              entity_id: !input mode_entity
-            data:
-              option: "Manuel"
-          # 2. Règle la consigne de température à 22°C
+          - stop: "Initialisation des helpers désactivée (sync_helpers_on_reload = false)."
+
+      - conditions: >
+          {{ trigger.id in ['init_on_start','init_on_reload'] and ( !input sync_helpers_on_reload ) == false }}
+        sequence:
+          # Copie les valeurs par défaut vers les helpers du dashboard
           - service: input_number.set_value
-            target:
-              entity_id: !input consigne_entity
-            data:
-              value: 22
-          # 3. Démarre le compte à rebours en enregistrant l'heure de fin (maintenant + 35min)
+            target: { entity_id: !input boost_duration_helper }
+            data: { value: "{{ default_minutes | int }}" }
+
+          - service: input_number.set_value
+            target: { entity_id: !input boost_temp_helper }
+            data: { value: "{{ default_temp | float }}" }
+
+          - stop: "Helpers initialisés avec les valeurs par défaut."
+
+      # =============== DÉMARRAGE ===============
+      - conditions: "{{ trigger.id in ['boost_start_remote', 'boost_start_ui'] }}"
+        sequence:
+          # Mode Manuel
+          - service: input_select.select_option
+            target: { entity_id: !input mode_entity }
+            data: { option: "Manuel" }
+
+          # Consigne = helper (écrit dans l’entité consigne chauffage)
+          - service: input_number.set_value
+            target: { entity_id: !input consigne_entity }
+            data: { value: "{{ boost_target_temp }}" }
+
+          # Sauvegarde de l'heure de fin
           - service: input_datetime.set_datetime
-            target:
-              entity_id: !input timer_entity
-            data:
-              timestamp: "{{ boost_end_ts }}"
-          # 4. Envoie une notification persistante aux utilisateurs présents, avec bouton "Arrêter"
+            target: { entity_id: !input timer_entity }
+            data: { timestamp: "{{ boost_end_ts }}" }
+
+          # Notifications persistantes (avec tag + action uniques)
           - choose:
-              # Notification pour Michel (si présent à la maison)
               - conditions:
                   - condition: state
                     entity_id: person.michel
@@ -170,15 +237,14 @@ action:
                   - service: notify.mobile_app_pixel_4a_5g
                     data:
                       title: "🔆 Boost chauffage {{ area_label }} activé"
-                      message: "Chauffage en Boost jusqu'à {{ (now() + timedelta(minutes=35)).strftime('%H:%M') }}."
+                      message: "Consigne {{ boost_target_temp|round(1) }}° • Fin {{ boost_end_hhmm }} ({{ boost_minutes }} min)"
                       data:
                         tag: "{{ notif_tag }}"
-                        persistent: true     # notification non balayable
-                        sticky: true         # reste affichée même en appuyant dessus
+                        persistent: true
+                        sticky: true
                         actions:
                           - action: "{{ stop_action_id }}"
                             title: "Arrêter"
-              # Notification pour Ciscoo (si présent à la maison)
               - conditions:
                   - condition: state
                     entity_id: person.ciscoo
@@ -187,7 +253,7 @@ action:
                   - service: notify.mobile_app_pixel_7_pro
                     data:
                       title: "🔆 Boost chauffage {{ area_label }} activé"
-                      message: "Chauffage en Boost jusqu'à {{ (now() + timedelta(minutes=35)).strftime('%H:%M') }}."
+                      message: "Consigne {{ boost_target_temp|round(1) }}° • Fin {{ boost_end_hhmm }} ({{ boost_minutes }} min)"
                       data:
                         tag: "{{ notif_tag }}"
                         persistent: true
@@ -195,27 +261,28 @@ action:
                         actions:
                           - action: "{{ stop_action_id }}"
                             title: "Arrêter"
-          # 5. Active le commutateur boost (si déclenché par le bouton physique pour synchroniser l'UI)
+
+          # Synchronisation UI si déclenché physiquement
           - condition: state
             entity_id: !input boost_switch
             state: "off"
           - service: input_boolean.turn_on
-            target:
-              entity_id: !input boost_switch
-          # 6. Attendre 35 minutes (durée du boost) avant l'arrêt automatique, sauf interruption manuelle
-          - delay: "00:35:00"
-          # 7. À la fin du délai, arrête le boost (équivaut à appuyer sur "Arrêter")
-          - service: input_boolean.turn_off
-            target:
-              entity_id: !input boost_switch
+            target: { entity_id: !input boost_switch }
 
-      # --- FIN DU BOOST / ARRÊT ANTICIPÉ (bouton physique Off, bouton UI "Arrêter" ou notif mobile "Arrêter") ---
-      - conditions:
-          - "{{ trigger.id in ['boost_stop_remote', 'boost_stop_ui', 'boost_stop_notif'] }}"
+          # Attente de la durée (templatable)
+          - delay:
+              minutes: "{{ boost_minutes | int }}"
+
+          # Arrêt automatique
+          - service: input_boolean.turn_off
+            target: { entity_id: !input boost_switch }
+
+      # =============== ARRÊT ===============
+      - conditions: "{{ trigger.id in ['boost_stop_remote', 'boost_stop_ui', 'boost_stop_notif'] }}"
         sequence:
-          # Filtres anti-faux positifs pour ne pas arrêter d'autres blueprints que celui-ci :
-          # - Si ça vient d'une notif, on ne continue QUE si action & tag correspondent à CETTE pièce
-          # - Et on ne continue que si le boost de cette pièce est effectivement actif
+          # Garde-fous :
+          # - si notif: action + tag doivent correspondre à CETTE pièce
+          # - boost de cette pièce doit être actif
           - condition: template
             value_template: >-
               {{ trigger.id != 'boost_stop_notif'
@@ -226,19 +293,15 @@ action:
             entity_id: !input boost_switch
             state: "on"
 
-          # 1. Remet le mode de chauffage en "Presence"
+          # Restaure Presence + 14°C
           - service: input_select.select_option
-            target:
-              entity_id: !input mode_entity
-            data:
-              option: "Presence"
-          # 2. Abaisse la consigne de température à 14°C
+            target: { entity_id: !input mode_entity }
+            data: { option: "Presence" }
           - service: input_number.set_value
-            target:
-              entity_id: !input consigne_entity
-            data:
-              value: 14
-          # 3. Supprime/écrase la notification persistante de boost (avec message de fin)
+            target: { entity_id: !input consigne_entity }
+            data: { value: 14 }
+
+          # Notifs de fin (écrasent la persistante)
           - service: notify.mobile_app_pixel_4a_5g
             data:
               message: "✅ Boost chauffage {{ area_label }} terminé."
@@ -253,14 +316,12 @@ action:
                 tag: "{{ notif_tag }}"
                 persistent: false
                 sticky: false
-          # 4. Met à jour le commutateur de boost sur 'off' si besoin (si arrêté par télécommande ou notif)
+
+          # Synchronisation UI si besoin
           - condition: state
             entity_id: !input boost_switch
             state: "on"
           - service: input_boolean.turn_off
-            target:
-              entity_id: !input boost_switch
+            target: { entity_id: !input boost_switch }
 
-
-# Permet de relancer le boost immédiatement après une interruption (mode restart)
 mode: restart
