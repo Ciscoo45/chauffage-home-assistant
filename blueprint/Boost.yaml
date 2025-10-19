@@ -2,7 +2,7 @@ blueprint:
   name: Boost Chauffage
   description: >
 
-    version Boost : v0.07 - 2025-10-19
+    version Boost : v0.08 - 2025-10-19
 
 
     Active un mode "Boost" pendant une durée déterminée pour le chauffage de la pièce sélectionnée.
@@ -11,7 +11,7 @@ blueprint:
     
     
     **Déclencheurs** :
-        - Bouton IKEA Styrbar (appui sur "On")
+        - Bouton Ikea Styrbar ou Rodret (appui sur "On")
         - Bouton sur le dashboard (via un input_boolean)
       
     **Actions lors du démarrage** :
