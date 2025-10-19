@@ -2,7 +2,7 @@ blueprint:
   name: Boost Chauffage
   description: >
 
-    version Boost : v0.20 - 2025-10-19
+    version Boost : v0.21 - 2025-10-19
 
     Active un mode "Boost" pendant une durée déterminée pour le chauffage de la pièce sélectionnée.
     Paramétrage pilotable via dashboard (consigne & durée) + valeurs par défaut définies au moment d'instancier le blueprint.
@@ -78,17 +78,6 @@ blueprint:
       selector:
         entity:
           domain: input_number
-
-    consigne_boost_valeur_de_depart:
-      name: Consigne par défaut (°C)
-      description: Valeur de départ pour cette pièce copiée dans le helper lors du (re)démarrage/chargement
-      default: 21
-      selector:
-        number:
-          min: 15
-          max: 22
-          step: 0.5
-          mode: slider
           
     boost_duration_helper:
       name: Helper — Durée de boost (minutes)
@@ -97,15 +86,27 @@ blueprint:
         entity:
           domain: input_number
 
+    # -------- Valeurs par défaut définies au paramétrage --------
+    consigne_boost_valeur_de_depart:
+      name: Consigne par défaut (°C)
+      description: Valeur de départ pour cette pièce copiée dans le helper lors du (re)démarrage/chargement
+      default: 21
+      selector:
+        number:
+          min: 15
+          max: 30
+          step: 0.5
+          mode: slider
+
     duree_boost_valeur_de_depart:
       name: Durée par défaut (minutes)
       description: Valeur de départ copiée dans le helper lors du (re)démarrage/chargement
       default: 40
       selector:
         number:
-          min: 10
-          max: 600
-          step: 10
+          min: 5
+          max: 180
+          step: 5
           mode: slider
 
     sync_helpers_on_reload:
@@ -158,9 +159,15 @@ trigger:
 condition: []
 
 action:
-  # Variables & identifiants par pièce
+  # Variables & identifiants par pièce (assignations directes avec !input, puis usage dans templates)
   - variables:
       area_id: !input piece
+      duration_helper: !input boost_duration_helper
+      temp_helper: !input boost_temp_helper
+      sync_reload: !input sync_helpers_on_reload
+      default_minutes: !input duree_boost_valeur_de_depart
+      default_temp: !input consigne_boost_valeur_de_depart
+
       area_label: >-
         {{ area_name(area_id) if area_name(area_id) is not none else area_id }}
 
@@ -170,15 +177,11 @@ action:
       stop_action_id: >-
         {{ ('STOP_BOOST_' ~ area_id)|upper }}
 
-      # Valeurs de départ (depuis les selectors)
-      default_minutes: "{{ iif(!input duree_boost_valeur_de_depart is defined, !input duree_boost_valeur_de_depart, 40) }}"
-      default_temp: "{{ iif(!input consigne_boost_valeur_de_depart is defined, !input consigne_boost_valeur_de_depart, 21) }}"
-
-      # Helpers actuels (avec fallback sur défaut)
+      # Helpers actuels (avec fallback sur défaut) — ICI on utilise les variables ci-dessus, pas !input
       boost_minutes: >-
-        {{ (states(!input boost_duration_helper) | int(default_minutes)) | max(1) }}
+        {{ (states(duration_helper) | int(default_minutes)) | max(1) }}
       boost_target_temp: >-
-        {{ states(!input boost_temp_helper) | float(default_temp) }}
+        {{ states(temp_helper) | float(default_temp) }}
 
       # Heures de fin
       boost_end_ts: >-
@@ -189,13 +192,11 @@ action:
   - choose:
 
       # =============== INITIALISATION DES HELPERS ===============
-      - conditions: >
-          {{ trigger.id in ['init_on_start','init_on_reload'] and ( !input sync_helpers_on_reload ) }}
+      - conditions: "{{ trigger.id in ['init_on_start','init_on_reload'] and not sync_reload }}"
         sequence:
           - stop: "Initialisation des helpers désactivée (sync_helpers_on_reload = false)."
 
-      - conditions: >
-          {{ trigger.id in ['init_on_start','init_on_reload'] and ( !input sync_helpers_on_reload ) == false }}
+      - conditions: "{{ trigger.id in ['init_on_start','init_on_reload'] and sync_reload }}"
         sequence:
           # Copie les valeurs par défaut vers les helpers du dashboard
           - service: input_number.set_value
