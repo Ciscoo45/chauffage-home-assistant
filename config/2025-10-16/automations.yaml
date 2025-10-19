@@ -1,0 +1,453 @@
+- id: '1738521922811'
+  alias: Voitures Rodret Allumer
+  description: Allume tous les spots et bandeaux LEDs
+  triggers:
+  - device_id: 2127cd8891032cd7cb2aa79e344d3a85
+    domain: zha
+    type: remote_button_short_press
+    subtype: turn_on
+    trigger: device
+  conditions: []
+  actions:
+  - action: light.turn_on
+    metadata: {}
+    data: {}
+    target:
+      area_id: chambrevoitures
+  mode: single
+
+- id: '1738523861760'
+  alias: Voitures Eteindre
+  description: ''
+  triggers:
+  - device_id: 2127cd8891032cd7cb2aa79e344d3a85
+    domain: zha
+    type: remote_button_short_press
+    subtype: turn_off
+    trigger: device
+  conditions: []
+  actions:
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      area_id: chambrevoitures
+  mode: single
+
+
+- id: '1759685882645'
+  alias: Thermostat TPI Atelier
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Thermostat_TPI__by_C.yaml
+    input:
+      coeff_c: 0.8
+      coeff_t: 0.025
+      entity_consigne: input_number.radiateur_atelier_consigne
+      entity_temp_ext: sensor.temperature_exterieure_virtuelle_consolidee
+      entity_temp_int: sensor.temperature_sonoff_atelier
+      entity_fenetre: binary_sensor.fenetre_virtuelle_onoff
+      entity_puissance: input_number.radiateur_atelier_puissance
+      entity_chauffage:
+      - switch.radiateur_inv_atelier
+      entity_mode_inverse: true
+
+- id: '1737414586159'
+  alias: Pilotage chauffage Atelier
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_pilotage_Week-Vs-WE.yaml
+    input:
+      entity_consigne: input_number.radiateur_atelier_consigne
+      entity_mode: input_select.radiateur_atelier_mode
+      entity_schedule_presence:
+      - switch.schedule_atelier_presence_sem
+      - switch.schedule_atelier_presence_we
+      entity_schedule_absence:
+      - switch.schedule_atelier_absence_quo
+      entity_thermostat_tpi: automation.thermostat_tpi_atelier
+
+- id: '1737082106063'
+  alias: Pilotage chauffage by C. - Semaine et WE/fériés - Chambre Ss-sol
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_pilotage_Week-Vs-WE.yaml
+    input:
+      entity_consigne: input_number.radiateur_chambre_sssol_consigne
+      entity_mode: input_select.radiateur_chambre_sssol_mode
+      entity_schedule_presence:
+      - switch.schedule_chambre_sssol_presence_quo
+      entity_schedule_absence:
+      - switch.schedule_chambre_sssol_absence_quo
+      entity_thermostat_tpi: automation.thermostat_tpi_chambre_sssol
+
+- id: '1737155536732'
+  alias: Pilotage chauffage Telmo
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_pilotage_Week-Vs-WE.yaml
+    input:
+      entity_consigne: input_number.radiateur_telmo_consigne
+      entity_mode: input_select.radiateur_telmo_mode
+      entity_schedule_presence:
+      - switch.schedule_telmo_presence_quo
+      entity_schedule_absence:
+      - switch.schedule_telmo_absence_quo
+      entity_thermostat_tpi: automation.thermostat_tpi_telmo
+
+- id: '1737298831614'
+  alias: Pilotage chauffage Michel
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_pilotage_Week-Vs-WE.yaml
+    input:
+      entity_consigne: input_number.radiateur_michel_consigne
+      entity_mode: input_select.radiateur_michel_mode
+      entity_schedule_presence:
+      - switch.schedule_michel_presence_quo
+      entity_schedule_absence:
+      - switch.schedule_michel_absence_quo
+      entity_thermostat_tpi: automation.thermostat_tpi_michel
+
+- id: '1737328006135'
+  alias: Pilotage Chauffage Bureau
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_pilotage_Week-Vs-WE.yaml
+    input:
+      entity_consigne: input_number.radiateur_bureau_consigne
+      entity_mode: input_select.radiateur_bureau_mode
+      entity_schedule_presence:
+      - switch.schedule_bureau_presence_quo
+      entity_schedule_absence:
+      - switch.schedule_bureau_absence_quo
+      entity_thermostat_tpi: automation.thermostat_tpi_bureau
+
+- id: '1738362694235'
+  alias: Thermostat TPI - Voitures
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Thermostat_TPI__by_C.yaml
+    input:
+      coeff_c: 0.7
+      coeff_t: 0.017
+      entity_consigne: input_number.radiateur_voitures_consigne
+      entity_temp_ext: sensor.temperature_exterieure_virtuelle_consolidee
+      entity_temp_int: sensor.temperature_sonoff_voitures
+      entity_fenetre: binary_sensor.fenetre_virtuelle_onoff
+      entity_puissance: input_number.radiateur_voitures_puissance
+      entity_chauffage:
+      - switch.radiateur_inv_voitures
+      entity_mode_inverse: true
+
+- id: '1738363814817'
+  alias: Pilotage chauffage Voitures
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_pilotage_Week-Vs-WE.yaml
+    input:
+      entity_consigne: input_number.radiateur_voitures_consigne
+      entity_mode: input_select.radiateur_voitures_mode
+      entity_schedule_presence:
+      - switch.schedule_voitures_presence_quo
+      entity_schedule_absence:
+      - switch.schedule_voitures_absence_quo
+      entity_thermostat_tpi: automation.thermostat_tpi_voitures
+
+
+- id: '1759687023454'
+  alias: Thermsotat TPI SdB
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Thermostat_TPI__by_C.yaml
+    input:
+      coeff_c: 0.4
+      coeff_t: 0.015
+      entity_consigne: input_number.radiateur_sdb_consigne
+      entity_temp_ext: sensor.temperature_exterieure_virtuelle_consolidee
+      entity_temp_int: sensor.temperature_sonoff_sdb
+      entity_fenetre: binary_sensor.fenetre_virtuelle_onoff
+      entity_puissance: input_number.radiateur_sdb_puissance
+      entity_chauffage:
+      - switch.radiateur_inv_sdb
+      entity_mode_inverse: true
+
+- id: '1740239871838'
+  alias: Pilotage chauffage SdB
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_pilotage_Week-Vs-WE.yaml
+    input:
+      entity_consigne: input_number.radiateur_sdb_consigne
+      entity_mode: input_select.radiateur_sdb_mode
+      entity_schedule_presence:
+      - switch.schedule_sdb_presence_quo
+      entity_schedule_absence:
+      - switch.schedule_sdb_absence_quo
+      entity_thermostat_tpi: automation.thermostat_tpi_sdb
+
+- id: '1740244180996'
+  alias: Chauffage boost SdB
+  description: ''
+  triggers:
+  - device_id: 9a717b09b02a3c4f5238e95817fc9354
+    domain: zha
+    type: remote_button_short_press
+    subtype: turn_on
+    trigger: device
+  conditions: []
+  actions:
+  - action: input_select.select_option
+    metadata: {}
+    data:
+      option: Manuel
+    target:
+      entity_id: input_select.radiateur_sdb_mode
+  - action: input_number.set_value
+    metadata: {}
+    data:
+      value: 21
+    target:
+      entity_id: input_number.radiateur_sdb_consigne
+  - delay:
+      hours: 0
+      minutes: 35
+      seconds: 0
+      milliseconds: 0
+  - action: input_select.select_option
+    metadata: {}
+    data:
+      option: Presence
+    target:
+      entity_id: input_select.radiateur_sdb_mode
+  mode: single
+
+- id: '1740244321282'
+  alias: Chauffage Arrêt Boost SdB
+  description: ''
+  triggers:
+  - device_id: 9a717b09b02a3c4f5238e95817fc9354
+    domain: zha
+    type: remote_button_short_press
+    subtype: turn_off
+    trigger: device
+  conditions: []
+  actions:
+  - action: input_select.select_option
+    metadata: {}
+    data:
+      option: Presence
+    target:
+      entity_id: input_select.radiateur_sdb_mode
+  - action: input_number.set_value
+    metadata: {}
+    data:
+      value: 14
+    target:
+      entity_id: input_number.radiateur_sdb_consigne
+  mode: single
+
+- id: '1742757798686'
+  alias: Boost Chauffage SdB - 35min - Blueprint test
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Boost_SdB.yaml
+    input:
+      remote_button: 9a717b09b02a3c4f5238e95817fc9354
+      mode_entity: input_select.radiateur_sdb_mode
+      consigne_entity: input_number.radiateur_sdb_consigne
+      timer_entity: input_datetime.boost_end_sdb
+
+
+- id: '1740518925117'
+  alias: Thermostat TPI Salon
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Thermostat_TPI__by_C.yaml
+    input:
+      coeff_c: 0.6
+      coeff_t: 0.018
+      entity_consigne: input_number.radiateur_salon_consigne
+      entity_temp_ext: sensor.temperature_exterieure_virtuelle_consolidee
+      entity_temp_int: sensor.temperature_sonoff_salon
+      entity_fenetre: binary_sensor.fenetre_virtuelle_onoff
+      entity_puissance: input_number.radiateur_salon_puissance
+      entity_chauffage:
+      - climate.x2d_elec_thermostat_a3_salon_sud
+      - climate.x2d_elec_thermostat_a2_salon_est
+      entity_mode_climate: true
+
+- id: '1740520085587'
+  alias: Pilotage chauffage Salon
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_pilotage_Week-Vs-WE.yaml
+    input:
+      entity_consigne: input_number.radiateur_salon_consigne
+      entity_mode: input_select.radiateur_salon_mode
+      entity_schedule_presence:
+      - switch.schedule_salon_presence_quo
+      entity_schedule_absence:
+      - switch.schedule_salon_absence_quo
+      entity_thermostat_tpi: automation.thermostat_tpi_salon
+
+- id: '1741119306918'
+  alias: Thermostat TPI Cuisine
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Thermostat_TPI__by_C.yaml
+    input:
+      coeff_c: 0.7
+      coeff_t: 0.028
+      entity_consigne: input_number.radiateur_cuisine_consigne
+      entity_temp_ext: sensor.temperature_exterieure_virtuelle_consolidee
+      entity_temp_int: sensor.temperature_sonoff_cuisine
+      entity_fenetre: binary_sensor.fenetre_virtuelle_onoff
+      entity_puissance: input_number.radiateur_cuisine_puissance
+      entity_chauffage:
+      - climate.x2d_elec_thermostat_a6_cuisine
+      entity_mode_climate: true
+
+- id: '1741122121684'
+  alias: Pilotage chauffage Cuisine
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_pilotage_Week-Vs-WE.yaml
+    input:
+      entity_consigne: input_number.radiateur_cuisine_consigne
+      entity_mode: input_select.radiateur_cuisine_mode
+      entity_schedule_presence:
+      - switch.schedule_cuisine_presence_quo
+      entity_schedule_absence:
+      - switch.schedule_cuisine_absence_quo
+      entity_thermostat_tpi: automation.thermostat_tpi_cuisine
+
+- id: '1741122346932'
+  alias: Thermostat TPI Couloir
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Thermostat_TPI__by_C.yaml
+    input:
+      coeff_c: 0.67
+      coeff_t: 0.015
+      entity_consigne: input_number.radiateur_couloir_consigne
+      entity_temp_ext: sensor.temperature_exterieure_virtuelle_consolidee
+      entity_temp_int: sensor.temperature_sonoff_couloir
+      entity_fenetre: binary_sensor.fenetre_virtuelle_onoff
+      entity_puissance: input_number.radiateur_couloir_puissance
+      entity_chauffage:
+      - climate.x2d_elec_thermostat_a5_couloir
+      entity_mode_climate: true
+
+- id: '1741123292829'
+  alias: Pilotage chauffage Couloir
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_pilotage_Week-Vs-WE.yaml
+    input:
+      entity_consigne: input_number.radiateur_couloir_consigne
+      entity_mode: input_select.radiateur_couloir_mode
+      entity_schedule_presence:
+      - switch.schedule_couloir_presence_quo
+      entity_schedule_absence:
+      - switch.schedule_couloir_absence_quo
+      entity_thermostat_tpi: automation.thermostat_tpi_couloir
+
+- id: '1741126760992'
+  alias: Thermostat TPI SdB_Etg
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Thermostat_TPI__by_C.yaml
+    input:
+      coeff_c: 0.7
+      coeff_t: 0.022
+      entity_consigne: input_number.radiateur_sdb_etg_consigne
+      entity_temp_ext: sensor.temperature_exterieure_virtuelle_consolidee
+      entity_temp_int: sensor.temperature_sonoff_sdb_etg
+      entity_fenetre: binary_sensor.fenetre_virtuelle_onoff
+      entity_puissance: input_number.radiateur_sdb_etg_puissance
+      entity_chauffage:
+      - switch.radiateur_inv_sdb_etg
+      entity_mode_inverse: true
+
+- id: '1741127317400'
+  alias: Pilotage chauffage SdB_Etg
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_pilotage_Week-Vs-WE.yaml
+    input:
+      entity_consigne: input_number.radiateur_sdb_etg_consigne
+      entity_mode: input_select.radiateur_sdb_etg_mode
+      entity_schedule_presence:
+      - switch.schedule_sdb_etg_presence_quo
+      entity_schedule_absence:
+      - switch.schedule_sdb_etg_absence_quo
+      entity_thermostat_tpi: automation.thermostat_tpi_sdb_etg
+
+- id: '1759686327946'
+  alias: Thermostat TPI Bureau
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Thermostat_TPI__by_C.yaml
+    input:
+      coeff_c: 0.8
+      coeff_t: 0.02
+      entity_consigne: input_number.radiateur_bureau_consigne
+      entity_temp_ext: sensor.temperature_exterieure_virtuelle_consolidee
+      entity_temp_int: sensor.temperature_sonoff_bureau
+      entity_fenetre: binary_sensor.fenetre_virtuelle_onoff
+      entity_puissance: input_number.radiateur_bureau_puissance
+      entity_chauffage:
+      - switch.radiateur_inv_bureau
+      entity_mode_inverse: true
+
+- id: '1759686588752'
+  alias: Thermostat TPI Chambre SS-Sol
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Thermostat_TPI__by_C.yaml
+    input:
+      coeff_c: 0.55
+      coeff_t: 0.027
+      entity_consigne: input_number.radiateur_chambre_sssol_consigne
+      entity_temp_ext: sensor.temperature_exterieure_virtuelle_consolidee
+      entity_temp_int: sensor.temperature_sonoff_chambre_sssol
+      entity_fenetre: binary_sensor.fenetre_virtuelle_onoff
+      entity_puissance: input_number.radiateur_chambre_sssol_puissance
+      entity_chauffage:
+      - switch.radiateur_inv_chambre_sssol
+      entity_mode_inverse: true
+
+- id: '1759686759083'
+  alias: Thermostat TPI Michel
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Thermostat_TPI__by_C.yaml
+    input:
+      coeff_c: 0.72
+      coeff_t: 0.019
+      entity_consigne: input_number.radiateur_michel_consigne
+      entity_temp_ext: sensor.temperature_exterieure_virtuelle_consolidee
+      entity_temp_int: sensor.temperature_sonoff_michel
+      entity_fenetre: binary_sensor.fenetre_virtuelle_onoff
+      entity_puissance: input_number.radiateur_michel_puissance
+      entity_chauffage:
+      - switch.radiateur_inv_michel
+      entity_mode_inverse: true
+
+- id: '1759687275261'
+  alias: Thermostat TPI Telmo
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Thermostat_TPI__by_C.yaml
+    input:
+      coeff_c: 0.87
+      coeff_t: 0.03
+      entity_consigne: input_number.radiateur_telmo_consigne
+      entity_temp_ext: sensor.temperature_exterieure_virtuelle_consolidee
+      entity_temp_int: sensor.temperature_sonoff_telmo
+      entity_fenetre: binary_sensor.fenetre_virtuelle_onoff
+      entity_puissance: input_number.radiateur_telmo_puissance
+      entity_chauffage:
+      - switch.radiateur_inv_telmo
+      entity_mode_inverse: true

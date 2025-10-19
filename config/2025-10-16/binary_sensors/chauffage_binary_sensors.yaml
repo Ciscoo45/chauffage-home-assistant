@@ -1,0 +1,48 @@
+#####################################################
+### Fenêtre virtuelle toujours fermée, pour chauffage
+- platform: template
+  sensors:
+    fenetre_virtuelle_onoff:
+        friendly_name: Fenetre virtuelle
+        value_template: 'off'
+        device_class: opening
+
+
+
+
+###################################################
+### Groupes de programmation (Presence, Absence), pour semaine et WE
+
+## pour Atelier
+- platform: template
+  sensors:
+    schedule_atelier_presence_any:
+      friendly_name: "Programmation présence atelier"
+      value_template: >-
+        {{ is_state('switch.schedule_atelier_presence_sem','on')
+           or is_state('switch.schedule_atelier_presence_we','on') }}
+      icon_template: mdi:home-account
+
+
+
+
+###################################################
+### Groupes de capteurs d'ouvertures (fenêtres...)
+
+## pour Salon
+#- platform: group
+#  unique_id: binary_sensor.ouvertures_salon_groupe
+#  name: "Ouvertures Salon Groupe"
+#  device_class: opening
+#  entities:
+#    - binary_sensor.ouverture_salon_sud
+#    - binary_sensor.ouverture_salon_ouest
+#    - binary_sensor.ouverture_salon_est
+
+
+
+
+
+
+
+#

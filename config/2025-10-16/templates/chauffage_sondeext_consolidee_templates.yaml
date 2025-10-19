@@ -1,0 +1,27 @@
+
+##############################################################################################
+### Template de capteur de Température extérieure consolidée :
+###
+### -> Permet une redondance en cas d'indispo des sondes de température
+### -> Autorise ainsi les modules de Pilotage du chauffage à continuer le travail si hors cnx/pas de sonde locale fonctionnnelle
+### -> Prend priorité, dans l'ordre :
+###    1. Sonde Internet Temp Ressentie OpenWeather (intégration à ajouter)
+### si ne répond pas, prend alors :
+###    2. Sonde locale de température placée à l'éxtérieure (déclarée ici)
+### si n'est pas non plus disponible, prend alors :
+###    3. Valeur par défaut pour la température extérieure (déclarée en dure ici, exemple 0°C)
+- sensor:
+    - unique_id: "temperature_exterieure_consolidee"
+      name: "Température extérieure virtuelle consolidée"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state_class: measurement
+      state: >
+        {% set owm = states('sensor.openweathermap_feels_like_temperature') | float(none) %}
+        {% set local = states('sensor.temperature_sonoff_exterieur') | float(none) %}
+        {{ owm if owm is not none else (local if local is not none else 0) }}
+
+
+
+
+

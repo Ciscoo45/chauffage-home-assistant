@@ -1,0 +1,156 @@
+### Pour l'alerte sur mobiles en cas de fallback vers la température en dur (sondes indispos) :
+
+chauffage_package:
+
+# création du binaire
+  template:
+    - binary_sensor:
+        - unique_id: "temp_ext_fallback_0c_actif"
+          name: "Temp Ext : fallback 0°C actif"
+          device_class: problem
+          state: >
+            {% set owm = states('sensor.openweathermap_feels_like_temperature') | float(none) %}
+            {% set local = states('sensor.temperature_sonoff_exterieur') | float(none) %}
+            {{ owm is none and local is none }}
+
+
+  automation:
+
+# alerte ON (avec mobiles + tablettes)
+    - id: "notif_temp_ext_fallback_on"
+      alias: "Alerte: fallback 0°C actif (extérieur)"
+      mode: single
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.temp_ext_fallback_0c_actif
+          to: "on"
+          for: "00:00:30"   # anti-bruit
+      condition:
+        # Au moins une personne à la maison
+        - condition: template
+          value_template: >
+            {{ states.person | selectattr('state','eq','home') | list | count > 0 }}
+      action:
+        # Notification persistante dans HA
+        - service: persistent_notification.create
+          data:
+            notification_id: temp_ext_fallback
+            title: "Température extérieure Melleray — secours 0 °C actif"
+            message: >
+              Les capteurs OpenWeatherMap et la sonde extérieure locale sont indisponibles.
+              Valeur de secours **0 °C** utilisée pour la température extérieure en remplacement de secours.
+              (OWM: {{ states('sensor.openweathermap_feels_like_temperature') }},
+              Sonoff: {{ states('sensor.temperature_sonoff_exterieur') }})
+
+        # Notifications vers les appareils des personnes présentes
+        - choose:
+            # Michel présent
+            - conditions:
+                - condition: state
+                  entity_id: person.michel
+                  state: "home"
+              sequence:
+                - service: notify.mobile_app_pixel_4a_5g
+                  data:
+                    title: "Alerte — 0 °C en secours (extérieur)"
+                    message: "OWM + Sonoff indisponibles. 0 °C utilisé."
+                    data:
+                      tag: "temp_ext_fallback"
+                      sticky: true
+                      group: "homeassistant"
+                      notification_icon: "mdi:thermometer-alert"
+                      ttl: 0
+                      priority: high
+                - service: notify.mobile_app_sm_t720
+                  data:
+                    title: "Alerte — 0 °C en secours (extérieur)"
+                    message: "Les sondes de températures extérieures Internet et locale sont indisponibles. 0 °C utilisé en secours."
+                    data:
+                      tag: "temp_ext_fallback"
+                      sticky: true
+                      group: "homeassistant"
+                      notification_icon: "mdi:thermometer-alert"
+                      ttl: 0
+                      priority: high
+
+            # François présent
+            - conditions:
+                - condition: state
+                  entity_id: person.ciscoo
+                  state: "home"
+              sequence:
+                - service: notify.mobile_app_pixel_7_pro
+                  data:
+                    title: "Alerte — 0 °C en secours (extérieur)"
+                    message: "OWM + Sonoff indisponibles. 0 °C utilisé."
+                    data:
+                      tag: "temp_ext_fallback"
+                      sticky: true
+                      group: "homeassistant"
+                      notification_icon: "mdi:thermometer-alert"
+                      ttl: 0
+                      priority: high
+                - service: notify.mobile_app_sm_t720_fr
+                  data:
+                    title: "Alerte — 0 °C en secours (extérieur)"
+                    message: "OWM + Sonoff indisponibles. 0 °C utilisé."
+                    data:
+                      tag: "temp_ext_fallback"
+                      sticky: true
+                      group: "homeassistant"
+                      notification_icon: "mdi:thermometer-alert"
+                      ttl: 0
+                      priority: high
+
+# alerte OFF (avec mobiles + tablettes)
+    - id: "notif_temp_ext_fallback_off"
+      alias: "Alerte: fallback 0°C désactivé (extérieur)"
+      mode: single
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.temp_ext_fallback_0c_actif
+          to: "off"
+          for: "00:00:30"
+      action:
+        - service: persistent_notification.dismiss
+          data:
+            notification_id: temp_ext_fallback
+
+        - choose:
+            # Michel présent
+            - conditions:
+                - condition: state
+                  entity_id: person.michel
+                  state: "home"
+              sequence:
+                - service: notify.mobile_app_pixel_4a_5g
+                  data:
+                    title: "OK — Sonde(s) de température extérieure rétablie(s)"
+                    message: "Au moins une source est de nouveau disponible."
+                    data:
+                      tag: "temp_ext_fallback"
+                - service: notify.mobile_app_sm_t720
+                  data:
+                    title: "OK — Sonde(s) de température extérieure rétablie(s)"
+                    message: "Au moins une source est de nouveau disponible."
+                    data:
+                      tag: "temp_ext_fallback"
+
+            # François présent
+            - conditions:
+                - condition: state
+                  entity_id: person.ciscoo
+                  state: "home"
+              sequence:
+                - service: notify.mobile_app_pixel_7_pro
+                  data:
+                    title: "Sonde(s) de température extérieure rétablie(s)"
+                    message: "Au moins une source (OWM ou locale) est de nouveau disponible."
+                    data:
+                      tag: "temp_ext_fallback"
+                - service: notify.mobile_app_sm_t720_fr
+                  data:
+                    itle: "Sonde(s) de température extérieure rétablie(s)"
+                    message: "Au moins une source (OWM ou locale) est de nouveau disponible."
+                    data:
+                      tag: "temp_ext_fallback"

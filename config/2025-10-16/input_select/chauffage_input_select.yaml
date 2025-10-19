@@ -1,0 +1,69 @@
+
+## Définition de l'ancre pour les paramètres communs aux input_select
+mode_defaults: &mode_defaults
+  options:
+    - Presence
+    - Absence
+    - Manuel
+    - Hors-gel
+    - Arret
+  icon: mdi:format-list-bulleted
+
+
+
+### pour SS-Sol
+
+radiateur_chambre_sssol_mode:
+  <<: *mode_defaults
+  name: Radiateur Chambre Sous-sol Mode
+
+
+  
+### pour RdC
+
+radiateur_bureau_mode:
+  <<: *mode_defaults
+  name: Radiateur Bureau Mode
+
+radiateur_cuisine_mode:
+  <<: *mode_defaults
+  name: Radiateur Cuisine Mode
+
+radiateur_salon_mode:
+  <<: *mode_defaults
+  name: Radiateur Salon Mode
+
+radiateur_sdb_mode:
+  <<: *mode_defaults
+  name: Radiateur SdB Mode
+
+radiateur_michel_mode:
+  <<: *mode_defaults
+  name: Radiateur Michel Mode
+
+radiateur_voitures_mode:
+  <<: *mode_defaults
+  name: Radiateur Voitures Mode
+
+radiateur_couloir_mode:
+  <<: *mode_defaults
+  name: Radiateur Couloir Mode
+
+
+
+### pour 1ier Etage
+
+radiateur_atelier_mode:
+  <<: *mode_defaults
+  name: Radiateur Atelier Mode
+
+radiateur_telmo_mode:
+  <<: *mode_defaults
+  name: Radiateur Telmo Mode
+
+radiateur_sdb_etg_mode:
+  <<: *mode_defaults
+  name: Radiateur Sdb Etg Mode
+
+
+

@@ -1,0 +1,111 @@
+
+
+### Définition des input_numbers Consigne, Puissance, Index
+
+
+## Définition des ancres pour les paramètres communs
+base_consigne: &base_consigne
+  min: 0
+  max: 22
+  step: 0.5
+  unit_of_measurement: °C
+  icon: mdi:target
+base_puissance: &base_puissance
+  min: 0
+  max: 100
+  step: 1
+  mode: box
+  unit_of_measurement: '%'
+  icon: mdi:power-plug
+
+  
+
+## pour SS-Sol
+
+radiateur_chambre_sssol_consigne:
+  <<: *base_consigne
+  name: Radiateur Chambre Sous-sol Consigne
+radiateur_chambre_sssol_puissance:
+  <<: *base_puissance
+  name: Radiateur Chambre Sous-sol Puissance
+
+
+
+## pour RdC
+
+radiateur_bureau_consigne:
+  <<: *base_consigne
+  name: Radiateur Bureau Consigne
+radiateur_bureau_puissance:
+  <<: *base_puissance
+  name: Radiateur Bureau Puissance
+
+radiateur_cuisine_consigne:
+  <<: *base_consigne
+  name: Radiateur Cuisine Consigne
+radiateur_cuisine_puissance:
+  <<: *base_puissance
+  name: Radiateur Cuisine Puissance
+
+radiateur_salon_consigne:
+  <<: *base_consigne
+  name: Radiateur Salon Consigne
+radiateur_salon_puissance:
+  <<: *base_puissance
+  name: Radiateur Salon Puissance
+
+radiateur_sdb_consigne:
+  <<: *base_consigne
+  name: Radiateur SdB Consigne
+radiateur_sdb_puissance:
+  <<: *base_puissance
+  name: Radiateur SdB Puissance
+
+radiateur_michel_consigne:
+  <<: *base_consigne
+  name: Radiateur Michel Consigne
+radiateur_michel_puissance:
+  <<: *base_puissance
+  name: Radiateur Michel Puissance
+
+radiateur_voitures_consigne:
+  <<: *base_consigne
+  name: Radiateur Voitures Consigne
+radiateur_voitures_puissance:
+  <<: *base_puissance
+  name: Radiateur Voitures Puissance
+
+radiateur_couloir_consigne:
+  <<: *base_consigne
+  name: Radiateur Couloir Consigne
+radiateur_couloir_puissance:
+  <<: *base_puissance
+  name: Radiateur Couloir Puissance
+
+
+
+## pour 1ier Etage
+
+radiateur_atelier_consigne:
+  <<: *base_consigne
+  name: Radiateur Atelier Consigne
+radiateur_atelier_puissance:
+  <<: *base_puissance
+  name: Radiateur Atelier Puissance
+
+radiateur_telmo_consigne:
+  <<: *base_consigne
+  name: Radiateur Telmo Consigne
+radiateur_telmo_puissance:
+  <<: *base_puissance
+  name: Radiateur Telmo Puissance
+
+radiateur_sdb_etg_consigne:
+  <<: *base_consigne
+  name: Radiateur SdB Etg Consigne
+radiateur_sdb_etg_puissance:
+  <<: *base_puissance
+  name: Radiateur SdB Etg Puissance
+
+
+

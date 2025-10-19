@@ -1,0 +1,5 @@
+### Pour stocker l'heure de fin de boost - pour le Boost SdB 35min
+boost_end_sdb:
+  name: "Heure de fin du boost SdB"
+  has_date: true
+  has_time: true

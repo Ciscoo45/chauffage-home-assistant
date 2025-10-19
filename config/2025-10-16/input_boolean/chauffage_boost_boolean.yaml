@@ -1,0 +1,5 @@
+### Déclencheur vitruel pour le dashboard - pour le Boost SdB 35min
+boost_sdb:
+  name: "Boost SdB 35min"
+  initial: off
+  icon: mdi:toggle-switch-off

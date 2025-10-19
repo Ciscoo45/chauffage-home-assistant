@@ -1,0 +1,8 @@
+###############################################################################
+# Automations/BluePrints qui concernent le chauffage 
+# depuisà migrer de nouveau vers automations.yaml à terme,
+# si on désire les utiliser et ainsi pouvoir les configurer via l'UI
+# pour migrer : ne pas utiliser la fonction dans l'interface,
+# couper-coller le code de chaque automation,
+# depuis ici vers automations.yaml à la racine de config/
+# puis recharger les automations depuis Outils Dev
