@@ -2,7 +2,7 @@ blueprint:
   name: Boost Chauffage
   description: >
 
-    version Boost : v0.18 - 2025-10-19
+    version Boost : v0.19 - 2025-10-19
 
     Active un mode "Boost" pendant une durée déterminée pour le chauffage de la pièce sélectionnée.
     Paramétrage pilotable via dashboard (consigne & durée) + valeurs par défaut définies au moment d'instancier le blueprint.
@@ -79,14 +79,6 @@ blueprint:
         entity:
           domain: input_number
 
-    boost_duration_helper:
-      name: Helper — Durée de boost (minutes)
-      description: input_number affiché sur le dashboard 
-      selector:
-        entity:
-          domain: input_number
-
-    # -------- Valeurs par défaut définies au paramétrage --------
     consigne_boost_valeur_de_depart:
       name: Consigne par défaut (°C)
       description: Valeur de départ pour cette pièce copiée dans le helper lors du (re)démarrage/chargement
@@ -97,6 +89,13 @@ blueprint:
           max: 22
           step: 0.5
           mode: slider
+          
+    boost_duration_helper:
+      name: Helper — Durée de boost (minutes)
+      description: input_number affiché sur le dashboard 
+      selector:
+        entity:
+          domain: input_number
 
     duree_boost_valeur_de_depart:
       name: Durée par défaut (minutes)
