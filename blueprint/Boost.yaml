@@ -2,25 +2,22 @@ blueprint:
   name: Boost Chauffage
   description: >
 
-    version Boost : v0.13 - 2025-10-19
-
+    version Boost : v0.16 - 2025-10-19
 
     Active un mode "Boost" pendant une durée déterminée pour le chauffage de la pièce sélectionnée.
-
     Permet de déroger à la programmation en cours et d'y revenir automatiquement après le délai défini.
     
-    
-    **Déclencheurs** :
+    **Déclencheurs** :
         - Bouton Ikea Styrbar ou Rodret (appui sur "On")
         - Bouton sur le dashboard (via un input_boolean)
       
-    **Actions lors du démarrage** :
+    **Actions lors du démarrage** :
         - Pièce sélectionnée > Chauffage > Mode sur Manuel + Consigne sur la température choisie
         - Lance un compte à rebours du temps paramétré (enregistre l'heure de fin)
         - Envoie une notification persistante avec bouton Arrêter sur les appareils des personnes du groupe d'utilisateurs présents dans le foyer
         - Actualise le tableau de bord pour afficher l'état actif du boost et l'heure de fin automatique
       
-    **Actions d'arrêt** (fin du boost ou interruption) :
+    **Actions d'arrêt** (fin du boost ou interruption) :
         - Pièce sélectionnée > Chauffage > Mode sur Presence + Consigne sur 14°C
         - Supprime la notification persistante de boost sur les appareils
         - Actualise l'état du tableau de bord
@@ -28,9 +25,14 @@ blueprint:
   source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Boost.yaml
   domain: automation
 
-  
   input:
-  
+
+    piece:
+      name: Pièce
+      description: Pièce où le chauffage se trouve
+      selector:
+        area: {}          # <- sélecteur de pièce (area)
+
     remote_button:
       name: "[Optionnel] Télécommande Ikea Styrbar ou Rodret pour le déclenchement physique"
       description: Télécommande optionnelle Ikea Styrbar (E2001/E2002) ou Rodret (E2201) appairée via ZHA 
@@ -105,10 +107,9 @@ trigger:
     id: boost_stop_ui
   
   # 3. Action "Arrêter" depuis la notification persistante sur mobile
+  #    (on NE filtre plus ici pour ne pas dépendre de la templatisation au niveau trigger)
   - platform: event
     event_type: mobile_app_notification_action
-    event_data:
-      action: "STOP_BOOST"
     id: boost_stop_notif
 
 
@@ -119,58 +120,46 @@ condition: []
 # Script des actions selon le type de déclencheur
 action:
 
-  # Pré-calcul de l'heure de fin du boost (maintenant + 35 minutes)
+  # Pré-calculs + identifiants uniques dérivés de l'area
   - variables:
-      
-      boost_end_ts: "{{ (now() + timedelta(minutes=35)).timestamp() | int }}"
-      
-      # Pour éviter les double notif si arrêt depuis notif sur mobiles :
-      # Détecte si le trigger UI a été causé par cette exécution (boucle interne)
-      #self_ui_event: >-
-      #  {{
-      #    (trigger.id in ['boost_start_ui','boost_stop_ui'])
-      #    and (trigger.to_state is defined)
-      #    and (trigger.to_state.context is defined)
-      #    and (trigger.to_state.context.parent_id == this.context.id)
-      #  }}
+      area_id: !input piece
+      # Nom lisible de la pièce (retombe sur l'ID si non trouvé)
+      area_label: >-
+        {{ area_name(area_id) if area_name(area_id) is not none else area_id }}
+      # Identifiants uniques par pièce (tag et action)
+      notif_tag: >-
+        {{ 'boost_' ~ area_id }}
+      stop_action_id: >-
+        {{ ('STOP_BOOST_' ~ area_id)|upper }}
 
-      
+      # Heure de fin du boost (maintenant + 35 minutes)
+      boost_end_ts: "{{ (now() + timedelta(minutes=35)).timestamp() | int }}"
+
   - choose:
 
-      # Arrêt si l'événement UI provient de cette exécution, on stoppe immédiatement pour éviter le double tir
-      #- conditions: "{{ self_ui_event }}"
-      #  sequence:
-      #    - stop: "Événement UI auto-généré — on stoppe pour éviter le double tir"
-      
-      
       # --- DÉMARRAGE DU BOOST (bouton physique ON ou via dashboard) ---
       - conditions:
           - "{{ trigger.id in ['boost_start_remote', 'boost_start_ui'] }}"
-          
         sequence:
-        
           # 1. Passe le mode de chauffage en "Manuel"
           - service: input_select.select_option
             target:
               entity_id: !input mode_entity
             data:
               option: "Manuel"
-              
           # 2. Règle la consigne de température à 22°C
           - service: input_number.set_value
             target:
               entity_id: !input consigne_entity
             data:
               value: 22
-              
           # 3. Démarre le compte à rebours en enregistrant l'heure de fin (maintenant + 35min)
           - service: input_datetime.set_datetime
             target:
               entity_id: !input timer_entity
             data:
               timestamp: "{{ boost_end_ts }}"
-              
-          # 4. Envoie une notification persistante (non effaçable) aux utilisateurs présents, avec le bouton "Arrêter"
+          # 4. Envoie une notification persistante aux utilisateurs présents, avec bouton "Arrêter"
           - choose:
               # Notification pour Michel (si présent à la maison)
               - conditions:
@@ -180,16 +169,15 @@ action:
                 sequence:
                   - service: notify.mobile_app_pixel_4a_5g
                     data:
-                      title: "🔆 Boost Chauffage SdB Etg activé"
+                      title: "🔆 Boost chauffage {{ area_label }} activé"
                       message: "Chauffage en Boost jusqu'à {{ (now() + timedelta(minutes=35)).strftime('%H:%M') }}."
                       data:
-                        tag: "boost"
+                        tag: "{{ notif_tag }}"
                         persistent: true     # notification non balayable
                         sticky: true         # reste affichée même en appuyant dessus
                         actions:
-                          - action: "STOP_BOOST"
+                          - action: "{{ stop_action_id }}"
                             title: "Arrêter"
-                            
               # Notification pour Ciscoo (si présent à la maison)
               - conditions:
                   - condition: state
@@ -198,16 +186,15 @@ action:
                 sequence:
                   - service: notify.mobile_app_pixel_7_pro
                     data:
-                      title: "🔆 Boost Chauffage SdB Etg activé"
+                      title: "🔆 Boost chauffage {{ area_label }} activé"
                       message: "Chauffage en Boost jusqu'à {{ (now() + timedelta(minutes=35)).strftime('%H:%M') }}."
                       data:
-                        tag: "boost"
+                        tag: "{{ notif_tag }}"
                         persistent: true
                         sticky: true
                         actions:
-                          - action: "STOP_BOOST"
+                          - action: "{{ stop_action_id }}"
                             title: "Arrêter"
-                            
           # 5. Active le commutateur boost (si déclenché par le bouton physique pour synchroniser l'UI)
           - condition: state
             entity_id: !input boost_switch
@@ -215,52 +202,57 @@ action:
           - service: input_boolean.turn_on
             target:
               entity_id: !input boost_switch
-              
           # 6. Attendre 35 minutes (durée du boost) avant l'arrêt automatique, sauf interruption manuelle
           - delay: "00:35:00"
-          
           # 7. À la fin du délai, arrête le boost (équivaut à appuyer sur "Arrêter")
           - service: input_boolean.turn_off
             target:
               entity_id: !input boost_switch
-              
 
       # --- FIN DU BOOST / ARRÊT ANTICIPÉ (bouton physique Off, bouton UI "Arrêter" ou notif mobile "Arrêter") ---
       - conditions:
           - "{{ trigger.id in ['boost_stop_remote', 'boost_stop_ui', 'boost_stop_notif'] }}"
-          
         sequence:
-        
+          # Filtres anti-faux positifs pour ne pas arrêter d'autres blueprints que celui-ci :
+          # - Si ça vient d'une notif, on ne continue QUE si action & tag correspondent à CETTE pièce
+          # - Et on ne continue que si le boost de cette pièce est effectivement actif
+          - condition: template
+            value_template: >-
+              {{ trigger.id != 'boost_stop_notif'
+                 or (trigger.event is defined
+                     and trigger.event.data.action == stop_action_id
+                     and trigger.event.data.tag == notif_tag) }}
+          - condition: state
+            entity_id: !input boost_switch
+            state: "on"
+
           # 1. Remet le mode de chauffage en "Presence"
           - service: input_select.select_option
             target:
               entity_id: !input mode_entity
             data:
               option: "Presence"
-              
           # 2. Abaisse la consigne de température à 14°C
           - service: input_number.set_value
             target:
               entity_id: !input consigne_entity
             data:
               value: 14
-              
-          # 3. Supprime la notification persistante de boost sur les mobiles (en envoyant une notification de fin)
+          # 3. Supprime/écrase la notification persistante de boost (avec message de fin)
           - service: notify.mobile_app_pixel_4a_5g
             data:
-              message: "✅ Boost chauffage SdB Etg terminé."
+              message: "✅ Boost chauffage {{ area_label }} terminé."
               data:
-                tag: "boost"
-                persistent: false   # notification classique (écrase la précédente)
+                tag: "{{ notif_tag }}"
+                persistent: false
                 sticky: false
           - service: notify.mobile_app_pixel_7_pro
             data:
-              message: "✅ Boost chauffage SdB Etg terminé."
+              message: "✅ Boost chauffage {{ area_label }} terminé."
               data:
-                tag: "boost"
+                tag: "{{ notif_tag }}"
                 persistent: false
                 sticky: false
-                
           # 4. Met à jour le commutateur de boost sur 'off' si besoin (si arrêté par télécommande ou notif)
           - condition: state
             entity_id: !input boost_switch
