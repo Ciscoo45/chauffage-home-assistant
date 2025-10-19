@@ -38,7 +38,7 @@ Available forks here:
     - maybe: humidity threshold not to be exceeded (auto sanity boost)
     - maybe: option to accept optional load shedding during peak demand, as a civic act (Voltalis like)
 
-[DOC] Install
+[Doc] Install
 
     2 ways :
     - config files and directories to merge to your HA config dir, then edit to change entities names
