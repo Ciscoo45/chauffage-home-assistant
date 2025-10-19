@@ -2,7 +2,7 @@ blueprint:
   name: Boost Chauffage
   description: >
 
-    version Boost : v0.22 - 2025-10-19
+    version Boost : v0.24 - 2025-10-19
 
     Active un mode "Boost" pendant une durée déterminée pour le chauffage de la pièce sélectionnée.
     Paramétrage pilotable via dashboard (consigne & durée) + valeurs par défaut définies au moment d'instancier le blueprint.
@@ -174,12 +174,12 @@ action:
         {{ 'boost_' ~ area_id }}
       stop_action_id: >-
         {{ ('STOP_BOOST_' ~ area_id)|upper }}
-
-      # Helpers actuels (avec fallback sur défaut) — ICI on utilise les variables ci-dessus, pas !input
+        
+      # Helpers actuels (avec bornes issues des selectors)
       boost_minutes: >-
-        {{ (states(duration_helper) | int(default_minutes)) | max(1) }}
+        {{ [ [ states(duration_helper) | int(default_minutes), 10 ] | max, 600 ] | min }}
       boost_target_temp: >-
-        {{ states(temp_helper) | float(default_temp) }}
+        {{ [ [ states(temp_helper) | float(default_temp), 15 ] | max, 22 ] | min }}
 
       # Heures de fin
       boost_end_ts: >-
