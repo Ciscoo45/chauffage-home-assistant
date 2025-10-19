@@ -2,7 +2,7 @@ blueprint:
   name: Boost Chauffage
   description: >
 
-    version Boost : v0.10 - 2025-10-19
+    version Boost : v0.11 - 2025-10-19
 
 
     Active un mode "Boost" pendant une durée déterminée pour le chauffage de la pièce sélectionnée.
@@ -42,28 +42,28 @@ blueprint:
           
     boost_switch:
       name: Commutateur Boost (Dashboard)
-      description: "Entité input_boolean (On/Off) utilisée par le dashboard Lovelace pour activer/arrêter le boost"
+      description: "Entité On/Off (input_boolean) utilisée par le dashboard Lovelace pour activer/arrêter le boost"
       selector:
         entity:
           domain: input_boolean
 
     timer_entity:
       name: Horaire de fin de Boost
-      description: Entité input_datetime (date & heure) qui stockera l'heure de fin du boost
+      description: Entité date & heure (input_datetime) qui stockera l'heure de fin du boost
       selector:
         entity:
           domain: input_datetime
                     
     mode_entity:
       name: Entité Mode du module Chauffage
-      description: Entité de sélection du mode pour le chauffage de la pièce (input_select)
+      description: Entité de sélection du mode (input_select) pour le chauffage de la pièce 
       selector:
         entity:
           domain: input_select
           
     consigne_entity:
       name: Entité Consigne du module Chauffage
-      description: Consigne de température du chauffage de la pièce (input_number)
+      description: Consigne de température (input_number) du chauffage de la pièce 
       selector:
         entity:
           domain: input_number
