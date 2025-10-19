@@ -43,7 +43,7 @@ Available forks here:
     2 ways :
     - config files and directories to merge to your HA config dir, then edit to change entities names
     - step by step from full documentation XLSX:
-    https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/Structure%20de%20la%20documentation%20-%20xlsx.png
+Doc struture: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/Structure%20de%20la%20documentation%20-%20xlsx.png
 
 
 ###################################### ORIGINAL WORK ##############################
