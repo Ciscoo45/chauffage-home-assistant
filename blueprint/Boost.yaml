@@ -140,7 +140,7 @@ action:
       # Arrêt si l'événement UI provient de cette exécution, on stoppe immédiatement pour éviter le double tir
       - conditions: "{{ self_ui_event }}"
         sequence:
-          - stop
+          - stop: "Événement UI auto-généré — on stoppe pour éviter le double tir"
       
       
       # --- DÉMARRAGE DU BOOST (bouton physique ON ou via dashboard) ---
