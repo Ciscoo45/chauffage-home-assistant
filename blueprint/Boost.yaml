@@ -2,7 +2,7 @@ blueprint:
   name: Boost Chauffage
   description: >
 
-    version Boost : v0.09 - 2025-10-19
+    version Boost : v0.10 - 2025-10-19
 
 
     Active un mode "Boost" pendant une durée déterminée pour le chauffage de la pièce sélectionnée.
@@ -55,14 +55,14 @@ blueprint:
           domain: input_datetime
                     
     mode_entity:
-      name: Mode Chauffage
+      name: Entité Mode du module Chauffage
       description: Entité de sélection du mode pour le chauffage de la pièce (input_select)
       selector:
         entity:
           domain: input_select
           
     consigne_entity:
-      name: Consigne Chauffage
+      name: Entité Consigne du module Chauffage
       description: Consigne de température du chauffage de la pièce (input_number)
       selector:
         entity:
@@ -72,7 +72,7 @@ blueprint:
 # Automatisation du Boost de chauffage (35 minutes)
 trigger:
   
-  # 1. Bouton physique IKEA Styrbar (appui sur "On" pour démarrer)
+  # 1. Bouton physique Ikea Styrbar ou Rodret (appui sur "On" pour démarrer)
   - platform: event
     event_type: zha_event
     event_data:
@@ -163,7 +163,7 @@ action:
                       title: "🔆 Boost Chauffage SdB Etg activé"
                       message: "Chauffage en Boost jusqu'à {{ (now() + timedelta(minutes=35)).strftime('%H:%M') }}."
                       data:
-                        tag: "sdb_boost"
+                        tag: "boost"
                         persistent: true     # notification non balayable
                         sticky: true         # reste affichée même en appuyant dessus
                         actions:
@@ -181,7 +181,7 @@ action:
                       title: "🔆 Boost Chauffage SdB Etg activé"
                       message: "Chauffage en Boost jusqu'à {{ (now() + timedelta(minutes=35)).strftime('%H:%M') }}."
                       data:
-                        tag: "sdb_boost"
+                        tag: "boost"
                         persistent: true
                         sticky: true
                         actions:
