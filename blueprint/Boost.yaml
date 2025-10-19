@@ -2,7 +2,7 @@ blueprint:
   name: Boost Chauffage
   description: >
 
-    version Boost : v0.12 - 2025-10-19
+    version Boost : v0.13 - 2025-10-19
 
 
     Active un mode "Boost" pendant une durée déterminée pour le chauffage de la pièce sélectionnée.
