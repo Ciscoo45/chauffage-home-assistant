@@ -2,7 +2,7 @@ blueprint:
   name: Boost Chauffage
   description: >
 
-    version Boost : v0.08 - 2025-10-19
+    version Boost : v0.09 - 2025-10-19
 
 
     Active un mode "Boost" pendant une durée déterminée pour le chauffage de la pièce sélectionnée.
@@ -16,7 +16,7 @@ blueprint:
       
     **Actions lors du démarrage** :
         - Pièce sélectionnée > Chauffage > Mode sur Manuel + Consigne sur la température choisie
-        - Lance un compte à rebours de du temps paramétré (enregistre l'heure de fin)
+        - Lance un compte à rebours du temps paramétré (enregistre l'heure de fin)
         - Envoie une notification persistante avec bouton Arrêter sur les appareils des personnes du groupe d'utilisateurs présents dans le foyer
         - Actualise le tableau de bord pour afficher l'état actif du boost et l'heure de fin automatique
       
@@ -32,8 +32,9 @@ blueprint:
   input:
   
     remote_button:
-      name: Télécommande Styrbar (Ikea E2001/E2002) ou Rodret (Ikea E2201)
-      description: Télécommande Ikea Styrbar ou Rodret appairée via ZHA (pour le déclenchement physique)
+      name: [Optionnel] Télécommande Ikea Styrbar ou Rodret pour le déclenchement physique
+      description: Télécommande optionnelle Ikea Styrbar (E2001/E2002) ou Rodret (E2201) appairée via ZHA 
+      default: ""
       selector:
         device:
           integration: zha
@@ -54,22 +55,21 @@ blueprint:
           domain: input_datetime
                     
     mode_entity:
-      name: Mode Chauffage SdB
-      description: Entité de sélection du mode de chauffage (input_select)
+      name: Mode Chauffage
+      description: Entité de sélection du mode pour le chauffage de la pièce (input_select)
       selector:
         entity:
           domain: input_select
           
     consigne_entity:
-      name: Consigne Chauffage SdB
-      description: Consigne de température de la SDB (input_number)
-      default: input_number.consigne_sdb
+      name: Consigne Chauffage
+      description: Consigne de température du chauffage de la pièce (input_number)
       selector:
         entity:
           domain: input_number
 
 
-# Automatisation du Boost de chauffage de la SdB (35 minutes)
+# Automatisation du Boost de chauffage (35 minutes)
 trigger:
   
   # 1. Bouton physique IKEA Styrbar (appui sur "On" pour démarrer)
@@ -123,7 +123,7 @@ action:
   - variables:
       boost_end_ts: "{{ (now() + timedelta(minutes=35)).timestamp() | int }}"
   - choose:
-      # --- DÉMARRAGE DU BOOST (bouton physique On ou via dashboard) ---
+      # --- DÉMARRAGE DU BOOST (bouton physique ON ou via dashboard) ---
       - conditions:
           - "{{ trigger.id in ['boost_start_remote', 'boost_start_ui'] }}"
           
@@ -230,14 +230,14 @@ action:
             data:
               message: "✅ Boost chauffage SdB Etg terminé."
               data:
-                tag: "sdb_boost"
+                tag: "boost"
                 persistent: false   # notification classique (écrase la précédente)
                 sticky: false
           - service: notify.mobile_app_pixel_7_pro
             data:
               message: "✅ Boost chauffage SdB Etg terminé."
               data:
-                tag: "sdb_boost"
+                tag: "boost"
                 persistent: false
                 sticky: false
                 
