@@ -32,7 +32,7 @@ blueprint:
   input:
   
     remote_button:
-      name: [Optionnel] Télécommande Ikea Styrbar ou Rodret pour le déclenchement physique
+      name: "[Optionnel] Télécommande Ikea Styrbar ou Rodret pour le déclenchement physique"
       description: Télécommande optionnelle Ikea Styrbar (E2001/E2002) ou Rodret (E2201) appairée via ZHA 
       default: ""
       selector:
