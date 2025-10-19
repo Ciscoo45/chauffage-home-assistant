@@ -126,21 +126,21 @@ action:
       
       # Pour éviter les double notif si arrêt depuis notif sur mobiles :
       # Détecte si le trigger UI a été causé par cette exécution (boucle interne)
-      self_ui_event: >-
-        {{
-          (trigger.id in ['boost_start_ui','boost_stop_ui'])
-          and (trigger.to_state is defined)
-          and (trigger.to_state.context is defined)
-          and (trigger.to_state.context.parent_id == this.context.id)
-        }}
+      #self_ui_event: >-
+      #  {{
+      #    (trigger.id in ['boost_start_ui','boost_stop_ui'])
+      #    and (trigger.to_state is defined)
+      #    and (trigger.to_state.context is defined)
+      #    and (trigger.to_state.context.parent_id == this.context.id)
+      #  }}
 
       
   - choose:
 
       # Arrêt si l'événement UI provient de cette exécution, on stoppe immédiatement pour éviter le double tir
-      - conditions: "{{ self_ui_event }}"
-        sequence:
-          - stop: "Événement UI auto-généré — on stoppe pour éviter le double tir"
+      #- conditions: "{{ self_ui_event }}"
+      #  sequence:
+      #    - stop: "Événement UI auto-généré — on stoppe pour éviter le double tir"
       
       
       # --- DÉMARRAGE DU BOOST (bouton physique ON ou via dashboard) ---
