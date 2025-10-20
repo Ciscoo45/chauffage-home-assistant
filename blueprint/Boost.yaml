@@ -1,12 +1,11 @@
 blueprint:
   name: Boost Chauffage by C.
   description: >
-    version Boost : v0.35 - 2025-10-20
+    version Boost : v0.36 - 2025-10-20
 
-    Notifications envoyées vers les ENTITÉS notify.* (ex: notify.user_michel),
-    calculées dynamiquement depuis un groupe de person.* PRÉSENTS.
-    Envoi par boucle for_each qui appelle chaque service notify.<nom> individuellement
-    (compatibilité totale avec le champ data: des actions persistantes).
+    Notifications vers les ENTITÉS notify.* des utilisateurs PRÉSENTS (group person.*).
+    Envoi par boucle for_each (un service notify.<nom> par cible).
+    Ajout d’un handler direct pour le bouton "arrêter" émis par la notification.
 
   source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Boost.yaml
   domain: automation
@@ -126,9 +125,10 @@ action:
       area_label: >-
         {{ area_name(area_id) if area_name(area_id) is not none else area_id }}
 
+      # IDs d'actions en minuscules (compatibilité iOS/Android)
       notif_tag: "{{ 'boost_' ~ area_id }}"
-      stop_action_id: "{{ ('STOP_BOOST_' ~ area_id)|upper }}"
-      extend_action_id: "{{ ('EXTEND_BOOST_' ~ area_id)|upper }}"
+      stop_action_id: "{{ ('boost_stop_' ~ area_id)|lower }}"
+      extend_action_id: "{{ ('boost_extend_' ~ area_id)|lower }}"
 
       boost_minutes: "{{ [ [ states(duration_helper)|int(default_minutes), 10 ]|max, 600 ]|min }}"
       boost_target_temp: "{{ [ [ states(temp_helper)|float(default_temp), 15 ]|max, 22 ]|min }}"
@@ -180,7 +180,7 @@ action:
             target: { entity_id: !input timer_entity }
             data: { timestamp: "{{ boost_end_ts }}" }
 
-          # Notif persistante -> vers PRÉSENTS (boucle services notify.<nom>)
+          # Notif persistante -> vers PRÉSENTS
           - if:
               - condition: template
                 value_template: "{{ has_targets }}"
@@ -235,11 +235,6 @@ action:
                     seconds: "{{ remaining }}"
                   continue_on_timeout: true
                 - choose:
-                    - conditions: "{{ wait.trigger is defined and wait.trigger.event.data.action == stop_action_id }}"
-                      sequence:
-                        - service: input_boolean.turn_off
-                          target: { entity_id: !input boost_switch }
-                        - stop: "Stop via notif."
                     - conditions: "{{ wait.trigger is defined and wait.trigger.event.data.action == extend_action_id }}"
                       sequence:
                         - variables:
@@ -278,10 +273,28 @@ action:
                                             title: "Arrêter"
                                           - action: "{{ extend_action_id }}"
                                             title: "+{{ extend_step }} min"
+                    - conditions: "{{ wait.trigger is defined and wait.trigger.event.data.action == stop_action_id }}"
+                      sequence:
+                        - service: input_boolean.turn_off
+                          target: { entity_id: !input boost_switch }
+                        - stop: "Stop via notif (boucle)."
 
-      # ======= EXTENSION hors boucle =======
+      # ======= EXTENSION / ARRÊT hors boucle =======
       - conditions: "{{ trigger.id == 'boost_stop_notif' }}"
         sequence:
+          # --- ARRET via notif (fallback robuste) ---
+          - choose:
+              - conditions: >-
+                  {{ trigger.event is defined
+                     and trigger.event.data.tag == notif_tag
+                     and trigger.event.data.action == stop_action_id }}
+                sequence:
+                  - service: input_boolean.turn_off
+                    target: { entity_id: !input boost_switch }
+                  - stop: "Stop via notif (handler direct)."
+            default: []
+
+          # --- EXTENSION via notif (hors boucle) ---
           - condition: template
             value_template: >-
               {{ trigger.event is defined
@@ -332,7 +345,7 @@ action:
             value_template: >-
               {{ trigger.id != 'boost_stop_notif'
                  or (trigger.event is defined
-                     and trigger.event.data.action == stop_action_id
+                     and trigger.event.data.action in [stop_action_id, extend_action_id]
                      and trigger.event.data.tag == notif_tag) }}
           - condition: state
             entity_id: !input boost_switch
@@ -345,6 +358,7 @@ action:
             target: { entity_id: !input consigne_entity }
             data: { value: 14 }
 
+          # Notifs de fin (écrasent la persistante) vers PRÉSENTS
           - variables:
               present_notify_entities_end: >-
                 {{
