@@ -1,7 +1,7 @@
 blueprint:
   name: Boost Chauffage by C.
   description: >
-    version Boost : v0.30 - 2025-10-20
+    version Boost : v0.31 - 2025-10-20
 
   source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Boost.yaml
   domain: automation
@@ -73,8 +73,8 @@ blueprint:
       default: 21
       selector:
         number:
-          min: 10
-          max: 24
+          min: 15
+          max: 30
           step: 0.5
           mode: slider
 
@@ -91,8 +91,8 @@ blueprint:
       default: 40
       selector:
         number:
-          min: 10
-          max: 600
+          min: 5
+          max: 180
           step: 5
           mode: slider
 
@@ -193,25 +193,16 @@ action:
       boost_end_hhmm: >-
         {{ (now() + timedelta(minutes=boost_minutes)).strftime('%H:%M') }}
 
-      # ==== Cibles de notif: extraction robuste des user_id PRÉSENTS ====
+      # ==== Cibles de notif: liste des user_id PRÉSENTS (sans append) ====
       present_user_ids: >-
-        {% set result = [] %}
-        {% set members = state_attr(users_group_entity, 'entity_id') | default([], true) %}
-        {% if members is string %}
-          {% set members = [members] %}
-        {% endif %}
-        {% for eid in members %}
-          {% if eid is string and eid.startswith('person.') %}
-            {% set st = states[eid] %}
-            {% if st is not none and st.state == 'home' %}
-              {% set uid = st.attributes.user_id %}
-              {% if uid is not none %}
-                {% set _ = result.append(uid) %}
-              {% endif %}
-            {% endif %}
-          {% endif %}
-        {% endfor %}
-        {{ result }}
+        {{
+          expand(state_attr(users_group_entity, 'entity_id') | default([], true))
+          | selectattr('entity_id','match','^person\\.')
+          | selectattr('state','equalto','home')
+          | map(attribute='attributes.user_id')
+          | reject('equalto', none)
+          | list
+        }}
       has_targets: "{{ present_user_ids | count > 0 }}"
 
   - choose:
@@ -328,26 +319,17 @@ action:
                         - service: input_datetime.set_datetime
                           target: { entity_id: !input timer_entity }
                           data: { timestamp: "{{ new_end_ts }}" }
-                        # Mise à jour de la notif -> PRÉSENTS recalculés
+                        # Mise à jour de la notif -> PRÉSENTS recalculés (sans append)
                         - variables:
                             present_user_ids_loop: >-
-                              {% set result = [] %}
-                              {% set members = state_attr(users_group_entity, 'entity_id') | default([], true) %}
-                              {% if members is string %}
-                                {% set members = [members] %}
-                              {% endif %}
-                              {% for eid in members %}
-                                {% if eid is string and eid.startswith('person.') %}
-                                  {% set st = states[eid] %}
-                                  {% if st is not none and st.state == 'home' %}
-                                    {% set uid = st.attributes.user_id %}
-                                    {% if uid is not none %}
-                                      {% set _ = result.append(uid) %}
-                                    {% endif %}
-                                  {% endif %}
-                                {% endif %}
-                              {% endfor %}
-                              {{ result }}
+                              {{
+                                expand(state_attr(users_group_entity, 'entity_id') | default([], true))
+                                | selectattr('entity_id','match','^person\\.')
+                                | selectattr('state','equalto','home')
+                                | map(attribute='attributes.user_id')
+                                | reject('equalto', none)
+                                | list
+                              }}
                         - if:
                             - condition: template
                               value_template: "{{ present_user_ids_loop | count > 0 }}"
@@ -382,26 +364,17 @@ action:
           - service: input_datetime.set_datetime
             target: { entity_id: !input timer_entity }
             data: { timestamp: "{{ new_end }}" }
-          # Mise à jour de la notif -> PRÉSENTS recalculés
+          # Mise à jour de la notif -> PRÉSENTS recalculés (sans append)
           - variables:
               present_user_ids_once: >-
-                {% set result = [] %}
-                {% set members = state_attr(users_group_entity, 'entity_id') | default([], true) %}
-                {% if members is string %}
-                  {% set members = [members] %}
-                {% endif %}
-                {% for eid in members %}
-                  {% if eid is string and eid.startswith('person.') %}
-                    {% set st = states[eid] %}
-                    {% if st is not none and st.state == 'home' %}
-                      {% set uid = st.attributes.user_id %}
-                      {% if uid is not none %}
-                        {% set _ = result.append(uid) %}
-                      {% endif %}
-                    {% endif %}
-                  {% endif %}
-                {% endfor %}
-                {{ result }}
+                {{
+                  expand(state_attr(users_group_entity, 'entity_id') | default([], true))
+                  | selectattr('entity_id','match','^person\\.')
+                  | selectattr('state','equalto','home')
+                  | map(attribute='attributes.user_id')
+                  | reject('equalto', none)
+                  | list
+                }}
           - if:
               - condition: template
                 value_template: "{{ present_user_ids_once | count > 0 }}"
@@ -425,7 +398,6 @@ action:
       # =============== ARRÊT ===============
       - conditions: "{{ trigger.id in ['boost_stop_remote', 'boost_stop_ui', 'boost_stop_notif'] }}"
         sequence:
-          # Garde-fous :
           - condition: template
             value_template: >-
               {{ trigger.id != 'boost_stop_notif'
@@ -444,26 +416,17 @@ action:
             target: { entity_id: !input consigne_entity }
             data: { value: 14 }
 
-          # Notif de fin -> PRÉSENTS recalculés
+          # Notif de fin -> PRÉSENTS recalculés (sans append)
           - variables:
               present_user_ids_end: >-
-                {% set result = [] %}
-                {% set members = state_attr(users_group_entity, 'entity_id') | default([], true) %}
-                {% if members is string %}
-                  {% set members = [members] %}
-                {% endif %}
-                {% for eid in members %}
-                  {% if eid is string and eid.startswith('person.') %}
-                    {% set st = states[eid] %}
-                    {% if st is not none and st.state == 'home' %}
-                      {% set uid = st.attributes.user_id %}
-                      {% if uid is not none %}
-                        {% set _ = result.append(uid) %}
-                      {% endif %}
-                    {% endif %}
-                  {% endif %}
-                {% endfor %}
-                {{ result }}
+                {{
+                  expand(state_attr(users_group_entity, 'entity_id') | default([], true))
+                  | selectattr('entity_id','match','^person\\.')
+                  | selectattr('state','equalto','home')
+                  | map(attribute='attributes.user_id')
+                  | reject('equalto', none)
+                  | list
+                }}
           - if:
               - condition: template
                 value_template: "{{ present_user_ids_end | count > 0 }}"
