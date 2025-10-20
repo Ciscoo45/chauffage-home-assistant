@@ -1,11 +1,12 @@
 blueprint:
   name: Boost Chauffage by C.
   description: >
-    version Boost : v0.34 - 2025-10-20
+    version Boost : v0.35 - 2025-10-20
 
     Notifications envoyées vers les ENTITÉS notify.* (ex: notify.user_michel),
     calculées dynamiquement depuis un groupe de person.* PRÉSENTS.
-    Envoi via `notify.notify` avec target.entity_id (supporte le champ data).
+    Envoi par boucle for_each qui appelle chaque service notify.<nom> individuellement
+    (compatibilité totale avec le champ data: des actions persistantes).
 
   source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Boost.yaml
   domain: automation
@@ -179,26 +180,27 @@ action:
             target: { entity_id: !input timer_entity }
             data: { timestamp: "{{ boost_end_ts }}" }
 
-          # Notif persistante -> vers PRÉSENTS (notify.notify + target.entity_id)
+          # Notif persistante -> vers PRÉSENTS (boucle services notify.<nom>)
           - if:
               - condition: template
                 value_template: "{{ has_targets }}"
             then:
-              - service: notify.notify
-                target:
-                  entity_id: "{{ present_notify_entities }}"
-                data:
-                  title: "🔆 Boost chauffage {{ area_label }} activé"
-                  message: "Consigne {{ boost_target_temp|round(1) }}° • Fin {{ boost_end_hhmm }} ({{ boost_minutes }} min)"
-                  data:
-                    tag: "{{ notif_tag }}"
-                    persistent: true
-                    sticky: true
-                    actions:
-                      - action: "{{ stop_action_id }}"
-                        title: "Arrêter"
-                      - action: "{{ extend_action_id }}"
-                        title: "+{{ extend_step }} min"
+              - repeat:
+                  for_each: "{{ present_notify_entities }}"
+                  sequence:
+                    - service: "{{ repeat.item }}"
+                      data:
+                        title: "🔆 Boost chauffage {{ area_label }} activé"
+                        message: "Consigne {{ boost_target_temp|round(1) }}° • Fin {{ boost_end_hhmm }} ({{ boost_minutes }} min)"
+                        data:
+                          tag: "{{ notif_tag }}"
+                          persistent: true
+                          sticky: true
+                          actions:
+                            - action: "{{ stop_action_id }}"
+                              title: "Arrêter"
+                            - action: "{{ extend_action_id }}"
+                              title: "+{{ extend_step }} min"
 
           # Sync UI si déclenché physiquement
           - condition: state
@@ -260,21 +262,22 @@ action:
                             - condition: template
                               value_template: "{{ present_notify_entities_loop | count > 0 }}"
                           then:
-                            - service: notify.notify
-                              target:
-                                entity_id: "{{ present_notify_entities_loop }}"
-                              data:
-                                title: "🔆 Boost chauffage {{ area_label }} prolongé"
-                                message: "Fin {{ (as_datetime(new_end_ts) | as_local).strftime('%H:%M') }}"
-                                data:
-                                  tag: "{{ notif_tag }}"
-                                  persistent: true
-                                  sticky: true
-                                  actions:
-                                    - action: "{{ stop_action_id }}"
-                                      title: "Arrêter"
-                                    - action: "{{ extend_action_id }}"
-                                      title: "+{{ extend_step }} min"
+                            - repeat:
+                                for_each: "{{ present_notify_entities_loop }}"
+                                sequence:
+                                  - service: "{{ repeat.item }}"
+                                    data:
+                                      title: "🔆 Boost chauffage {{ area_label }} prolongé"
+                                      message: "Fin {{ (as_datetime(new_end_ts) | as_local).strftime('%H:%M') }}"
+                                      data:
+                                        tag: "{{ notif_tag }}"
+                                        persistent: true
+                                        sticky: true
+                                        actions:
+                                          - action: "{{ stop_action_id }}"
+                                            title: "Arrêter"
+                                          - action: "{{ extend_action_id }}"
+                                            title: "+{{ extend_step }} min"
 
       # ======= EXTENSION hors boucle =======
       - conditions: "{{ trigger.id == 'boost_stop_notif' }}"
@@ -304,21 +307,22 @@ action:
               - condition: template
                 value_template: "{{ present_notify_entities_once | count > 0 }}"
             then:
-              - service: notify.notify
-                target:
-                  entity_id: "{{ present_notify_entities_once }}"
-                data:
-                  title: "🔆 Boost chauffage {{ area_label }} prolongé"
-                  message: "Nouvelle fin {{ (as_datetime(new_end) | as_local).strftime('%H:%M') }}"
-                  data:
-                    tag: "{{ notif_tag }}"
-                    persistent: true
-                    sticky: true
-                    actions:
-                      - action: "{{ stop_action_id }}"
-                        title: "Arrêter"
-                      - action: "{{ extend_action_id }}"
-                        title: "+{{ extend_step }} min"
+              - repeat:
+                  for_each: "{{ present_notify_entities_once }}"
+                  sequence:
+                    - service: "{{ repeat.item }}"
+                      data:
+                        title: "🔆 Boost chauffage {{ area_label }} prolongé"
+                        message: "Nouvelle fin {{ (as_datetime(new_end) | as_local).strftime('%H:%M') }}"
+                        data:
+                          tag: "{{ notif_tag }}"
+                          persistent: true
+                          sticky: true
+                          actions:
+                            - action: "{{ stop_action_id }}"
+                              title: "Arrêter"
+                            - action: "{{ extend_action_id }}"
+                              title: "+{{ extend_step }} min"
           - stop: "Extension traitée."
 
       # ======= ARRÊT =======
@@ -355,15 +359,16 @@ action:
               - condition: template
                 value_template: "{{ present_notify_entities_end | count > 0 }}"
             then:
-              - service: notify.notify
-                target:
-                  entity_id: "{{ present_notify_entities_end }}"
-                data:
-                  message: "✅ Boost chauffage {{ area_label }} terminé."
-                  data:
-                    tag: "{{ notif_tag }}"
-                    persistent: false
-                    sticky: false
+              - repeat:
+                  for_each: "{{ present_notify_entities_end }}"
+                  sequence:
+                    - service: "{{ repeat.item }}"
+                      data:
+                        message: "✅ Boost chauffage {{ area_label }} terminé."
+                        data:
+                          tag: "{{ notif_tag }}"
+                          persistent: false
+                          sticky: false
 
           - condition: state
             entity_id: !input boost_switch
