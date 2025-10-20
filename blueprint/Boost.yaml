@@ -1,27 +1,13 @@
 blueprint:
-  name: Boost Chauffage by C.
+  name: Boost Chauffage by C. (users group & presence-aware notifications)
   description: >
-    version Boost : v0.27 - 2025-10-20
+    version Boost : v0.28 - 2025-10-20
 
-    Active un mode "Boost" pendant une durée déterminée pour le chauffage de la pièce sélectionnée.
-    Paramétrage pilotable via dashboard (consigne & durée) + valeurs par défaut définies au moment d'instancier le blueprint.
-    
-    **Déclencheurs** :
-        - Bouton Ikea Styrbar/Rodret (On/Off)
-        - Bouton sur le dashboard (input_boolean)
-        - (optionnel) Au démarrage de Home Assistant / rechargement des automatisations pour initialiser les helpers
-      
-    **Démarrage** :
-        - Mode -> Manuel + Consigne = valeur du Helper
-        - Enregistre l'heure de fin
-        - Notification persistante avec boutons "Arrêter" et "+X min"
-        - Synchronise l’UI
-      
-    **Arrêt** :
-        - Mode -> Presence + Consigne = 14°C
-        - Nettoie la notif
-        - Synchronise l’UI
-      
+    Idem v0.27 mais notifications envoyées vers tous les appareils des utilisateurs PRÉSENTS,
+    via un groupe d'utilisateurs (entités person.*) fourni en input. Utilise notify.notify
+    avec target = user_id des personnes présentes. Évite l'effet "premier match" et évite
+    de notifier les non-présents à l'arrêt.
+
   source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Boost.yaml
   domain: automation
 
@@ -32,6 +18,16 @@ blueprint:
       description: Choisis la pièce concernée
       selector:
         area: {}
+
+    # NOUVEL INPUT — groupe d'utilisateurs (doit contenir des entités person.*)
+    users_group:
+      name: Groupe des utilisateurs éligibles
+      description: >
+        Groupe Home Assistant contenant des entités person.* (ex: group.utilisateurs_maison).
+        Seuls les utilisateurs PRÉSENTS (state: home) recevront les notifications.
+      selector:
+        entity:
+          domain: group
 
     remote_button:
       name: "[Optionnel] Télécommande Ikea Styrbar / Rodret"
@@ -167,9 +163,10 @@ trigger:
 condition: []
 
 action:
-  # Variables & identifiants par pièce (assignations directes avec !input, puis usage dans templates)
   - variables:
       area_id: !input piece
+      users_group_entity: !input users_group
+
       duration_helper: !input boost_duration_helper
       temp_helper: !input boost_temp_helper
       timer_id: !input timer_entity
@@ -188,7 +185,7 @@ action:
         {{ ('STOP_BOOST_' ~ area_id)|upper }}
       extend_action_id: >-
         {{ ('EXTEND_BOOST_' ~ area_id)|upper }}
-        
+
       # Helpers actuels (avec bornes issues des selectors)
       boost_minutes: >-
         {{ [ [ states(duration_helper) | int(default_minutes), 10 ] | max, 600 ] | min }}
@@ -201,6 +198,22 @@ action:
       boost_end_hhmm: >-
         {{ (now() + timedelta(minutes=boost_minutes)).strftime('%H:%M') }}
 
+      # ==== Calcul des cibles de notif (présents) ====
+      # Liste des entités person.* présentes (en partant du groupe fourni)
+      present_persons: >-
+        {{ expand(users_group_entity)
+           | selectattr('domain','equalto','person')
+           | selectattr('state','equalto','home')
+           | list }}
+      # user_id des persons (si liés à un utilisateur HA)
+      present_user_ids: >-
+        {{ present_persons
+           | map(attribute='attributes.user_id')
+           | select('defined')
+           | list }}
+      # utilitaire: vrai si au moins une cible
+      has_targets: "{{ present_user_ids | count > 0 }}"
+
   - choose:
 
       # =============== INITIALISATION DES HELPERS ===============
@@ -210,7 +223,6 @@ action:
 
       - conditions: "{{ trigger.id in ['init_on_start','init_on_reload'] and sync_reload }}"
         sequence:
-          # Copie les valeurs par défaut vers les helpers du dashboard
           - service: input_number.set_value
             target: { entity_id: !input boost_duration_helper }
             data: { value: "{{ default_minutes | int }}" }
@@ -224,59 +236,37 @@ action:
       # =============== DÉMARRAGE ===============
       - conditions: "{{ trigger.id in ['boost_start_remote', 'boost_start_ui'] }}"
         sequence:
-          # Mode Manuel
           - service: input_select.select_option
             target: { entity_id: !input mode_entity }
             data: { option: "Manuel" }
 
-          # Consigne = helper (écrit dans l’entité consigne chauffage)
           - service: input_number.set_value
             target: { entity_id: !input consigne_entity }
             data: { value: "{{ boost_target_temp }}" }
 
-          # Sauvegarde de l'heure de fin initiale
           - service: input_datetime.set_datetime
             target: { entity_id: !input timer_entity }
             data: { timestamp: "{{ boost_end_ts }}" }
 
-          # Notifications persistantes (avec tag + actions uniques)
-          - choose:
-              - conditions:
-                  - condition: state
-                    entity_id: person.michel
-                    state: "home"
-                sequence:
-                  - service: notify.mobile_app_pixel_4a_5g
-                    data:
-                      title: "🔆 Boost chauffage {{ area_label }} activé"
-                      message: "Consigne {{ boost_target_temp|round(1) }}° • Fin {{ boost_end_hhmm }} ({{ boost_minutes }} min)"
-                      data:
-                        tag: "{{ notif_tag }}"
-                        persistent: true
-                        sticky: true
-                        actions:
-                          - action: "{{ stop_action_id }}"
-                            title: "Arrêter"
-                          - action: "{{ extend_action_id }}"
-                            title: "+{{ extend_step }} min"
-              - conditions:
-                  - condition: state
-                    entity_id: person.ciscoo
-                    state: "home"
-                sequence:
-                  - service: notify.mobile_app_pixel_7_pro
-                    data:
-                      title: "🔆 Boost chauffage {{ area_label }} activé"
-                      message: "Consigne {{ boost_target_temp|round(1) }}° • Fin {{ boost_end_hhmm }} ({{ boost_minutes }} min)"
-                      data:
-                        tag: "{{ notif_tag }}"
-                        persistent: true
-                        sticky: true
-                        actions:
-                          - action: "{{ stop_action_id }}"
-                            title: "Arrêter"
-                          - action: "{{ extend_action_id }}"
-                            title: "+{{ extend_step }} min"
+          # === Notification persistante à TOUS les utilisateurs PRÉSENTS ===
+          - if:
+              - condition: template
+                value_template: "{{ has_targets }}"
+            then:
+              - service: notify.notify
+                data:
+                  title: "🔆 Boost chauffage {{ area_label }} activé"
+                  message: "Consigne {{ boost_target_temp|round(1) }}° • Fin {{ boost_end_hhmm }} ({{ boost_minutes }} min)"
+                  target: "{{ present_user_ids }}"
+                  data:
+                    tag: "{{ notif_tag }}"
+                    persistent: true
+                    sticky: true
+                    actions:
+                      - action: "{{ stop_action_id }}"
+                        title: "Arrêter"
+                      - action: "{{ extend_action_id }}"
+                        title: "+{{ extend_step }} min"
 
           # Synchronisation UI si déclenché physiquement
           - condition: state
@@ -294,7 +284,6 @@ action:
                     end_ts: >-
                       {{ state_attr(timer_id, 'timestamp') | int(boost_end_ts) }}
                     remaining: "{{ (end_ts - now_ts) | max(0) }}"
-                # Si c'est fini -> on coupe
                 - choose:
                     - conditions: "{{ remaining == 0 }}"
                       sequence:
@@ -302,7 +291,6 @@ action:
                           target: { entity_id: !input boost_switch }
                         - stop: "Boost expiré (fin de boucle)."
                   default: []
-                # On attend soit un appui notif (STOP / +X min), soit l'expiration
                 - wait_for_trigger:
                     - platform: event
                       event_type: mobile_app_notification_action
@@ -318,7 +306,6 @@ action:
                     seconds: "{{ remaining }}"
                   continue_on_timeout: true
 
-                # Si timeout => expiration -> on coupera au prochain tour (remaining==0)
                 - choose:
                     # STOP pressé
                     - conditions: >-
@@ -340,33 +327,36 @@ action:
                         - service: input_datetime.set_datetime
                           target: { entity_id: !input timer_entity }
                           data: { timestamp: "{{ new_end_ts }}" }
-                        # Mise à jour de la notif (même tag -> remplace)
-                        - service: notify.mobile_app_pixel_4a_5g
-                          data:
-                            title: "🔆 Boost chauffage {{ area_label }} prolongé"
-                            message: "Fin {{ (as_datetime(new_end_ts) | as_local).strftime('%H:%M') }}"
-                            data:
-                              tag: "{{ notif_tag }}"
-                              persistent: true
-                              sticky: true
-                              actions:
-                                - action: "{{ stop_action_id }}"
-                                  title: "Arrêter"
-                                - action: "{{ extend_action_id }}"
-                                  title: "+{{ extend_step }} min"
-                        - service: notify.mobile_app_pixel_7_pro
-                          data:
-                            title: "🔆 Boost chauffage {{ area_label }} prolongé"
-                            message: "Fin {{ (as_datetime(new_end_ts) | as_local).strftime('%H:%M') }}"
-                            data:
-                              tag: "{{ notif_tag }}"
-                              persistent: true
-                              sticky: true
-                              actions:
-                                - action: "{{ stop_action_id }}"
-                                  title: "Arrêter"
-                                - action: "{{ extend_action_id }}"
-                                  title: "+{{ extend_step }} min"
+                        # Mise à jour de la notif (même tag -> remplace) vers PRÉSENTS
+                        - variables:
+                            present_persons_loop: >-
+                              {{ expand(users_group_entity)
+                                 | selectattr('domain','equalto','person')
+                                 | selectattr('state','equalto','home')
+                                 | list }}
+                            present_user_ids_loop: >-
+                              {{ present_persons_loop
+                                 | map(attribute='attributes.user_id')
+                                 | select('defined')
+                                 | list }}
+                        - if:
+                            - condition: template
+                              value_template: "{{ present_user_ids_loop | count > 0 }}"
+                          then:
+                            - service: notify.notify
+                              data:
+                                title: "🔆 Boost chauffage {{ area_label }} prolongé"
+                                message: "Fin {{ (as_datetime(new_end_ts) | as_local).strftime('%H:%M') }}"
+                                target: "{{ present_user_ids_loop }}"
+                                data:
+                                  tag: "{{ notif_tag }}"
+                                  persistent: true
+                                  sticky: true
+                                  actions:
+                                    - action: "{{ stop_action_id }}"
+                                      title: "Arrêter"
+                                    - action: "{{ extend_action_id }}"
+                                      title: "+{{ extend_step }} min"
                   default: []
 
       # =============== EXTENSION PAR NOTIF (si appelée hors boucle) ===============
@@ -383,41 +373,41 @@ action:
           - service: input_datetime.set_datetime
             target: { entity_id: !input timer_entity }
             data: { timestamp: "{{ new_end }}" }
-          # Mise à jour de la notif (même tag => elle s’écrase)
-          - service: notify.mobile_app_pixel_4a_5g
-            data:
-              title: "🔆 Boost chauffage {{ area_label }} prolongé"
-              message: "Nouvelle fin {{ (as_datetime(new_end) | as_local).strftime('%H:%M') }}"
-              data:
-                tag: "{{ notif_tag }}"
-                persistent: true
-                sticky: true
-                actions:
-                  - action: "{{ stop_action_id }}"
-                    title: "Arrêter"
-                  - action: "{{ extend_action_id }}"
-                    title: "+{{ extend_step }} min"
-          - service: notify.mobile_app_pixel_7_pro
-            data:
-              title: "🔆 Boost chauffage {{ area_label }} prolongé"
-              message: "Nouvelle fin {{ (as_datetime(new_end) | as_local).strftime('%H:%M') }}"
-              data:
-                tag: "{{ notif_tag }}"
-                persistent: true
-                sticky: true
-                actions:
-                  - action: "{{ stop_action_id }}"
-                    title: "Arrêter"
-                  - action: "{{ extend_action_id }}"
-                    title: "+{{ extend_step }} min"
+          # Mise à jour de la notif (même tag => elle s’écrase) vers PRÉSENTS
+          - variables:
+              present_persons_once: >-
+                {{ expand(users_group_entity)
+                   | selectattr('domain','equalto','person')
+                   | selectattr('state','equalto','home')
+                   | list }}
+              present_user_ids_once: >-
+                {{ present_persons_once
+                   | map(attribute='attributes.user_id')
+                   | select('defined')
+                   | list }}
+          - if:
+              - condition: template
+                value_template: "{{ present_user_ids_once | count > 0 }}"
+            then:
+              - service: notify.notify
+                data:
+                  title: "🔆 Boost chauffage {{ area_label }} prolongé"
+                  message: "Nouvelle fin {{ (as_datetime(new_end) | as_local).strftime('%H:%M') }}"
+                  target: "{{ present_user_ids_once }}"
+                  data:
+                    tag: "{{ notif_tag }}"
+                    persistent: true
+                    sticky: true
+                    actions:
+                      - action: "{{ stop_action_id }}"
+                        title: "Arrêter"
+                      - action: "{{ extend_action_id }}"
+                        title: "+{{ extend_step }} min"
           - stop: "Extension traitée."
 
       # =============== ARRÊT ===============
       - conditions: "{{ trigger.id in ['boost_stop_remote', 'boost_stop_ui', 'boost_stop_notif'] }}"
         sequence:
-          # Garde-fous :
-          # - si notif: action + tag doivent correspondre à CETTE pièce
-          # - boost de cette pièce doit être actif
           - condition: template
             value_template: >-
               {{ trigger.id != 'boost_stop_notif'
@@ -428,7 +418,6 @@ action:
             entity_id: !input boost_switch
             state: "on"
 
-          # Restaure Presence + 14°C
           - service: input_select.select_option
             target: { entity_id: !input mode_entity }
             data: { option: "Presence" }
@@ -436,21 +425,30 @@ action:
             target: { entity_id: !input consigne_entity }
             data: { value: 14 }
 
-          # Notifs de fin (écrasent la persistante)
-          - service: notify.mobile_app_pixel_4a_5g
-            data:
-              message: "✅ Boost chauffage {{ area_label }} terminé."
-              data:
-                tag: "{{ notif_tag }}"
-                persistent: false
-                sticky: false
-          - service: notify.mobile_app_pixel_7_pro
-            data:
-              message: "✅ Boost chauffage {{ area_label }} terminé."
-              data:
-                tag: "{{ notif_tag }}"
-                persistent: false
-                sticky: false
+          # Notifs de fin vers PRÉSENTS UNIQUEMENT (écrasent la persistante)
+          - variables:
+              present_persons_end: >-
+                {{ expand(users_group_entity)
+                   | selectattr('domain','equalto','person')
+                   | selectattr('state','equalto','home')
+                   | list }}
+              present_user_ids_end: >-
+                {{ present_persons_end
+                   | map(attribute='attributes.user_id')
+                   | select('defined')
+                   | list }}
+          - if:
+              - condition: template
+                value_template: "{{ present_user_ids_end | count > 0 }}"
+            then:
+              - service: notify.notify
+                data:
+                  message: "✅ Boost chauffage {{ area_label }} terminé."
+                  target: "{{ present_user_ids_end }}"
+                  data:
+                    tag: "{{ notif_tag }}"
+                    persistent: false
+                    sticky: false
 
           # Synchronisation UI si besoin
           - condition: state
