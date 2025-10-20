@@ -1,11 +1,11 @@
 blueprint:
   name: Boost Chauffage by C.
   description: >
-    version Boost : v0.33 - 2025-10-20
+    version Boost : v0.34 - 2025-10-20
 
     Notifications envoyées vers les ENTITÉS notify.* (ex: notify.user_michel),
     calculées dynamiquement depuis un groupe de person.* PRÉSENTS.
-    Utilise l’action `notify.send_message` (entity platform).
+    Envoi via `notify.notify` avec target.entity_id (supporte le champ data).
 
   source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Boost.yaml
   domain: automation
@@ -135,8 +135,7 @@ action:
       boost_end_ts: "{{ (now() + timedelta(minutes=boost_minutes)).timestamp()|int }}"
       boost_end_hhmm: "{{ (now() + timedelta(minutes=boost_minutes)).strftime('%H:%M') }}"
 
-      # --- Liste des entités notify.* cibles depuis les persons PRÉSENTS ---
-      # Convention: person.<slug> -> notify.user_<slug>
+      # Entités notify.* cibles depuis persons PRÉSENTS (convention person.<slug> -> notify.user_<slug>)
       present_notify_entities: >-
         {{
           expand(state_attr(users_group_entity, 'entity_id') | default([], true))
@@ -150,7 +149,7 @@ action:
 
   - choose:
 
-      # ========== INIT HELPERS ==========
+      # ======= INIT HELPERS =======
       - conditions: "{{ trigger.id in ['init_on_start','init_on_reload'] and not sync_reload }}"
         sequence:
           - stop: "Initialisation des helpers désactivée."
@@ -165,7 +164,7 @@ action:
             data: { value: "{{ default_temp|float }}" }
           - stop: "Helpers initialisés."
 
-      # ========== DÉMARRAGE ==========
+      # ======= DÉMARRAGE =======
       - conditions: "{{ trigger.id in ['boost_start_remote','boost_start_ui'] }}"
         sequence:
           - service: input_select.select_option
@@ -180,14 +179,15 @@ action:
             target: { entity_id: !input timer_entity }
             data: { timestamp: "{{ boost_end_ts }}" }
 
-          # Notif persistante (entity platform)
+          # Notif persistante -> vers PRÉSENTS (notify.notify + target.entity_id)
           - if:
               - condition: template
                 value_template: "{{ has_targets }}"
             then:
-              - service: notify.send_message
-                data:
+              - service: notify.notify
+                target:
                   entity_id: "{{ present_notify_entities }}"
+                data:
                   title: "🔆 Boost chauffage {{ area_label }} activé"
                   message: "Consigne {{ boost_target_temp|round(1) }}° • Fin {{ boost_end_hhmm }} ({{ boost_minutes }} min)"
                   data:
@@ -207,7 +207,7 @@ action:
           - service: input_boolean.turn_on
             target: { entity_id: !input boost_switch }
 
-          # ===== Boucle attente =====
+          # ======= Boucle attente =======
           - repeat:
               while: "{{ true }}"
               sequence:
@@ -260,9 +260,10 @@ action:
                             - condition: template
                               value_template: "{{ present_notify_entities_loop | count > 0 }}"
                           then:
-                            - service: notify.send_message
-                              data:
+                            - service: notify.notify
+                              target:
                                 entity_id: "{{ present_notify_entities_loop }}"
+                              data:
                                 title: "🔆 Boost chauffage {{ area_label }} prolongé"
                                 message: "Fin {{ (as_datetime(new_end_ts) | as_local).strftime('%H:%M') }}"
                                 data:
@@ -275,7 +276,7 @@ action:
                                     - action: "{{ extend_action_id }}"
                                       title: "+{{ extend_step }} min"
 
-      # ========== EXTENSION hors boucle ==========
+      # ======= EXTENSION hors boucle =======
       - conditions: "{{ trigger.id == 'boost_stop_notif' }}"
         sequence:
           - condition: template
@@ -303,9 +304,10 @@ action:
               - condition: template
                 value_template: "{{ present_notify_entities_once | count > 0 }}"
             then:
-              - service: notify.send_message
-                data:
+              - service: notify.notify
+                target:
                   entity_id: "{{ present_notify_entities_once }}"
+                data:
                   title: "🔆 Boost chauffage {{ area_label }} prolongé"
                   message: "Nouvelle fin {{ (as_datetime(new_end) | as_local).strftime('%H:%M') }}"
                   data:
@@ -319,7 +321,7 @@ action:
                         title: "+{{ extend_step }} min"
           - stop: "Extension traitée."
 
-      # ========== ARRÊT ==========
+      # ======= ARRÊT =======
       - conditions: "{{ trigger.id in ['boost_stop_remote','boost_stop_ui','boost_stop_notif'] }}"
         sequence:
           - condition: template
@@ -353,9 +355,10 @@ action:
               - condition: template
                 value_template: "{{ present_notify_entities_end | count > 0 }}"
             then:
-              - service: notify.send_message
-                data:
+              - service: notify.notify
+                target:
                   entity_id: "{{ present_notify_entities_end }}"
+                data:
                   message: "✅ Boost chauffage {{ area_label }} terminé."
                   data:
                     tag: "{{ notif_tag }}"
