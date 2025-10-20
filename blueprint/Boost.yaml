@@ -458,5 +458,7 @@ action:
             state: "on"
           - service: input_boolean.turn_off
             target: { entity_id: !input boost_switch }
+          - service: input_boolean.turn_off
+            target: { entity_id: !input boost_switch }
 
-mode: re
+mode: restart
