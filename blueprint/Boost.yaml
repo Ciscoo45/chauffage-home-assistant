@@ -1,7 +1,7 @@
 blueprint:
   name: Boost Chauffage by C.
   description: >
-    version Boost : v0.29 - 2025-10-20
+    version Boost : v0.30 - 2025-10-20
 
   source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Boost.yaml
   domain: automation
@@ -73,8 +73,8 @@ blueprint:
       default: 21
       selector:
         number:
-          min: 15
-          max: 30
+          min: 10
+          max: 24
           step: 0.5
           mode: slider
 
@@ -93,7 +93,7 @@ blueprint:
         number:
           min: 10
           max: 600
-          step: 10
+          step: 5
           mode: slider
 
     boost_extend_step_minutes:
@@ -157,7 +157,7 @@ trigger:
 condition: []
 
 action:
-  # Variables & identifiants par pièce (assignations directes avec !input, puis usage dans templates)
+  # Variables & identifiants par pièce
   - variables:
       area_id: !input piece
       users_group_entity: !input users_group
@@ -193,19 +193,25 @@ action:
       boost_end_hhmm: >-
         {{ (now() + timedelta(minutes=boost_minutes)).strftime('%H:%M') }}
 
-      # ==== Calcul des cibles de notif (présents) ====
-      group_members: >-
-        {{ state_attr(users_group_entity, 'entity_id') | default([], true) }}
-      present_persons: >-
-        {{ expand(group_members)
-           | selectattr('entity_id','match','^person\\.')
-           | selectattr('state','equalto','home')
-           | list }}
+      # ==== Cibles de notif: extraction robuste des user_id PRÉSENTS ====
       present_user_ids: >-
-        {{ present_persons
-           | map(attribute='attributes.user_id')
-           | reject('equalto', none)
-           | list }}
+        {% set result = [] %}
+        {% set members = state_attr(users_group_entity, 'entity_id') | default([], true) %}
+        {% if members is string %}
+          {% set members = [members] %}
+        {% endif %}
+        {% for eid in members %}
+          {% if eid is string and eid.startswith('person.') %}
+            {% set st = states[eid] %}
+            {% if st is not none and st.state == 'home' %}
+              {% set uid = st.attributes.user_id %}
+              {% if uid is not none %}
+                {% set _ = result.append(uid) %}
+              {% endif %}
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+        {{ result }}
       has_targets: "{{ present_user_ids | count > 0 }}"
 
   - choose:
@@ -217,38 +223,32 @@ action:
 
       - conditions: "{{ trigger.id in ['init_on_start','init_on_reload'] and sync_reload }}"
         sequence:
-          # Copie les valeurs par défaut vers les helpers du dashboard
           - service: input_number.set_value
             target: { entity_id: !input boost_duration_helper }
-            data:
-              value: "{{ default_minutes | int }}"
+            data: { value: "{{ default_minutes | int }}" }
 
           - service: input_number.set_value
             target: { entity_id: !input boost_temp_helper }
-            data:
-              value: "{{ default_temp | float }}"
+            data: { value: "{{ default_temp | float }}" }
 
           - stop: "Helpers initialisés avec les valeurs par défaut."
 
       # =============== DÉMARRAGE ===============
       - conditions: "{{ trigger.id in ['boost_start_remote', 'boost_start_ui'] }}"
         sequence:
-          # Mode Manuel
           - service: input_select.select_option
             target: { entity_id: !input mode_entity }
             data: { option: "Manuel" }
 
-          # Consigne = helper (écrit dans l’entité consigne chauffage)
           - service: input_number.set_value
             target: { entity_id: !input consigne_entity }
             data: { value: "{{ boost_target_temp }}" }
 
-          # Sauvegarde de l'heure de fin initiale
           - service: input_datetime.set_datetime
             target: { entity_id: !input timer_entity }
             data: { timestamp: "{{ boost_end_ts }}" }
 
-          # Notifications persistantes (avec tag + actions uniques) -> vers PRÉSENTS
+          # Notification persistante -> vers PRÉSENTS
           - if:
               - condition: template
                 value_template: "{{ has_targets }}"
@@ -284,7 +284,6 @@ action:
                     end_ts: >-
                       {{ state_attr(timer_id, 'timestamp') | int(boost_end_ts) }}
                     remaining: "{{ (end_ts - now_ts) | max(0) }}"
-                # Si c'est fini -> on coupe
                 - choose:
                     - conditions: "{{ remaining == 0 }}"
                       sequence:
@@ -292,7 +291,7 @@ action:
                           target: { entity_id: !input boost_switch }
                         - stop: "Boost expiré (fin de boucle)."
                   default: []
-                # On attend soit un appui notif (STOP / +X min), soit l'expiration
+
                 - wait_for_trigger:
                     - platform: event
                       event_type: mobile_app_notification_action
@@ -308,7 +307,6 @@ action:
                     seconds: "{{ remaining }}"
                   continue_on_timeout: true
 
-                # Si timeout => expiration -> on coupera au prochain tour (remaining==0)
                 - choose:
                     # STOP pressé
                     - conditions: >-
@@ -330,20 +328,26 @@ action:
                         - service: input_datetime.set_datetime
                           target: { entity_id: !input timer_entity }
                           data: { timestamp: "{{ new_end_ts }}" }
-                        # Mise à jour de la notif (même tag -> remplace) -> vers PRÉSENTS recalculés
+                        # Mise à jour de la notif -> PRÉSENTS recalculés
                         - variables:
-                            group_members_loop: >-
-                              {{ state_attr(users_group_entity, 'entity_id') | default([], true) }}
-                            present_persons_loop: >-
-                              {{ expand(group_members_loop)
-                                 | selectattr('entity_id','match','^person\\.')
-                                 | selectattr('state','equalto','home')
-                                 | list }}
                             present_user_ids_loop: >-
-                              {{ present_persons_loop
-                                 | map(attribute='attributes.user_id')
-                                 | reject('equalto', none)
-                                 | list }}
+                              {% set result = [] %}
+                              {% set members = state_attr(users_group_entity, 'entity_id') | default([], true) %}
+                              {% if members is string %}
+                                {% set members = [members] %}
+                              {% endif %}
+                              {% for eid in members %}
+                                {% if eid is string and eid.startswith('person.') %}
+                                  {% set st = states[eid] %}
+                                  {% if st is not none and st.state == 'home' %}
+                                    {% set uid = st.attributes.user_id %}
+                                    {% if uid is not none %}
+                                      {% set _ = result.append(uid) %}
+                                    {% endif %}
+                                  {% endif %}
+                                {% endif %}
+                              {% endfor %}
+                              {{ result }}
                         - if:
                             - condition: template
                               value_template: "{{ present_user_ids_loop | count > 0 }}"
@@ -378,20 +382,26 @@ action:
           - service: input_datetime.set_datetime
             target: { entity_id: !input timer_entity }
             data: { timestamp: "{{ new_end }}" }
-          # Mise à jour de la notif (même tag => elle s’écrase) vers PRÉSENTS
+          # Mise à jour de la notif -> PRÉSENTS recalculés
           - variables:
-              group_members_once: >-
-                {{ state_attr(users_group_entity, 'entity_id') | default([], true) }}
-              present_persons_once: >-
-                {{ expand(group_members_once)
-                   | selectattr('entity_id','match','^person\\.')
-                   | selectattr('state','equalto','home')
-                   | list }}
               present_user_ids_once: >-
-                {{ present_persons_once
-                   | map(attribute='attributes.user_id')
-                   | reject('equalto', none)
-                   | list }}
+                {% set result = [] %}
+                {% set members = state_attr(users_group_entity, 'entity_id') | default([], true) %}
+                {% if members is string %}
+                  {% set members = [members] %}
+                {% endif %}
+                {% for eid in members %}
+                  {% if eid is string and eid.startswith('person.') %}
+                    {% set st = states[eid] %}
+                    {% if st is not none and st.state == 'home' %}
+                      {% set uid = st.attributes.user_id %}
+                      {% if uid is not none %}
+                        {% set _ = result.append(uid) %}
+                      {% endif %}
+                    {% endif %}
+                  {% endif %}
+                {% endfor %}
+                {{ result }}
           - if:
               - condition: template
                 value_template: "{{ present_user_ids_once | count > 0 }}"
@@ -416,8 +426,6 @@ action:
       - conditions: "{{ trigger.id in ['boost_stop_remote', 'boost_stop_ui', 'boost_stop_notif'] }}"
         sequence:
           # Garde-fous :
-          # - si notif: action + tag doivent correspondre à CETTE pièce
-          # - boost de cette pièce doit être actif
           - condition: template
             value_template: >-
               {{ trigger.id != 'boost_stop_notif'
@@ -436,20 +444,26 @@ action:
             target: { entity_id: !input consigne_entity }
             data: { value: 14 }
 
-          # Notifs de fin (écrasent la persistante) vers PRÉSENTS uniquement
+          # Notif de fin -> PRÉSENTS recalculés
           - variables:
-              group_members_end: >-
-                {{ state_attr(users_group_entity, 'entity_id') | default([], true) }}
-              present_persons_end: >-
-                {{ expand(group_members_end)
-                   | selectattr('entity_id','match','^person\\.')
-                   | selectattr('state','equalto','home')
-                   | list }}
               present_user_ids_end: >-
-                {{ present_persons_end
-                   | map(attribute='attributes.user_id')
-                   | reject('equalto', none)
-                   | list }}
+                {% set result = [] %}
+                {% set members = state_attr(users_group_entity, 'entity_id') | default([], true) %}
+                {% if members is string %}
+                  {% set members = [members] %}
+                {% endif %}
+                {% for eid in members %}
+                  {% if eid is string and eid.startswith('person.') %}
+                    {% set st = states[eid] %}
+                    {% if st is not none and st.state == 'home' %}
+                      {% set uid = st.attributes.user_id %}
+                      {% if uid is not none %}
+                        {% set _ = result.append(uid) %}
+                      {% endif %}
+                    {% endif %}
+                  {% endif %}
+                {% endfor %}
+                {{ result }}
           - if:
               - condition: template
                 value_template: "{{ present_user_ids_end | count > 0 }}"
