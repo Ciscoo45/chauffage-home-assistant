@@ -1,12 +1,7 @@
 blueprint:
-  name: Boost Chauffage by C. (users group & presence-aware notifications)
+  name: Boost Chauffage by C.
   description: >
     version Boost : v0.28 - 2025-10-20
-
-    Idem v0.27 mais notifications envoyées vers tous les appareils des utilisateurs PRÉSENTS,
-    via un groupe d'utilisateurs (entités person.*) fourni en input. Utilise notify.notify
-    avec target = user_id des personnes présentes. Évite l'effet "premier match" et évite
-    de notifier les non-présents à l'arrêt.
 
   source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Boost.yaml
   domain: automation
