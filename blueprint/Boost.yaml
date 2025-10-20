@@ -1,7 +1,7 @@
 blueprint:
   name: Boost Chauffage
   description: >
-    version Boost : v0.25 - 2025-10-20
+    version Boost : v0.26 - 2025-10-20
 
     Active un mode "Boost" pendant une durée déterminée pour le chauffage de la pièce sélectionnée.
     Paramétrage pilotable via dashboard (consigne & durée) + valeurs par défaut définies au moment d'instancier le blueprint.
@@ -300,7 +300,7 @@ action:
                       sequence:
                         - service: input_boolean.turn_off
                           target: { entity_id: !input boost_switch }
-                        - break
+                        - stop: "Boost expiré (fin de boucle)."
                   default: []
                 # On attend soit un appui notif (STOP / +X min), soit l'expiration
                 - wait_for_trigger:
@@ -328,8 +328,7 @@ action:
                       sequence:
                         - service: input_boolean.turn_off
                           target: { entity_id: !input boost_switch }
-                        - break
-
+                        - stop: "Boost arrêté par notification."
                     # EXTEND pressé
                     - conditions: >-
                         {{ wait.trigger is defined
@@ -424,4 +423,40 @@ action:
               {{ trigger.id != 'boost_stop_notif'
                  or (trigger.event is defined
                      and trigger.event.data.action == stop_action_id
-                     and trigger.event.data.tag == no
+                     and trigger.event.data.tag == notif_tag) }}
+          - condition: state
+            entity_id: !input boost_switch
+            state: "on"
+
+          # Restaure Presence + 14°C
+          - service: input_select.select_option
+            target: { entity_id: !input mode_entity }
+            data: { option: "Presence" }
+          - service: input_number.set_value
+            target: { entity_id: !input consigne_entity }
+            data: { value: 14 }
+
+          # Notifs de fin (écrasent la persistante)
+          - service: notify.mobile_app_pixel_4a_5g
+            data:
+              message: "✅ Boost chauffage {{ area_label }} terminé."
+              data:
+                tag: "{{ notif_tag }}"
+                persistent: false
+                sticky: false
+          - service: notify.mobile_app_pixel_7_pro
+            data:
+              message: "✅ Boost chauffage {{ area_label }} terminé."
+              data:
+                tag: "{{ notif_tag }}"
+                persistent: false
+                sticky: false
+
+          # Synchronisation UI si besoin
+          - condition: state
+            entity_id: !input boost_switch
+            state: "on"
+          - service: input_boolean.turn_off
+            target: { entity_id: !input boost_switch }
+
+mode: re
