@@ -1,7 +1,13 @@
 blueprint:
   name: Boost Chauffage by C.
   description: >
-    version Boost : v0.31 - 2025-10-20
+    version Boost : v0.32 - 2025-10-20
+
+    Active un mode "Boost" pendant une durée déterminée pour le chauffage de la pièce sélectionnée.
+    Paramétrage pilotable via dashboard (consigne & durée) + valeurs par défaut définies au moment d'instancier le blueprint.
+
+    Notifications envoyées vers TOUS les appareils des utilisateurs PRÉSENTS, via un groupe d’utilisateurs (entités person.*)
+    fourni en input. Utilise notify.notify avec target.user_id = user_id des personnes présentes.
 
   source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Boost.yaml
   domain: automation
@@ -157,7 +163,6 @@ trigger:
 condition: []
 
 action:
-  # Variables & identifiants par pièce
   - variables:
       area_id: !input piece
       users_group_entity: !input users_group
@@ -181,19 +186,19 @@ action:
       extend_action_id: >-
         {{ ('EXTEND_BOOST_' ~ area_id)|upper }}
 
-      # Helpers actuels (avec bornes issues des selectors)
+      # Helpers actuels
       boost_minutes: >-
         {{ [ [ states(duration_helper) | int(default_minutes), 10 ] | max, 600 ] | min }}
       boost_target_temp: >-
         {{ [ [ states(temp_helper) | float(default_temp), 15 ] | max, 22 ] | min }}
 
-      # Heures de fin (calcul initial)
+      # Heures de fin
       boost_end_ts: >-
         {{ (now() + timedelta(minutes=boost_minutes)).timestamp() | int }}
       boost_end_hhmm: >-
         {{ (now() + timedelta(minutes=boost_minutes)).strftime('%H:%M') }}
 
-      # ==== Cibles de notif: liste des user_id PRÉSENTS (sans append) ====
+      # ==== Cibles de notif: liste des user_id PRÉSENTS (sans méthodes mutatives) ====
       present_user_ids: >-
         {{
           expand(state_attr(users_group_entity, 'entity_id') | default([], true))
@@ -239,16 +244,17 @@ action:
             target: { entity_id: !input timer_entity }
             data: { timestamp: "{{ boost_end_ts }}" }
 
-          # Notification persistante -> vers PRÉSENTS
+          # Notification persistante -> vers PRÉSENTS (target selector user_id)
           - if:
               - condition: template
                 value_template: "{{ has_targets }}"
             then:
               - service: notify.notify
+                target:
+                  user_id: "{{ present_user_ids }}"
                 data:
                   title: "🔆 Boost chauffage {{ area_label }} activé"
                   message: "Consigne {{ boost_target_temp|round(1) }}° • Fin {{ boost_end_hhmm }} ({{ boost_minutes }} min)"
-                  target: "{{ present_user_ids }}"
                   data:
                     tag: "{{ notif_tag }}"
                     persistent: true
@@ -319,7 +325,7 @@ action:
                         - service: input_datetime.set_datetime
                           target: { entity_id: !input timer_entity }
                           data: { timestamp: "{{ new_end_ts }}" }
-                        # Mise à jour de la notif -> PRÉSENTS recalculés (sans append)
+                        # Mise à jour de la notif -> PRÉSENTS recalculés
                         - variables:
                             present_user_ids_loop: >-
                               {{
@@ -335,10 +341,11 @@ action:
                               value_template: "{{ present_user_ids_loop | count > 0 }}"
                           then:
                             - service: notify.notify
+                              target:
+                                user_id: "{{ present_user_ids_loop }}"
                               data:
                                 title: "🔆 Boost chauffage {{ area_label }} prolongé"
                                 message: "Fin {{ (as_datetime(new_end_ts) | as_local).strftime('%H:%M') }}"
-                                target: "{{ present_user_ids_loop }}"
                                 data:
                                   tag: "{{ notif_tag }}"
                                   persistent: true
@@ -364,7 +371,7 @@ action:
           - service: input_datetime.set_datetime
             target: { entity_id: !input timer_entity }
             data: { timestamp: "{{ new_end }}" }
-          # Mise à jour de la notif -> PRÉSENTS recalculés (sans append)
+          # Mise à jour de la notif -> PRÉSENTS recalculés
           - variables:
               present_user_ids_once: >-
                 {{
@@ -380,10 +387,11 @@ action:
                 value_template: "{{ present_user_ids_once | count > 0 }}"
             then:
               - service: notify.notify
+                target:
+                  user_id: "{{ present_user_ids_once }}"
                 data:
                   title: "🔆 Boost chauffage {{ area_label }} prolongé"
                   message: "Nouvelle fin {{ (as_datetime(new_end) | as_local).strftime('%H:%M') }}"
-                  target: "{{ present_user_ids_once }}"
                   data:
                     tag: "{{ notif_tag }}"
                     persistent: true
@@ -416,7 +424,7 @@ action:
             target: { entity_id: !input consigne_entity }
             data: { value: 14 }
 
-          # Notif de fin -> PRÉSENTS recalculés (sans append)
+          # Notif de fin -> PRÉSENTS recalculés
           - variables:
               present_user_ids_end: >-
                 {{
@@ -432,9 +440,10 @@ action:
                 value_template: "{{ present_user_ids_end | count > 0 }}"
             then:
               - service: notify.notify
+                target:
+                  user_id: "{{ present_user_ids_end }}"
                 data:
                   message: "✅ Boost chauffage {{ area_label }} terminé."
-                  target: "{{ present_user_ids_end }}"
                   data:
                     tag: "{{ notif_tag }}"
                     persistent: false
