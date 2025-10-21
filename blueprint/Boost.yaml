@@ -59,11 +59,11 @@ blueprint:
     duree_boost_valeur_de_depart:
       name: Durée par défaut (minutes)
       default: 40
-      selector: { number: { min: 1, max: 180, step: 5, mode: slider } }
+      selector: { number: { min: 1, max: 600, step: 5, mode: slider } }
 
     boost_extend_step_minutes:
       name: Pas d’extension (minutes)
-      default: 10
+      default: 1
       selector: { number: { min: 5, max: 60, step: 5, mode: slider } }
 
     sync_helpers_on_reload:
@@ -130,7 +130,7 @@ action:
       stop_action_id: "{{ ('boost_stop_' ~ area_id)|lower }}"
       extend_action_id: "{{ ('boost_extend_' ~ area_id)|lower }}"
 
-      boost_minutes: "{{ [ [ states(duration_helper)|int(default_minutes), 10 ]|max, 600 ]|min }}"
+      boost_minutes: "{{ [ [ states(duration_helper)|int(default_minutes), 1 ]|max, 600 ]|min }}"
       boost_target_temp: "{{ [ [ states(temp_helper)|float(default_temp), 15 ]|max, 22 ]|min }}"
 
       boost_end_ts: "{{ (now() + timedelta(minutes=boost_minutes)).timestamp()|int }}"
