@@ -1,7 +1,7 @@
 blueprint:
   name: Boost Chauffage by C.
   description: >
-    version Boost : v0.46 - 2025-10-21
+    version Boost : v0.47 - 2025-10-21
 
     Notifications vers les ENTITÉS notify.* des utilisateurs PRÉSENTS (group person.*).
     Envoi par boucle for_each (un service notify.<nom> par cible).
@@ -121,10 +121,7 @@ trigger:
       {% set ts = state_attr('!input timer_entity', 'timestamp') | int(0) %}
       {{ ts > 0 and (now().timestamp() | int) >= ts }}
 
-  # 2) Tick de secours toutes les minutes (filet de sécurité)
-  - platform: time_pattern
-    minutes: "/1"
-    id: boost_expire_tick
+
 
 condition: []
 
@@ -379,21 +376,26 @@ action:
           - stop: "Extension traitée."
 
 
-      # ======= ARRÊT (UI / télécommande / notif / template / tick) =======
-      - conditions: "{{ trigger.id in ['boost_stop_remote','boost_stop_ui','boost_stop_notif','boost_expire_template','boost_expire_tick'] }}"
+
+      # ======= ARRÊT (UI / télécommande / notif / template) =======
+      - conditions: "{{ trigger.id in ['boost_stop_remote','boost_stop_ui','boost_stop_notif','boost_expire_template'] }}"
         sequence:
-          # Si déclenché par le tick/template: ne continuer que si on est vraiment à l'échéance ET que le boost est encore actif
-          - choose:
-              - conditions: "{{ trigger.id in ['boost_expire_template','boost_expire_tick'] }}"
-                sequence:
-                  - condition: template
-                    value_template: >-
-                      {% set ts = state_attr(timer_id, 'timestamp') | int(0) %}
-                      {% set nowts = now().timestamp() | int %}
-                      {{ ts > 0
-                         and nowts >= ts
-                         and ( is_state('!input boost_switch', 'on') or is_state('!input mode_entity', 'Manuel') ) }}
-            default: []
+          # Garde-fou global :
+          # - Si déclenché par le template d'expiration, on NE CONTINUE que si:
+          #   1) le timer est atteint, ET
+          #   2) le boost est encore actif (boolean ON OU mode Manuel).
+          # - Pour les autres déclencheurs (UI/télécommande/notif), on passe.
+          - condition: template
+            value_template: >-
+              {% if trigger.id == 'boost_expire_template' %}
+                {% set ts = state_attr(timer_id, 'timestamp') | int(0) %}
+                {% set nowts = now().timestamp() | int %}
+                {{ ts > 0
+                   and nowts >= ts
+                   and ( is_state('!input boost_switch', 'on') or is_state('!input mode_entity', 'Manuel') ) }}
+              {% else %}
+                true
+              {% endif %}
 
           # Si c'est la notif : garde-fou tag/action
           - condition: template
@@ -410,6 +412,12 @@ action:
           - service: input_number.set_value
             target: { entity_id: !input consigne_entity }
             data: { value: 14 }
+
+          # (Optionnel) on "désarme" le timer pour éviter de futures ambiguïtés visuelles
+          - service: input_datetime.set_datetime
+            target: { entity_id: !input timer_entity }
+            data:
+              timestamp: "{{ now().timestamp() | int }}"
 
           # Notifs de fin (écrasent la persistante) vers PRÉSENTS
           - variables:
@@ -443,8 +451,7 @@ action:
             state: "on"
           - service: input_boolean.turn_off
             target: { entity_id: !input boost_switch }
-          - service: input_boolean.turn_off
-            target: { entity_id: !input boost_switch }
+
 
 
 
