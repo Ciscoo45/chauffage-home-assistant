@@ -1,11 +1,11 @@
 blueprint:
-  name: Boost Chauffage by C.
+  name: Boost Chauffage by C. (presence-aware, notify entities)
   description: >
-    version Boost : v0.37 - 2025-10-21
+    version Boost : v0.38 - 2025-10-21
 
     Notifications vers les ENTITÉS notify.* des utilisateurs PRÉSENTS (group person.*).
     Envoi par boucle for_each (un service notify.<nom> par cible).
-    Arrêt fiable depuis la notification et le boolean du dashboard.
+    Arrêt fiable depuis la notif, le boolean OU automatiquement à l’échéance.
 
   source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Boost.yaml
   domain: automation
@@ -59,11 +59,11 @@ blueprint:
     duree_boost_valeur_de_depart:
       name: Durée par défaut (minutes)
       default: 40
-      selector: { number: { min: 1, max: 600, step: 5, mode: slider } }
+      selector: { number: { min: 1, max: 180, step: 5, mode: slider } }
 
     boost_extend_step_minutes:
       name: Pas d’extension (minutes)
-      default: 1
+      default: 10
       selector: { number: { min: 5, max: 60, step: 5, mode: slider } }
 
     sync_helpers_on_reload:
@@ -209,37 +209,46 @@ action:
           - service: input_boolean.turn_on
             target: { entity_id: !input boost_switch }
 
-          # ======= Boucle attente =======
+          # ======= BOUCLE D'ATTENTE — STOP / EXTEND / EXPIRATION =======
           - repeat:
               while: "{{ true }}"
               sequence:
-                - variables:
-                    now_ts: "{{ now().timestamp()|int }}"
-                    end_ts: "{{ state_attr(timer_id,'timestamp') | int(boost_end_ts) }}"
-                    remaining: "{{ (end_ts - now_ts) | max(0) }}"
-                - choose:
-                    - conditions: "{{ remaining == 0 }}"
-                      sequence:
-                        - service: input_boolean.turn_off
-                          target: { entity_id: !input boost_switch }
-                        - stop: "Boost expiré."
-                  default: []
                 - wait_for_trigger:
+                    # 1) Bouton "Arrêter"
                     - platform: event
                       event_type: mobile_app_notification_action
                       event_data: { tag: "{{ notif_tag }}", action: "{{ stop_action_id }}" }
+                    # 2) Bouton "+X min"
                     - platform: event
                       event_type: mobile_app_notification_action
                       event_data: { tag: "{{ notif_tag }}", action: "{{ extend_action_id }}" }
-                  timeout:
-                    seconds: "{{ remaining }}"
-                  continue_on_timeout: true
+                    # 3) EXPIRATION du boost (maintient à jour si on prolonge le timer)
+                    - platform: template
+                      value_template: >-
+                        {{ now().timestamp() | int >=
+                           (state_attr(timer_id, 'timestamp') | int(boost_end_ts)) }}
+                  continue_on_timeout: false
+
                 - choose:
-                    # EXTEND dans la boucle
-                    - conditions: "{{ wait.trigger is defined and wait.trigger.event.data.action == extend_action_id }}"
+                    # --- STOP via notif ---
+                    - conditions: >-
+                        {{ wait.trigger is defined
+                           and wait.trigger.platform == 'event'
+                           and wait.trigger.event.data.action == stop_action_id }}
+                      sequence:
+                        - service: input_boolean.turn_off
+                          target: { entity_id: !input boost_switch }
+                        - stop: "Stop via notif (boucle)."
+
+                    # --- EXTEND via notif ---
+                    - conditions: >-
+                        {{ wait.trigger is defined
+                           and wait.trigger.platform == 'event'
+                           and wait.trigger.event.data.action == extend_action_id }}
                       sequence:
                         - variables:
-                            new_end_ts: "{{ end_ts + (extend_step * 60) }}"
+                            new_end_ts: >-
+                              {{ (state_attr(timer_id,'timestamp') | int(boost_end_ts)) + (extend_step * 60) }}
                         - service: input_datetime.set_datetime
                           target: { entity_id: !input timer_entity }
                           data: { timestamp: "{{ new_end_ts }}" }
@@ -274,12 +283,15 @@ action:
                                             title: "Arrêter"
                                           - action: "{{ extend_action_id }}"
                                             title: "+{{ extend_step }} min"
-                    # STOP dans la boucle : coupe le boolean (branche ARRET traitera le reste)
-                    - conditions: "{{ wait.trigger is defined and wait.trigger.event.data.action == stop_action_id }}"
+
+                    # --- EXPIRATION automatique ---
+                    - conditions: >-
+                        {{ wait.trigger is defined
+                           and wait.trigger.platform == 'template' }}
                       sequence:
                         - service: input_boolean.turn_off
                           target: { entity_id: !input boost_switch }
-                        - stop: "Stop via notif (boucle)."
+                        - stop: "Boost expiré (template)."
 
       # ======= EXTENSION / ARRÊT hors boucle =======
       - conditions: "{{ trigger.id == 'boost_stop_notif' }}"
@@ -293,7 +305,6 @@ action:
                 sequence:
                   - service: input_boolean.turn_off
                     target: { entity_id: !input boost_switch }
-                  # Pas de stop ici : la branche ARRÊT traitera le reste
             default: []
 
           # --- EXTENSION via notif (hors boucle) ---
@@ -351,7 +362,7 @@ action:
                      and trigger.event.data.action in [stop_action_id, extend_action_id]
                      and trigger.event.data.tag == notif_tag) }}
 
-          # ⚠️ On ne vérifie plus que le boolean est "on" : l'arrêt doit s'appliquer même s'il est déjà "off".
+          # ⚠️ On ne vérifie plus que le boolean est "on" : l'arrêt s'applique même s'il est déjà "off".
 
           # Restaure Presence + 14°C
           - service: input_select.select_option
