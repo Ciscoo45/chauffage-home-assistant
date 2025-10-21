@@ -1,11 +1,11 @@
 blueprint:
   name: Boost Chauffage by C.
   description: >
-    version Boost : v0.36 - 2025-10-20
+    version Boost : v0.37 - 2025-10-21
 
     Notifications vers les ENTITÉS notify.* des utilisateurs PRÉSENTS (group person.*).
     Envoi par boucle for_each (un service notify.<nom> par cible).
-    Ajout d’un handler direct pour le bouton "arrêter" émis par la notification.
+    Arrêt fiable depuis la notification et le boolean du dashboard.
 
   source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Boost.yaml
   domain: automation
@@ -125,7 +125,7 @@ action:
       area_label: >-
         {{ area_name(area_id) if area_name(area_id) is not none else area_id }}
 
-      # IDs d'actions en minuscules (compatibilité iOS/Android)
+      # IDs d'actions en minuscules (compat iOS/Android)
       notif_tag: "{{ 'boost_' ~ area_id }}"
       stop_action_id: "{{ ('boost_stop_' ~ area_id)|lower }}"
       extend_action_id: "{{ ('boost_extend_' ~ area_id)|lower }}"
@@ -136,7 +136,7 @@ action:
       boost_end_ts: "{{ (now() + timedelta(minutes=boost_minutes)).timestamp()|int }}"
       boost_end_hhmm: "{{ (now() + timedelta(minutes=boost_minutes)).strftime('%H:%M') }}"
 
-      # Entités notify.* cibles depuis persons PRÉSENTS (convention person.<slug> -> notify.user_<slug>)
+      # Entités notify.* cibles depuis persons PRÉSENTS (person.<slug> -> notify.user_<slug>)
       present_notify_entities: >-
         {{
           expand(state_attr(users_group_entity, 'entity_id') | default([], true))
@@ -235,6 +235,7 @@ action:
                     seconds: "{{ remaining }}"
                   continue_on_timeout: true
                 - choose:
+                    # EXTEND dans la boucle
                     - conditions: "{{ wait.trigger is defined and wait.trigger.event.data.action == extend_action_id }}"
                       sequence:
                         - variables:
@@ -273,6 +274,7 @@ action:
                                             title: "Arrêter"
                                           - action: "{{ extend_action_id }}"
                                             title: "+{{ extend_step }} min"
+                    # STOP dans la boucle : coupe le boolean (branche ARRET traitera le reste)
                     - conditions: "{{ wait.trigger is defined and wait.trigger.event.data.action == stop_action_id }}"
                       sequence:
                         - service: input_boolean.turn_off
@@ -291,7 +293,7 @@ action:
                 sequence:
                   - service: input_boolean.turn_off
                     target: { entity_id: !input boost_switch }
-                  - stop: "Stop via notif (handler direct)."
+                  # Pas de stop ici : la branche ARRÊT traitera le reste
             default: []
 
           # --- EXTENSION via notif (hors boucle) ---
@@ -341,16 +343,17 @@ action:
       # ======= ARRÊT =======
       - conditions: "{{ trigger.id in ['boost_stop_remote','boost_stop_ui','boost_stop_notif'] }}"
         sequence:
+          # Garde-fou pour la notif (si c'est elle qui a déclenché)
           - condition: template
             value_template: >-
               {{ trigger.id != 'boost_stop_notif'
                  or (trigger.event is defined
                      and trigger.event.data.action in [stop_action_id, extend_action_id]
                      and trigger.event.data.tag == notif_tag) }}
-          - condition: state
-            entity_id: !input boost_switch
-            state: "on"
 
+          # ⚠️ On ne vérifie plus que le boolean est "on" : l'arrêt doit s'appliquer même s'il est déjà "off".
+
+          # Restaure Presence + 14°C
           - service: input_select.select_option
             target: { entity_id: !input mode_entity }
             data: { option: "Presence" }
@@ -384,6 +387,7 @@ action:
                           persistent: false
                           sticky: false
 
+          # Sync UI (idempotent)
           - condition: state
             entity_id: !input boost_switch
             state: "on"
