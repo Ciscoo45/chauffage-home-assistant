@@ -1,11 +1,12 @@
 blueprint:
-  name: Boost Chauffage by C. 
+  name: Boost Chauffage by C.
   description: >
-    version Boost : v0.42 - 2025-10-21
+    version Boost : v0.43 - 2025-10-21
 
     Notifications vers les ENTITÉS notify.* des utilisateurs PRÉSENTS (group person.*).
     Envoi par boucle for_each (un service notify.<nom> par cible).
-    Arrêt fiable via notification, boolean, interrupteur ET automatiquement à l’échéance (expiration blindée).
+    Arrêt fiable via notification, boolean, interrupteur ET automatiquement à l’échéance
+    (sécurisé par un déclencheur de template d’expiration).
 
   source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Boost.yaml
   domain: automation
@@ -33,6 +34,7 @@ blueprint:
 
     timer_entity:
       name: Horaire de fin de Boost
+      description: input_datetime (date+heure) — ⚠️ doit avoir date **ET** heure
       selector: { entity: { domain: input_datetime } }
 
     mode_entity:
@@ -59,7 +61,7 @@ blueprint:
     duree_boost_valeur_de_depart:
       name: Durée par défaut (minutes)
       default: 40
-      selector: { number: { min: 1, max: 600, step: 5, mode: slider } }
+      selector: { number: { min: , max: 600, step: 5, mode: slider } }
 
     boost_extend_step_minutes:
       name: Pas d’extension (minutes)
@@ -71,7 +73,9 @@ blueprint:
       default: true
       selector: { boolean: {} }
 
+# ========= Déclencheurs =========
 trigger:
+  # Physique ON/OFF
   - platform: event
     event_type: zha_event
     event_data: { device_id: !input remote_button, command: "on", cluster_id: 6 }
@@ -82,6 +86,7 @@ trigger:
     event_data: { device_id: !input remote_button, command: "off", cluster_id: 6 }
     id: boost_stop_remote
 
+  # UI ON/OFF
   - platform: state
     entity_id: !input boost_switch
     from: "off"
@@ -94,10 +99,12 @@ trigger:
     to: "off"
     id: boost_stop_ui
 
+  # Actions de notification
   - platform: event
     event_type: mobile_app_notification_action
     id: boost_stop_notif
 
+  # (Re)init helpers
   - platform: homeassistant
     event: start
     id: init_on_start
@@ -106,8 +113,21 @@ trigger:
     event_type: automation_reloaded
     id: init_on_reload
 
+  # ========= EXPIRATION SÉCURISÉE =========
+  # Se déclenche quand "maintenant" atteint/excède l'heure de fin (recalculé en temps réel).
+  # Fonctionne même si la boucle d'attente a été interrompue / redémarrée.
+  - platform: template
+    id: boost_expire_template
+    value_template: >-
+      {{
+        (states(!input timer_entity) is string) and
+        (state_attr(!input timer_entity, 'timestamp') | int(0) > 0) and
+        (now().timestamp() | int >= state_attr(!input timer_entity, 'timestamp') | int)
+      }}
+
 condition: []
 
+# ========= Actions =========
 action:
   - variables:
       area_id: !input piece
@@ -134,6 +154,7 @@ action:
       boost_end_ts: "{{ (now() + timedelta(minutes=boost_minutes)).timestamp()|int }}"
       boost_end_hhmm: "{{ (now() + timedelta(minutes=boost_minutes)).strftime('%H:%M') }}"
 
+      # Cibles notifs (person.* présents -> notify.user_*)
       present_notify_entities: >-
         {{
           expand(state_attr(users_group_entity, 'entity_id') | default([], true))
@@ -147,6 +168,7 @@ action:
 
   - choose:
 
+      # ======= INIT HELPERS =======
       - conditions: "{{ trigger.id in ['init_on_start','init_on_reload'] and not sync_reload }}"
         sequence:
           - stop: "Initialisation des helpers désactivée."
@@ -161,14 +183,17 @@ action:
             data: { value: "{{ default_temp|float }}" }
           - stop: "Helpers initialisés."
 
+      # ======= DÉMARRAGE =======
       - conditions: "{{ trigger.id in ['boost_start_remote','boost_start_ui'] }}"
         sequence:
           - service: input_select.select_option
             target: { entity_id: !input mode_entity }
             data: { option: "Manuel" }
+
           - service: input_number.set_value
             target: { entity_id: !input consigne_entity }
             data: { value: "{{ boost_target_temp }}" }
+
           - service: input_datetime.set_datetime
             target: { entity_id: !input timer_entity }
             data: { timestamp: "{{ boost_end_ts }}" }
@@ -194,23 +219,22 @@ action:
                             - action: "{{ extend_action_id }}"
                               title: "+{{ extend_step }} min"
 
+          # Sync UI si déclenché physiquement
           - condition: state
             entity_id: !input boost_switch
             state: "off"
           - service: input_boolean.turn_on
             target: { entity_id: !input boost_switch }
 
-          # ======= BOUCLE D'ATTENTE — STOP / EXTEND / EXPIRATION (blindée) =======
+          # ======= BOUCLE D'ATTENTE — STOP / EXTEND / EXPIRATION =======
           - repeat:
               while: "{{ true }}"
               sequence:
-                # 1) on calcule le temps restant
                 - variables:
                     now_ts: "{{ now().timestamp() | int }}"
                     end_ts: "{{ state_attr(timer_id, 'timestamp') | int(boost_end_ts) }}"
                     remaining: "{{ (end_ts - now_ts) | max(0) }}"
 
-                # 2) si déjà expiré -> on coupe
                 - choose:
                     - conditions: "{{ remaining == 0 }}"
                       sequence:
@@ -219,7 +243,6 @@ action:
                         - stop: "Boost expiré (fin de boucle)."
                   default: []
 
-                # 3) on attend un événement OU l'expiration (timeout)
                 - wait_for_trigger:
                     - platform: event
                       event_type: mobile_app_notification_action
@@ -231,13 +254,12 @@ action:
                     seconds: "{{ remaining }}"
                   continue_on_timeout: true
 
-                # 4) juste après l'attente, on RE-CALCULE "maintenant" et "fin"
+                # Recalcul post-attente — si on a atteint la fin, on coupe quand même
                 - variables:
                     now_after: "{{ now().timestamp() | int }}"
                     end_after: "{{ state_attr(timer_id, 'timestamp') | int(boost_end_ts) }}"
                     expired_now: "{{ now_after >= end_after }}"
 
-                # 5) si à cet instant on est à/bas l’échéance -> expiration
                 - choose:
                     - conditions: "{{ expired_now }}"
                       sequence:
@@ -245,7 +267,6 @@ action:
                           target: { entity_id: !input boost_switch }
                         - stop: "Boost expiré (post-wait check)."
 
-                    # 6) sinon on traite l’éventuel bouton
                     - conditions: >-
                         {{ wait.trigger is not none
                            and wait.trigger.event is defined
@@ -296,9 +317,9 @@ action:
                                           - action: "{{ extend_action_id }}"
                                             title: "+{{ extend_step }} min"
 
+      # ======= EXTENSION / ARRÊT hors boucle (actions notifs) =======
       - conditions: "{{ trigger.id == 'boost_stop_notif' }}"
         sequence:
-          # ARRET via notif (fallback)
           - choose:
               - conditions: >-
                   {{ trigger.event is defined
@@ -309,7 +330,6 @@ action:
                     target: { entity_id: !input boost_switch }
             default: []
 
-          # EXTENSION via notif (hors boucle)
           - condition: template
             value_template: >-
               {{ trigger.event is defined
@@ -353,8 +373,10 @@ action:
                               title: "+{{ extend_step }} min"
           - stop: "Extension traitée."
 
-      - conditions: "{{ trigger.id in ['boost_stop_remote','boost_stop_ui','boost_stop_notif'] }}"
+      # ======= ARRÊT (UI / télécommande / notif / template) =======
+      - conditions: "{{ trigger.id in ['boost_stop_remote','boost_stop_ui','boost_stop_notif','boost_expire_template'] }}"
         sequence:
+          # Si c'est la notif : garde-fou tag/action
           - condition: template
             value_template: >-
               {{ trigger.id != 'boost_stop_notif'
@@ -362,8 +384,7 @@ action:
                      and trigger.event.data.action in [stop_action_id, extend_action_id]
                      and trigger.event.data.tag == notif_tag) }}
 
-          # Pas de test "boolean on" : l'arrêt s'applique même s'il est déjà off.
-
+          # Restaure Presence + 14°C
           - service: input_select.select_option
             target: { entity_id: !input mode_entity }
             data: { option: "Presence" }
@@ -371,6 +392,7 @@ action:
             target: { entity_id: !input consigne_entity }
             data: { value: 14 }
 
+          # Notifs de fin (écrasent la persistante) vers PRÉSENTS
           - variables:
               present_notify_entities_end: >-
                 {{
@@ -396,6 +418,7 @@ action:
                           persistent: false
                           sticky: false
 
+          # Sync UI (idempotent)
           - condition: state
             entity_id: !input boost_switch
             state: "on"
