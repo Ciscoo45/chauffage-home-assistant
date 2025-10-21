@@ -1,7 +1,7 @@
 blueprint:
   name: Boost Chauffage by C.
   description: >
-    version Boost : v0.44 - 2025-10-21
+    version Boost : v0.45 - 2025-10-21
 
     Notifications vers les ENTITÉS notify.* des utilisateurs PRÉSENTS (group person.*).
     Envoi par boucle for_each (un service notify.<nom> par cible).
@@ -381,6 +381,19 @@ action:
       # ======= ARRÊT (UI / télécommande / notif / template / tick) =======
       - conditions: "{{ trigger.id in ['boost_stop_remote','boost_stop_ui','boost_stop_notif','boost_expire_template','boost_expire_tick'] }}"
         sequence:
+          # Si déclenché par le tick/template: ne continuer que si on est vraiment à l'échéance ET que le boost est encore actif
+          - choose:
+              - conditions: "{{ trigger.id in ['boost_expire_template','boost_expire_tick'] }}"
+                sequence:
+                  - condition: template
+                    value_template: >-
+                      {% set ts = state_attr(timer_id, 'timestamp') | int(0) %}
+                      {% set nowts = now().timestamp() | int %}
+                      {{ ts > 0
+                         and nowts >= ts
+                         and ( is_state(!input boost_switch, 'on') or is_state(!input mode_entity, 'Manuel') ) }}
+            default: []
+
           # Si c'est la notif : garde-fou tag/action
           - condition: template
             value_template: >-
@@ -431,5 +444,6 @@ action:
             target: { entity_id: !input boost_switch }
           - service: input_boolean.turn_off
             target: { entity_id: !input boost_switch }
+
 
 mode: restart
