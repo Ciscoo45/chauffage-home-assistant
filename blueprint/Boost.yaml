@@ -1,5 +1,5 @@
 blueprint:
-  name: Boost Chauffage by C. (presence-aware, notify entities)
+  name: Boost Chauffage by C.
   description: >
     version Boost : v0.39 - 2025-10-21
 
