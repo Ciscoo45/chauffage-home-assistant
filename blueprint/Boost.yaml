@@ -1,11 +1,11 @@
 blueprint:
-  name: Boost Chauffage by C.
+  name: Boost Chauffage by C. 
   description: >
-    version Boost : v0.41 - 2025-10-21
+    version Boost : v0.42 - 2025-10-21
 
     Notifications vers les ENTITÉS notify.* des utilisateurs PRÉSENTS (group person.*).
     Envoi par boucle for_each (un service notify.<nom> par cible).
-    Arrêt fiable via notification, boolean, interrupteur ET automatiquement à l’échéance.
+    Arrêt fiable via notification, boolean, interrupteur ET automatiquement à l’échéance (expiration blindée).
 
   source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Boost.yaml
   domain: automation
@@ -200,15 +200,17 @@ action:
           - service: input_boolean.turn_on
             target: { entity_id: !input boost_switch }
 
-          # ======= BOUCLE D'ATTENTE — STOP / EXTEND / EXPIRATION =======
+          # ======= BOUCLE D'ATTENTE — STOP / EXTEND / EXPIRATION (blindée) =======
           - repeat:
               while: "{{ true }}"
               sequence:
+                # 1) on calcule le temps restant
                 - variables:
                     now_ts: "{{ now().timestamp() | int }}"
                     end_ts: "{{ state_attr(timer_id, 'timestamp') | int(boost_end_ts) }}"
                     remaining: "{{ (end_ts - now_ts) | max(0) }}"
 
+                # 2) si déjà expiré -> on coupe
                 - choose:
                     - conditions: "{{ remaining == 0 }}"
                       sequence:
@@ -217,6 +219,7 @@ action:
                         - stop: "Boost expiré (fin de boucle)."
                   default: []
 
+                # 3) on attend un événement OU l'expiration (timeout)
                 - wait_for_trigger:
                     - platform: event
                       event_type: mobile_app_notification_action
@@ -228,15 +231,21 @@ action:
                     seconds: "{{ remaining }}"
                   continue_on_timeout: true
 
+                # 4) juste après l'attente, on RE-CALCULE "maintenant" et "fin"
+                - variables:
+                    now_after: "{{ now().timestamp() | int }}"
+                    end_after: "{{ state_attr(timer_id, 'timestamp') | int(boost_end_ts) }}"
+                    expired_now: "{{ now_after >= end_after }}"
+
+                # 5) si à cet instant on est à/bas l’échéance -> expiration
                 - choose:
-                    # --- EXPIRATION : timeout -> wait.trigger == none ---
-                    - conditions: "{{ wait.trigger is none }}"
+                    - conditions: "{{ expired_now }}"
                       sequence:
                         - service: input_boolean.turn_off
                           target: { entity_id: !input boost_switch }
-                        - stop: "Boost expiré (timeout)."
+                        - stop: "Boost expiré (post-wait check)."
 
-                    # --- STOP pressé ---
+                    # 6) sinon on traite l’éventuel bouton
                     - conditions: >-
                         {{ wait.trigger is not none
                            and wait.trigger.event is defined
@@ -246,14 +255,13 @@ action:
                           target: { entity_id: !input boost_switch }
                         - stop: "Stop via notif (boucle)."
 
-                    # --- EXTEND pressé ---
                     - conditions: >-
                         {{ wait.trigger is not none
                            and wait.trigger.event is defined
                            and wait.trigger.event.data.action == extend_action_id }}
                       sequence:
                         - variables:
-                            new_end_ts: "{{ end_ts + (extend_step * 60) }}"
+                            new_end_ts: "{{ end_after + (extend_step * 60) }}"
                         - service: input_datetime.set_datetime
                           target: { entity_id: !input timer_entity }
                           data: { timestamp: "{{ new_end_ts }}" }
@@ -290,6 +298,7 @@ action:
 
       - conditions: "{{ trigger.id == 'boost_stop_notif' }}"
         sequence:
+          # ARRET via notif (fallback)
           - choose:
               - conditions: >-
                   {{ trigger.event is defined
@@ -300,6 +309,7 @@ action:
                     target: { entity_id: !input boost_switch }
             default: []
 
+          # EXTENSION via notif (hors boucle)
           - condition: template
             value_template: >-
               {{ trigger.event is defined
