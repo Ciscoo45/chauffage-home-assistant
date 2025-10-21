@@ -1,14 +1,13 @@
 blueprint:
   name: Boost Chauffage by C.
   description: >
-    version Boost : v0.47 - 2025-10-21
+    version Boost : v0.50 - 2025-10-21
 
+    Expiration pilotée par un helper timer.* (fiable via l’évènement timer.finished).
     Notifications vers les ENTITÉS notify.* des utilisateurs PRÉSENTS (group person.*).
     Envoi par boucle for_each (un service notify.<nom> par cible).
-    Arrêt fiable via notification, boolean, interrupteur ET automatiquement à l’échéance
-    (sécurisé par un déclencheur de template + un tick /1 min).
+    Arrêt fiable via notification, boolean, interrupteur ET automatiquement à l’échéance (timer.finished).
 
-  source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Boost.yaml
   domain: automation
 
   input:
@@ -32,9 +31,16 @@ blueprint:
       name: Commutateur Boost (Dashboard)
       selector: { entity: { domain: input_boolean } }
 
+    # NOUVEAU : helper timer.* (obligatoire)
+    boost_timer:
+      name: Timer de boost (timer.*)
+      description: Helper timer qui fera foi pour l’expiration (services timer.start / évènement timer.finished)
+      selector: { entity: { domain: timer } }
+
+    # Conservé pour l’affichage dans l’UI (optionnel mais recommandé)
     timer_entity:
-      name: Horaire de fin de Boost
-      description: input_datetime (date+heure) — ⚠️ doit avoir date **ET** heure
+      name: Horaire de fin de Boost (input_datetime)
+      description: input_datetime (date+heure) utilisé pour afficher l’heure de fin dans l’UI
       selector: { entity: { domain: input_datetime } }
 
     mode_entity:
@@ -61,7 +67,7 @@ blueprint:
     duree_boost_valeur_de_depart:
       name: Durée par défaut (minutes)
       default: 40
-      selector: { number: { min: 1, max: 180, step: 5, mode: slider } }
+      selector: { number: { min: 1, max: 1200, step: 5, mode: slider } }
 
     boost_extend_step_minutes:
       name: Pas d’extension (minutes)
@@ -102,7 +108,7 @@ trigger:
   # Actions de notification
   - platform: event
     event_type: mobile_app_notification_action
-    id: boost_stop_notif
+    id: boost_notif_action
 
   # (Re)init helpers
   - platform: homeassistant
@@ -113,15 +119,12 @@ trigger:
     event_type: automation_reloaded
     id: init_on_reload
 
-  # ========= EXPIRATION SÉCURISÉE =========
-  # 1) Déclenche quand "maintenant" atteint/excède l'heure de fin (use quotes around !input)
-  - platform: template
-    id: boost_expire_template
-    value_template: >-
-      {% set ts = state_attr('!input timer_entity', 'timestamp') | int(0) %}
-      {{ ts > 0 and (now().timestamp() | int) >= ts }}
-
-
+  # Expiration FIABLE via timer.finished
+  - platform: event
+    event_type: timer.finished
+    event_data:
+      entity_id: !input boost_timer
+    id: boost_expired_timer
 
 condition: []
 
@@ -134,6 +137,7 @@ action:
       duration_helper: !input boost_duration_helper
       temp_helper: !input boost_temp_helper
       timer_id: !input timer_entity
+      boost_timer_id: !input boost_timer
       sync_reload: !input sync_helpers_on_reload
       default_minutes: !input duree_boost_valeur_de_depart
       default_temp: !input consigne_boost_valeur_de_depart
@@ -147,9 +151,11 @@ action:
       stop_action_id: "{{ ('boost_stop_' ~ area_id)|lower }}"
       extend_action_id: "{{ ('boost_extend_' ~ area_id)|lower }}"
 
+      # Helpers bornés
       boost_minutes: "{{ [ [ states(duration_helper)|int(default_minutes), 1 ]|max, 600 ]|min }}"
       boost_target_temp: "{{ [ [ states(temp_helper)|float(default_temp), 15 ]|max, 22 ]|min }}"
 
+      # Pour l’UI (input_datetime)
       boost_end_ts: "{{ (now() + timedelta(minutes=boost_minutes)).timestamp()|int }}"
       boost_end_hhmm: "{{ (now() + timedelta(minutes=boost_minutes)).strftime('%H:%M') }}"
 
@@ -185,6 +191,7 @@ action:
       # ======= DÉMARRAGE =======
       - conditions: "{{ trigger.id in ['boost_start_remote','boost_start_ui'] }}"
         sequence:
+          # Mode Manuel + consigne
           - service: input_select.select_option
             target: { entity_id: !input mode_entity }
             data: { option: "Manuel" }
@@ -193,11 +200,18 @@ action:
             target: { entity_id: !input consigne_entity }
             data: { value: "{{ boost_target_temp }}" }
 
+          # UI: heure de fin (facultatif si tu n’utilises pas l’input_datetime)
           - service: input_datetime.set_datetime
             target: { entity_id: !input timer_entity }
             data: { timestamp: "{{ boost_end_ts }}" }
 
-          # Notif persistante -> vers PRÉSENTS
+          # Timer FIABLE : démarre pour boost_minutes
+          - service: timer.start
+            target: { entity_id: !input boost_timer }
+            data:
+              duration: "{{ boost_minutes * 60 }}"
+
+          # Notifications persistantes -> vers PRÉSENTS
           - if:
               - condition: template
                 value_template: "{{ has_targets }}"
@@ -226,102 +240,11 @@ action:
           - service: input_boolean.turn_on
             target: { entity_id: !input boost_switch }
 
-          # ======= BOUCLE D'ATTENTE — STOP / EXTEND / EXPIRATION =======
-          - repeat:
-              while: "{{ true }}"
-              sequence:
-                - variables:
-                    now_ts: "{{ now().timestamp() | int }}"
-                    end_ts: "{{ state_attr(timer_id, 'timestamp') | int(boost_end_ts) }}"
-                    remaining: "{{ (end_ts - now_ts) | max(0) }}"
-
-                - choose:
-                    - conditions: "{{ remaining == 0 }}"
-                      sequence:
-                        - service: input_boolean.turn_off
-                          target: { entity_id: !input boost_switch }
-                        - stop: "Boost expiré (fin de boucle)."
-                  default: []
-
-                - wait_for_trigger:
-                    - platform: event
-                      event_type: mobile_app_notification_action
-                      event_data: { tag: "{{ notif_tag }}", action: "{{ stop_action_id }}" }
-                    - platform: event
-                      event_type: mobile_app_notification_action
-                      event_data: { tag: "{{ notif_tag }}", action: "{{ extend_action_id }}" }
-                  timeout:
-                    seconds: "{{ remaining }}"
-                  continue_on_timeout: true
-
-                # Recalcul post-attente — si on a atteint la fin, on coupe quand même
-                - variables:
-                    now_after: "{{ now().timestamp() | int }}"
-                    end_after: "{{ state_attr(timer_id, 'timestamp') | int(boost_end_ts) }}"
-                    expired_now: "{{ now_after >= end_after }}"
-
-                - choose:
-                    - conditions: "{{ expired_now }}"
-                      sequence:
-                        - service: input_boolean.turn_off
-                          target: { entity_id: !input boost_switch }
-                        - stop: "Boost expiré (post-wait check)."
-
-                    - conditions: >-
-                        {{ wait.trigger is not none
-                           and wait.trigger.event is defined
-                           and wait.trigger.event.data.action == stop_action_id }}
-                      sequence:
-                        - service: input_boolean.turn_off
-                          target: { entity_id: !input boost_switch }
-                        - stop: "Stop via notif (boucle)."
-
-                    - conditions: >-
-                        {{ wait.trigger is not none
-                           and wait.trigger.event is defined
-                           and wait.trigger.event.data.action == extend_action_id }}
-                      sequence:
-                        - variables:
-                            new_end_ts: "{{ end_after + (extend_step * 60) }}"
-                        - service: input_datetime.set_datetime
-                          target: { entity_id: !input timer_entity }
-                          data: { timestamp: "{{ new_end_ts }}" }
-                        - variables:
-                            present_notify_entities_loop: >-
-                              {{
-                                expand(state_attr(users_group_entity, 'entity_id') | default([], true))
-                                | selectattr('entity_id','match','^person\\.')
-                                | selectattr('state','equalto','home')
-                                | map(attribute='entity_id')
-                                | map('regex_replace', '^person\\.', 'notify.user_')
-                                | list
-                              }}
-                        - if:
-                            - condition: template
-                              value_template: "{{ present_notify_entities_loop | count > 0 }}"
-                          then:
-                            - repeat:
-                                for_each: "{{ present_notify_entities_loop }}"
-                                sequence:
-                                  - service: "{{ repeat.item }}"
-                                    data:
-                                      title: "🔆 Boost chauffage {{ area_label }} prolongé"
-                                      message: "Fin {{ (as_datetime(new_end_ts) | as_local).strftime('%H:%M') }}"
-                                      data:
-                                        tag: "{{ notif_tag }}"
-                                        persistent: true
-                                        sticky: true
-                                        actions:
-                                          - action: "{{ stop_action_id }}"
-                                            title: "Arrêter"
-                                          - action: "{{ extend_action_id }}"
-                                            title: "+{{ extend_step }} min"
-
-      # ======= EXTENSION / ARRÊT hors boucle (actions notifs) =======
-      - conditions: "{{ trigger.id == 'boost_stop_notif' }}"
+      # ======= ACTIONS DE NOTIF (stop / +X) =======
+      - conditions: "{{ trigger.id == 'boost_notif_action' }}"
         sequence:
-          # ARRET via notif (fallback)
           - choose:
+              # STOP via notif
               - conditions: >-
                   {{ trigger.event is defined
                      and trigger.event.data.tag == notif_tag
@@ -329,81 +252,72 @@ action:
                 sequence:
                   - service: input_boolean.turn_off
                     target: { entity_id: !input boost_switch }
-            default: []
+                  - stop: "Stop via notif."
 
-          # EXTENSION via notif (hors boucle)
-          - condition: template
-            value_template: >-
-              {{ trigger.event is defined
-                 and trigger.event.data.tag == notif_tag
-                 and trigger.event.data.action == extend_action_id }}
-          - variables:
-              current_end: "{{ state_attr(timer_id, 'timestamp') | int(boost_end_ts) }}"
-              new_end: "{{ current_end + (extend_step * 60) }}"
-          - service: input_datetime.set_datetime
-            target: { entity_id: !input timer_entity }
-            data: { timestamp: "{{ new_end }}" }
-          - variables:
-              present_notify_entities_once: >-
-                {{
-                  expand(state_attr(users_group_entity, 'entity_id') | default([], true))
-                  | selectattr('entity_id','match','^person\\.')
-                  | selectattr('state','equalto','home')
-                  | map(attribute='entity_id')
-                  | map('regex_replace', '^person\\.', 'notify.user_')
-                  | list
-                }}
-          - if:
-              - condition: template
-                value_template: "{{ present_notify_entities_once | count > 0 }}"
-            then:
-              - repeat:
-                  for_each: "{{ present_notify_entities_once }}"
-                  sequence:
-                    - service: "{{ repeat.item }}"
-                      data:
-                        title: "🔆 Boost chauffage {{ area_label }} prolongé"
-                        message: "Nouvelle fin {{ (as_datetime(new_end) | as_local).strftime('%H:%M') }}"
-                        data:
-                          tag: "{{ notif_tag }}"
-                          persistent: true
-                          sticky: true
-                          actions:
-                            - action: "{{ stop_action_id }}"
-                              title: "Arrêter"
-                            - action: "{{ extend_action_id }}"
-                              title: "+{{ extend_step }} min"
-          - stop: "Extension traitée."
+              # EXTEND via notif
+              - conditions: >-
+                  {{ trigger.event is defined
+                     and trigger.event.data.tag == notif_tag
+                     and trigger.event.data.action == extend_action_id }}
+                sequence:
+                  # On repart sur une nouvelle durée : now -> new_end
+                  - variables:
+                      finishes_at_ts: >-
+                        {{ (state_attr(boost_timer_id, 'finishes_at') | as_datetime | as_local).timestamp() | int(0) }}
+                      anchor_ts: "{{ [ finishes_at_ts, now().timestamp()|int ] | max }}"
+                      new_end_ts: "{{ anchor_ts + (extend_step * 60) }}"
+                      new_duration: "{{ (new_end_ts - now().timestamp()|int) | max(1) }}"
+                  - service: timer.start
+                    target: { entity_id: !input boost_timer }
+                    data:
+                      duration: "{{ new_duration }}"
+                  # UI aussi
+                  - service: input_datetime.set_datetime
+                    target: { entity_id: !input timer_entity }
+                    data: { timestamp: "{{ new_end_ts }}" }
+                  # Mise à jour notifs
+                  - variables:
+                      present_notify_entities_loop: >-
+                        {{
+                          expand(state_attr(users_group_entity, 'entity_id') | default([], true))
+                          | selectattr('entity_id','match','^person\\.')
+                          | selectattr('state','equalto','home')
+                          | map(attribute='entity_id')
+                          | map('regex_replace', '^person\\.', 'notify.user_')
+                          | list
+                        }}
+                  - if:
+                      - condition: template
+                        value_template: "{{ present_notify_entities_loop | count > 0 }}"
+                    then:
+                      - repeat:
+                          for_each: "{{ present_notify_entities_loop }}"
+                          sequence:
+                            - service: "{{ repeat.item }}"
+                              data:
+                                title: "🔆 Boost chauffage {{ area_label }} prolongé"
+                                message: "Fin {{ (as_datetime(new_end_ts) | as_local).strftime('%H:%M') }}"
+                                data:
+                                  tag: "{{ notif_tag }}"
+                                  persistent: true
+                                  sticky: true
+                                  actions:
+                                    - action: "{{ stop_action_id }}"
+                                      title: "Arrêter"
+                                    - action: "{{ extend_action_id }}"
+                                      title: "+{{ extend_step }} min"
 
-
-
-      # ======= ARRÊT (UI / télécommande / notif / template) =======
-      - conditions: "{{ trigger.id in ['boost_stop_remote','boost_stop_ui','boost_stop_notif','boost_expire_template'] }}"
+      # ======= ARRÊT (UI / télécommande / timer.finished) =======
+      - conditions: "{{ trigger.id in ['boost_stop_remote','boost_stop_ui','boost_expired_timer'] }}"
         sequence:
-          # Garde-fou global :
-          # - Si déclenché par le template d'expiration, on NE CONTINUE que si:
-          #   1) le timer est atteint, ET
-          #   2) le boost est encore actif (boolean ON OU mode Manuel).
-          # - Pour les autres déclencheurs (UI/télécommande/notif), on passe.
-          - condition: template
-            value_template: >-
-              {% if trigger.id == 'boost_expire_template' %}
-                {% set ts = state_attr(timer_id, 'timestamp') | int(0) %}
-                {% set nowts = now().timestamp() | int %}
-                {{ ts > 0
-                   and nowts >= ts
-                   and ( is_state('!input boost_switch', 'on') or is_state('!input mode_entity', 'Manuel') ) }}
-              {% else %}
-                true
-              {% endif %}
-
-          # Si c'est la notif : garde-fou tag/action
-          - condition: template
-            value_template: >-
-              {{ trigger.id != 'boost_stop_notif'
-                 or (trigger.event is defined
-                     and trigger.event.data.action in [stop_action_id, extend_action_id]
-                     and trigger.event.data.tag == notif_tag) }}
+          # Si c'est l’expiration par timer, on s’assure qu’on est toujours en boost
+          - choose:
+              - conditions: "{{ trigger.id == 'boost_expired_timer' }}"
+                sequence:
+                  - condition: template
+                    value_template: >-
+                      {{ is_state('!input boost_switch', 'on') or is_state('!input mode_entity', 'Manuel') }}
+            default: []
 
           # Restaure Presence + 14°C
           - service: input_select.select_option
@@ -413,11 +327,9 @@ action:
             target: { entity_id: !input consigne_entity }
             data: { value: 14 }
 
-          # (Optionnel) on "désarme" le timer pour éviter de futures ambiguïtés visuelles
-          - service: input_datetime.set_datetime
-            target: { entity_id: !input timer_entity }
-            data:
-              timestamp: "{{ now().timestamp() | int }}"
+          # Stoppe le timer si encore en cours (par sûreté)
+          - service: timer.cancel
+            target: { entity_id: !input boost_timer }
 
           # Notifs de fin (écrasent la persistante) vers PRÉSENTS
           - variables:
@@ -445,13 +357,12 @@ action:
                           persistent: false
                           sticky: false
 
-          # Sync UI (idempotent)
+          # Sync UI (boolean off)
           - condition: state
             entity_id: !input boost_switch
             state: "on"
           - service: input_boolean.turn_off
             target: { entity_id: !input boost_switch }
-
 
 
 
