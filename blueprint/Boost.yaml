@@ -59,7 +59,7 @@ blueprint:
     duree_boost_valeur_de_depart:
       name: Durée par défaut (minutes)
       default: 40
-      selector: { number: { min: 5, max: 180, step: 5, mode: slider } }
+      selector: { number: { min: 1, max: 180, step: 5, mode: slider } }
 
     boost_extend_step_minutes:
       name: Pas d’extension (minutes)
