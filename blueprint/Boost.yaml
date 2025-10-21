@@ -1,7 +1,7 @@
 blueprint:
   name: Boost Chauffage by C.
   description: >
-    version Boost : v0.50 - 2025-10-21
+    version Boost : v0.51 - 2025-10-21
 
     Expiration pilotée par un helper timer.* (fiable via l’évènement timer.finished).
     Notifications vers les ENTITÉS notify.* des utilisateurs PRÉSENTS (group person.*).
