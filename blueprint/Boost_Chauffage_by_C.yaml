@@ -3,7 +3,7 @@ blueprint:
   description: >
     version Boost : v0.60 - 2025-01-25
 
-    Avec mémoraisation du mode de chauffe précédent le BOost, et choix du mode de sortie de Boost.
+    Avec mémorisation du mode de chauffe précédent le BOost, et choix du mode de sortie de Boost.
     
 
   domain: automation
