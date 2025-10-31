@@ -1,7 +1,7 @@
 blueprint:
   name: Boost Chauffage by C.
   description: >
-    version Boost : v0.60 - 2025-01-25
+    version Boost : v0.61 - 2025-10-31
 
     Avec mémorisation du mode de chauffe précédent le BOost, et choix du mode de sortie de Boost.
     
@@ -229,11 +229,13 @@ action:
           # MÉMORISER l'état AVANT de modifier
           - service: input_text.set_value
             target: { entity_id: !input previous_mode_storage }
-            data: { value: "{{ states(!input mode_entity) }}" }
-
+            data: 
+              value: "{{ states(mode_entity) }}"
+          
           - service: input_number.set_value
             target: { entity_id: !input previous_consigne_storage }
-            data: { value: "{{ states(!input consigne_entity) | float(14) }}" }
+            data: 
+              value: "{{ states(consigne_entity) | float(14) }}"
 
           # Mode Manuel + consigne de boost
           - service: input_select.select_option
