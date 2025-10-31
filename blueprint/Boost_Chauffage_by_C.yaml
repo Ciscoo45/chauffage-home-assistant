@@ -1,7 +1,7 @@
 blueprint:
   name: Boost Chauffage by C.
   description: >
-    version Boost : v0.62 - 2025-10-31
+    version Boost : v0.63 - 2025-10-31
 
     Avec mémorisation du mode de chauffe précédent le Boost, et choix du mode de sortie de Boost.
     
@@ -369,33 +369,42 @@ action:
                       {{ is_state(boost_switch, 'on') or states(mode_entity) == 'Manuel' }}
             default: []
 
+          # RECALCUL des variables de restauration (pour avoir les valeurs actuelles)
+          - variables:
+              restore_choice_current: !input restore_behavior
+              custom_mode_entity_current: !input restore_mode_custom
+              override_consigne_switch_current: !input restore_override_consigne
+              custom_consigne_entity_current: !input restore_consigne_custom
+              prev_mode_storage_current: !input previous_mode_storage
+              prev_consigne_storage_current: !input previous_consigne_storage
+
           # ===== RESTAURATION INTELLIGENTE =====
           - choose:
               # Option 1 : Restaurer l'état précédent
-              - conditions: "{{ states(restore_choice) == 'Restaurer état précédent' }}"
+              - conditions: "{{ states(restore_choice_current) == 'Restaurer état précédent' }}"
                 sequence:
                   - service: input_select.select_option
                     target: { entity_id: !input mode_entity }
-                    data: { option: "{{ states(prev_mode_storage) }}" }
+                    data: { option: "{{ states(prev_mode_storage_current) }}" }
                   - service: input_number.set_value
                     target: { entity_id: !input consigne_entity }
-                    data: { value: "{{ states(prev_consigne_storage) | float(14) }}" }
+                    data: { value: "{{ states(prev_consigne_storage_current) | float(14) }}" }
 
               # Option 2 : Mode personnalisé
-              - conditions: "{{ states(restore_choice) == 'Mode personnalisé' }}"
+              - conditions: "{{ states(restore_choice_current) == 'Mode personnalisé' }}"
                 sequence:
                   # Appliquer le mode choisi
                   - service: input_select.select_option
                     target: { entity_id: !input mode_entity }
-                    data: { option: "{{ states(custom_mode_entity) }}" }
+                    data: { option: "{{ states(custom_mode_entity_current) }}" }
 
                   # Si override consigne activé : forcer la consigne
                   - choose:
-                      - conditions: "{{ is_state(override_consigne_switch, 'on') }}"
+                      - conditions: "{{ is_state(override_consigne_switch_current, 'on') }}"
                         sequence:
                           - service: input_number.set_value
                             target: { entity_id: !input consigne_entity }
-                            data: { value: "{{ states(custom_consigne_entity) | float(14) }}" }
+                            data: { value: "{{ states(custom_consigne_entity_current) | float(14) }}" }
                     # Sinon : laisser le Scheduler gérer (ne rien faire)
                     default: []
 
