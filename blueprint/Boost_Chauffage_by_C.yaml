@@ -1,9 +1,9 @@
 blueprint:
   name: Boost Chauffage by C.
   description: >
-    version Boost : v0.61 - 2025-10-31
+    version Boost : v0.62 - 2025-10-31
 
-    Avec mémorisation du mode de chauffe précédent le BOost, et choix du mode de sortie de Boost.
+    Avec mémorisation du mode de chauffe précédent le Boost, et choix du mode de sortie de Boost.
     
 
   domain: automation
@@ -161,6 +161,10 @@ action:
       area_id: !input piece
       users_group_entity: !input users_group
 
+      # Variables manquantes AJOUTÉES
+      mode_entity: !input mode_entity
+      consigne_entity: !input consigne_entity
+
       duration_helper: !input boost_duration_helper
       temp_helper: !input boost_temp_helper
       timer_id: !input timer_entity
@@ -188,7 +192,7 @@ action:
 
       # Helpers bornés
       boost_minutes: "{{ [ [ states(duration_helper)|int(default_minutes), 1 ]|max, 600 ]|min }}"
-      boost_target_temp: "{{ [ [ states(temp_helper)|float(default_temp), 15 ]|max, 22 ]|min }}"
+      boost_target_temp: "{{ [ [ states(temp_helper)|float(default_temp), 15 ]|max, 30 ]|min }}"
 
       # Pour l'UI (input_datetime)
       boost_end_ts: "{{ (now() + timedelta(minutes=boost_minutes)).timestamp()|int }}"
@@ -228,12 +232,12 @@ action:
         sequence:
           # MÉMORISER l'état AVANT de modifier
           - service: input_text.set_value
-            target: { entity_id: !input previous_mode_storage }
+            target: { entity_id: "{{ prev_mode_storage }}" }
             data: 
               value: "{{ states(mode_entity) }}"
           
           - service: input_number.set_value
-            target: { entity_id: !input previous_consigne_storage }
+            target: { entity_id: "{{ prev_consigne_storage }}" }
             data: 
               value: "{{ states(consigne_entity) | float(14) }}"
 
@@ -362,7 +366,7 @@ action:
                 sequence:
                   - condition: template
                     value_template: >-
-                      {{ is_state('!input boost_switch', 'on') or is_state('!input mode_entity', 'Manuel') }}
+                      {{ is_state(boost_switch, 'on') or states(mode_entity) == 'Manuel' }}
             default: []
 
           # ===== RESTAURATION INTELLIGENTE =====
