@@ -1,9 +1,9 @@
 blueprint:
   name: Boost Chauffage by C.
   description: >
-    version Boost : v0.71 - 2025-11-01
+    version Boost : v0.72 - 2025-11-01
 
-    Correction de l'erreur "int object is not iterable" lors de l'extension.
+    Version finale stable avec notifications persistantes fonctionnelles.
     Avec mémorisation du mode de chauffe précédent le Boost, et choix du mode de sortie de Boost.
     
 
@@ -294,15 +294,6 @@ action:
       # ======= ACTIONS DE NOTIF (stop / +X) =======
       - conditions: "{{ trigger.id == 'boost_notif_action' }}"
         sequence:
-          # LOG 1 : Événement reçu
-          - service: system_log.write
-            data:
-              message: >-
-                [BOOST DEBUG] Événement reçu:
-                action={{ trigger.event.data.action if trigger.event is defined else 'NO EVENT' }}
-                tag={{ trigger.event.data.tag if trigger.event is defined else 'NO TAG' }}
-              level: warning
-          
           - choose:
               # STOP via notif
               - conditions: >-
@@ -310,30 +301,18 @@ action:
                      and trigger.event.data.tag == notif_tag
                      and trigger.event.data.action == stop_action_id }}
                 sequence:
-                  - service: system_log.write
-                    data:
-                      message: "[BOOST DEBUG] STOP détecté"
-                      level: warning
                   - service: input_boolean.turn_off
                     target: { entity_id: !input boost_switch }
                   - stop: "Stop via notif."
 
-              # EXTEND via notif - VERSION CORRIGÉE v0.71
+              # EXTEND via notif
               - conditions: >-
                   {{ trigger.event is defined
                      and trigger.event.data.tag == notif_tag
                      and trigger.event.data.action == extend_action_id }}
                 sequence:
-                  - service: system_log.write
-                    data:
-                      message: "[BOOST DEBUG] EXTEND détecté"
-                      level: warning
-                  
-                  # CORRECTION : Calcul simplifié et robuste
+                  # Calcul de la nouvelle fin
                   - variables:
-                      # Récupérer l'attribut brut
-                      finishes_at_raw: "{{ state_attr(boost_timer_id, 'finishes_at') }}"
-                      # Calculer le timestamp de fin actuel
                       current_end_ts: >-
                         {% set fa = state_attr(boost_timer_id, 'finishes_at') %}
                         {% if fa not in [none, 'none', 'unavailable', 'unknown', ''] %}
@@ -341,31 +320,14 @@ action:
                         {% else %}
                           {{ now().timestamp() | int }}
                         {% endif %}
-                      # Nouvelle fin = fin actuelle + extension
                       new_end_ts: "{{ current_end_ts + (extend_step * 60) }}"
-                      # Durée restante = nouvelle fin - maintenant
                       new_duration_seconds: "{{ (new_end_ts - now().timestamp() | int) | int }}"
                   
-                  - service: system_log.write
-                    data:
-                      message: >-
-                        [BOOST DEBUG] Calcul:
-                        finishes_at_raw={{ finishes_at_raw }}
-                        current_end={{ current_end_ts }}
-                        new_end={{ new_end_ts }}
-                        duration={{ new_duration_seconds }}s
-                      level: warning
-                  
-                  # Redémarre le timer avec la nouvelle durée
+                  # Redémarre le timer
                   - service: timer.start
                     target: { entity_id: "{{ boost_timer_id }}" }
                     data:
                       duration: "{{ new_duration_seconds }}"
-                  
-                  - service: system_log.write
-                    data:
-                      message: "[BOOST DEBUG] Timer redémarré pour {{ new_duration_seconds }}s"
-                      level: warning
                   
                   # Met à jour l'input_datetime
                   - service: input_datetime.set_datetime
@@ -373,12 +335,7 @@ action:
                     data:
                       timestamp: "{{ new_end_ts }}"
                   
-                  - service: system_log.write
-                    data:
-                      message: "[BOOST DEBUG] input_datetime mis à jour à timestamp {{ new_end_ts }}"
-                      level: warning
-                  
-                  # Préparer les notifications
+                  # Mise à jour des notifications
                   - variables:
                       present_notify_entities_loop: >-
                         {{
@@ -389,21 +346,10 @@ action:
                           | map('regex_replace', '^person\\.', 'notify.user_')
                           | list
                         }}
-                      # Formatage de l'heure
                       new_end_time: "{{ new_end_ts | int | timestamp_custom('%H:%M', true) }}"
-                      # Calculer la consigne actuelle
                       current_temp: "{{ states(consigne_entity) | float(boost_target_temp) }}"
                   
-                  - service: system_log.write
-                    data:
-                      message: >-
-                        [BOOST DEBUG] Notification:
-                        heure={{ new_end_time }}
-                        temp={{ current_temp }}
-                        cibles={{ present_notify_entities_loop }}
-                      level: warning
-                  
-                  # Envoi des notifications
+                  # Envoi des notifications mises à jour
                   - if:
                       - condition: template
                         value_template: "{{ present_notify_entities_loop | count > 0 }}"
@@ -424,18 +370,6 @@ action:
                                       title: "Arrêter"
                                     - action: "{{ extend_action_id }}"
                                       title: "+{{ extend_step }} min"
-                  
-                  - service: system_log.write
-                    data:
-                      message: "[BOOST DEBUG] Extension terminée avec succès !"
-                      level: warning
-            
-            # Cas par défaut
-            default:
-              - service: system_log.write
-                data:
-                  message: "[BOOST DEBUG] AUCUNE ACTION DÉTECTÉE"
-                  level: error
                                       
       # ======= ARRÊT (UI / télécommande / timer.finished) =======
       - conditions: "{{ trigger.id in ['boost_stop_remote','boost_stop_ui','boost_expired_timer'] }}"
