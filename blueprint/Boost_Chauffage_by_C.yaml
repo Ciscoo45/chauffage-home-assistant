@@ -1,10 +1,10 @@
 blueprint:
   name: Boost Chauffage by C.
   description: >
-    version Boost : v0.65 - 2025-11-01
+    version Boost : v0.66 - 2025-11-01
 
     Avec mémorisation du mode de chauffe précédent le Boost, et choix du mode de sortie de Boost.
-    Correction de l'extension de boost via notification.
+    Correction de l'extension de boost via notification persistante.
     
 
   domain: automation
@@ -317,7 +317,7 @@ action:
                     target: { entity_id: !input boost_switch }
                   - stop: "Stop via notif."
 
-              # EXTEND via notif - VERSION CORRIGÉE
+              # EXTEND via notif - VERSION CORRIGÉE AVEC NOTIFICATION PERSISTANTE
               - conditions: >-
                   {{ trigger.event.data.action == extend_action_id }}
                 sequence:
@@ -360,7 +360,7 @@ action:
                     target: { entity_id: !input timer_entity }
                     data: { timestamp: "{{ new_end_ts }}" }
                   
-                  # Mise à jour des notifications
+                  # Mise à jour des notifications PERSISTANTES
                   - variables:
                       present_notify_entities_loop: >-
                         {{
@@ -373,6 +373,8 @@ action:
                         }}
                       new_end_time: "{{ (new_end_ts | int | timestamp_local).strftime('%H:%M') }}"
                       total_minutes: "{{ (new_total_seconds / 60) | round(0) | int }}"
+                      # Récupérer la consigne actuelle
+                      current_boost_temp: "{{ states(consigne_entity) | float(boost_target_temp) }}"
                   
                   - if:
                       - condition: template
@@ -384,7 +386,7 @@ action:
                             - service: "{{ repeat.item }}"
                               data:
                                 title: "🔆 Boost chauffage {{ area_label }} prolongé"
-                                message: "Fin {{ new_end_time }} ({{ total_minutes }} min restantes)"
+                                message: "Consigne {{ current_boost_temp|round(1) }}° • Fin {{ new_end_time }} ({{ total_minutes }} min)"
                                 data:
                                   tag: "{{ notif_tag }}"
                                   persistent: true
