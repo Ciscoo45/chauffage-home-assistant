@@ -1,9 +1,10 @@
 blueprint:
   name: Boost Chauffage by C.
   description: >
-    version Boost : v0.64 - 2025-10-31
+    version Boost : v0.65 - 2025-11-01
 
     Avec mémorisation du mode de chauffe précédent le Boost, et choix du mode de sortie de Boost.
+    Correction de l'extension de boost via notification.
     
 
   domain: automation
@@ -161,7 +162,6 @@ action:
       area_id: !input piece
       users_group_entity: !input users_group
 
-      # Variables manquantes AJOUTÉES
       mode_entity: !input mode_entity
       consigne_entity: !input consigne_entity
 
@@ -293,39 +293,74 @@ action:
       # ======= ACTIONS DE NOTIF (stop / +X) =======
       - conditions: "{{ trigger.id == 'boost_notif_action' }}"
         sequence:
+          # Log pour debug
+          - service: system_log.write
+            data:
+              message: >-
+                Notification action reçue: 
+                action={{ trigger.event.data.action }}, 
+                tag={{ trigger.event.data.tag }},
+                stop_id={{ stop_action_id }},
+                extend_id={{ extend_action_id }}
+              level: info
+          
           - choose:
               # STOP via notif
               - conditions: >-
-                  {{ trigger.event is defined
-                     and trigger.event.data.tag == notif_tag
-                     and trigger.event.data.action == stop_action_id }}
+                  {{ trigger.event.data.action == stop_action_id }}
                 sequence:
+                  - service: system_log.write
+                    data:
+                      message: "Arrêt du boost via notification pour {{ area_label }}"
+                      level: info
                   - service: input_boolean.turn_off
                     target: { entity_id: !input boost_switch }
                   - stop: "Stop via notif."
 
-              # EXTEND via notif
+              # EXTEND via notif - VERSION CORRIGÉE
               - conditions: >-
-                  {{ trigger.event is defined
-                     and trigger.event.data.tag == notif_tag
-                     and trigger.event.data.action == extend_action_id }}
+                  {{ trigger.event.data.action == extend_action_id }}
                 sequence:
-                  # On repart sur une nouvelle durée : now -> new_end
+                  - service: system_log.write
+                    data:
+                      message: "Extension du boost demandée pour {{ area_label }} (+{{ extend_step }} min)"
+                      level: info
+                  
+                  # Calcul simplifié et plus robuste
                   - variables:
-                      finishes_at_ts: >-
-                        {{ (state_attr(boost_timer_id, 'finishes_at') | as_datetime | as_local).timestamp() | int(0) }}
-                      anchor_ts: "{{ [ finishes_at_ts, now().timestamp()|int ] | max }}"
-                      new_end_ts: "{{ anchor_ts + (extend_step * 60) }}"
-                      new_duration: "{{ (new_end_ts - now().timestamp()|int) | max(1) }}"
+                      current_time: "{{ now().timestamp() | int }}"
+                      timer_remaining: >-
+                        {% set remaining = state_attr(boost_timer_id, 'remaining') %}
+                        {% if remaining %}
+                          {{ remaining.split(':')[0]|int * 3600 + remaining.split(':')[1]|int * 60 + remaining.split(':')[2]|int }}
+                        {% else %}
+                          {{ 0 }}
+                        {% endif %}
+                      current_end: "{{ current_time + timer_remaining }}"
+                      new_end_ts: "{{ current_end + (extend_step * 60) }}"
+                      new_total_seconds: "{{ timer_remaining + (extend_step * 60) }}"
+                  
+                  - service: system_log.write
+                    data:
+                      message: >-
+                        Extension: 
+                        remaining={{ timer_remaining }}s, 
+                        new_total={{ new_total_seconds }}s,
+                        new_end={{ new_end_ts }}
+                      level: info
+                  
+                  # Redémarre le timer avec la nouvelle durée totale
                   - service: timer.start
                     target: { entity_id: !input boost_timer }
                     data:
-                      duration: "{{ new_duration }}"
-                  # UI aussi
+                      duration: "{{ new_total_seconds }}"
+                  
+                  # Met à jour l'input_datetime
                   - service: input_datetime.set_datetime
                     target: { entity_id: !input timer_entity }
                     data: { timestamp: "{{ new_end_ts }}" }
-                  # Mise à jour notifs
+                  
+                  # Mise à jour des notifications
                   - variables:
                       present_notify_entities_loop: >-
                         {{
@@ -336,6 +371,9 @@ action:
                           | map('regex_replace', '^person\\.', 'notify.user_')
                           | list
                         }}
+                      new_end_time: "{{ (new_end_ts | int | timestamp_local).strftime('%H:%M') }}"
+                      total_minutes: "{{ (new_total_seconds / 60) | round(0) | int }}"
+                  
                   - if:
                       - condition: template
                         value_template: "{{ present_notify_entities_loop | count > 0 }}"
@@ -346,7 +384,7 @@ action:
                             - service: "{{ repeat.item }}"
                               data:
                                 title: "🔆 Boost chauffage {{ area_label }} prolongé"
-                                message: "Fin {{ (as_datetime(new_end_ts) | as_local).strftime('%H:%M') }}"
+                                message: "Fin {{ new_end_time }} ({{ total_minutes }} min restantes)"
                                 data:
                                   tag: "{{ notif_tag }}"
                                   persistent: true
@@ -370,7 +408,6 @@ action:
             default: []
 
           # ===== RESTAURATION INTELLIGENTE =====
-          # Utilisation directe de states() pour avoir les valeurs ACTUELLES
           - choose:
               # Option 1 : Restaurer l'état précédent
               - conditions: "{{ states(restore_choice) == 'Restaurer état précédent' }}"
@@ -387,23 +424,19 @@ action:
               # Option 2 : Mode personnalisé
               - conditions: "{{ states(restore_choice) == 'Mode personnalisé' }}"
                 sequence:
-                  # Variables locales pour debug
                   - variables:
                       target_mode: "{{ states(custom_mode_entity) }}"
                       override_active: "{{ is_state(override_consigne_switch, 'on') }}"
                       target_consigne: "{{ states(custom_consigne_entity) | float(14) }}"
                   
-                  # Appliquer le mode choisi
                   - service: input_select.select_option
                     target: { entity_id: !input mode_entity }
                     data: 
                       option: "{{ target_mode }}"
 
-                  # Délai pour s'assurer que le mode est bien appliqué
                   - delay:
                       milliseconds: 100
 
-                  # Si override consigne activé : forcer la consigne
                   - if:
                       - condition: template
                         value_template: "{{ override_active }}"
@@ -422,11 +455,11 @@ action:
                 target: { entity_id: !input consigne_entity }
                 data: { value: 14 }
 
-          # Stoppe le timer si encore en cours (par sûreté)
+          # Stoppe le timer
           - service: timer.cancel
             target: { entity_id: !input boost_timer }
 
-          # Notifs de fin (écrasent la persistante) vers PRÉSENTS
+          # Notifs de fin
           - variables:
               present_notify_entities_end: >-
                 {{
@@ -452,7 +485,7 @@ action:
                           persistent: false
                           sticky: false
 
-          # Sync UI (boolean off)
+          # Sync UI
           - condition: state
             entity_id: !input boost_switch
             state: "on"
