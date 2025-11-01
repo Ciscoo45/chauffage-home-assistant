@@ -1,10 +1,10 @@
 blueprint:
   name: Boost Chauffage by C.
   description: >
-    version Boost : v0.67 - 2025-11-01
+    version Boost : v0.68 - 2025-11-01
 
+    Retour à la logique v0.51 pour les notifications (qui fonctionnait).
     Avec mémorisation du mode de chauffe précédent le Boost, et choix du mode de sortie de Boost.
-    Correction notifications persistantes iOS + Android.
     
 
   domain: automation
@@ -261,7 +261,7 @@ action:
             data:
               duration: "{{ boost_minutes * 60 }}"
 
-          # Notifications persistantes -> vers PRÉSENTS (compatible iOS + Android)
+          # Notifications persistantes -> vers PRÉSENTS
           - if:
               - condition: template
                 value_template: "{{ has_targets }}"
@@ -274,16 +274,9 @@ action:
                         title: "🔆 Boost chauffage {{ area_label }} activé"
                         message: "Consigne {{ boost_target_temp|round(1) }}° • Fin {{ boost_end_hhmm }} ({{ boost_minutes }} min)"
                         data:
-                          # Android
                           tag: "{{ notif_tag }}"
-                          sticky: true
                           persistent: true
-                          channel: "Boost Chauffage"
-                          importance: high
-                          # iOS
-                          push:
-                            interruption-level: time-sensitive
-                          # Actions communes
+                          sticky: true
                           actions:
                             - action: "{{ stop_action_id }}"
                               title: "Arrêter"
@@ -297,71 +290,42 @@ action:
           - service: input_boolean.turn_on
             target: { entity_id: !input boost_switch }
 
-      # ======= ACTIONS DE NOTIF (stop / +X) =======
+      # ======= ACTIONS DE NOTIF (stop / +X) - LOGIQUE v0.51 QUI FONCTIONNAIT =======
       - conditions: "{{ trigger.id == 'boost_notif_action' }}"
         sequence:
-          # Log pour debug
-          - service: system_log.write
-            data:
-              message: >-
-                Notification action reçue: 
-                action={{ trigger.event.data.action }}, 
-                tag={{ trigger.event.data.tag }},
-                stop_id={{ stop_action_id }},
-                extend_id={{ extend_action_id }}
-              level: info
-          
           - choose:
               # STOP via notif
               - conditions: >-
-                  {{ trigger.event.data.action == stop_action_id }}
+                  {{ trigger.event is defined
+                     and trigger.event.data.tag == notif_tag
+                     and trigger.event.data.action == stop_action_id }}
                 sequence:
-                  - service: system_log.write
-                    data:
-                      message: "Arrêt du boost via notification pour {{ area_label }}"
-                      level: info
                   - service: input_boolean.turn_off
                     target: { entity_id: !input boost_switch }
                   - stop: "Stop via notif."
 
-              # EXTEND via notif - VERSION COMPATIBLE iOS + Android
+              # EXTEND via notif - EXACTEMENT COMME v0.51
               - conditions: >-
-                  {{ trigger.event.data.action == extend_action_id }}
+                  {{ trigger.event is defined
+                     and trigger.event.data.tag == notif_tag
+                     and trigger.event.data.action == extend_action_id }}
                 sequence:
-                  - service: system_log.write
-                    data:
-                      message: "Extension du boost demandée pour {{ area_label }} (+{{ extend_step }} min)"
-                      level: info
-                  
-                  # Calcul avec l'ancienne méthode qui fonctionnait
+                  # On repart sur une nouvelle durée : now -> new_end
                   - variables:
                       finishes_at_ts: >-
                         {{ (state_attr(boost_timer_id, 'finishes_at') | as_datetime | as_local).timestamp() | int(0) }}
                       anchor_ts: "{{ [ finishes_at_ts, now().timestamp()|int ] | max }}"
                       new_end_ts: "{{ anchor_ts + (extend_step * 60) }}"
                       new_duration: "{{ (new_end_ts - now().timestamp()|int) | max(1) }}"
-                  
-                  - service: system_log.write
-                    data:
-                      message: >-
-                        Extension: 
-                        anchor={{ anchor_ts }},
-                        new_end={{ new_end_ts }},
-                        new_duration={{ new_duration }}s
-                      level: info
-                  
-                  # Redémarre le timer
                   - service: timer.start
                     target: { entity_id: !input boost_timer }
                     data:
                       duration: "{{ new_duration }}"
-                  
-                  # Met à jour l'input_datetime
+                  # UI aussi
                   - service: input_datetime.set_datetime
                     target: { entity_id: !input timer_entity }
                     data: { timestamp: "{{ new_end_ts }}" }
-                  
-                  # Mise à jour des notifications PERSISTANTES (compatible iOS + Android)
+                  # Mise à jour notifs
                   - variables:
                       present_notify_entities_loop: >-
                         {{
@@ -372,10 +336,6 @@ action:
                           | map('regex_replace', '^person\\.', 'notify.user_')
                           | list
                         }}
-                      new_end_time: "{{ (as_datetime(new_end_ts) | as_local).strftime('%H:%M') }}"
-                      total_minutes: "{{ ((new_end_ts - now().timestamp()) / 60) | round(0) | int }}"
-                      current_boost_temp: "{{ states(consigne_entity) | float(boost_target_temp) }}"
-                  
                   - if:
                       - condition: template
                         value_template: "{{ present_notify_entities_loop | count > 0 }}"
@@ -386,18 +346,11 @@ action:
                             - service: "{{ repeat.item }}"
                               data:
                                 title: "🔆 Boost chauffage {{ area_label }} prolongé"
-                                message: "Consigne {{ current_boost_temp|round(1) }}° • Fin {{ new_end_time }} ({{ total_minutes }} min)"
+                                message: "Fin {{ (as_datetime(new_end_ts) | as_local).strftime('%H:%M') }}"
                                 data:
-                                  # Android
                                   tag: "{{ notif_tag }}"
-                                  sticky: true
                                   persistent: true
-                                  channel: "Boost Chauffage"
-                                  importance: high
-                                  # iOS
-                                  push:
-                                    interruption-level: time-sensitive
-                                  # Actions communes
+                                  sticky: true
                                   actions:
                                     - action: "{{ stop_action_id }}"
                                       title: "Arrêter"
