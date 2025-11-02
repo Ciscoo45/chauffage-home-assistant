@@ -1,10 +1,11 @@
 blueprint:
   name: Boost Chauffage by C.
   description: >
-    version Boost : v0.76 - 2025-11-02
+    version Boost : v0.77 - 2025-11-02
 
-    Correction finale de la restauration de l'état précédent (comparaison robuste insensible aux apostrophes).
-    Correction du boost depuis le mode Arrêt (forçage de la consigne).
+    Correction finale pour le boost depuis le mode Arrêt.
+    Ordre critique : Consigne → Délai 2s (TPI recalcule) → Mode Manuel.
+    Comparaison robuste pour la restauration de l'état précédent.
     
 
   domain: automation
@@ -238,8 +239,6 @@ action:
                 [BOOST START DEBUG] Démarrage boost {{ area_label }}:
                 Mode actuel={{ states(mode_entity) }}
                 Consigne actuelle={{ states(consigne_entity) }}
-                Stockage mode={{ prev_mode_storage }}
-                Stockage consigne={{ prev_consigne_storage }}
               level: warning
           
           # MÉMORISER l'état AVANT de modifier
@@ -253,28 +252,52 @@ action:
             data: 
               value: "{{ states(consigne_entity) | float(14) }}"
           
-          # DEBUG : Confirmer la mémorisation
           - service: system_log.write
             data:
               message: >-
                 [BOOST START DEBUG] Mémorisation effectuée:
-                prev_mode stocké={{ states(prev_mode_storage) }}
-                prev_consigne stockée={{ states(prev_consigne_storage) }}
+                prev_mode={{ states(prev_mode_storage) }}
+                prev_consigne={{ states(prev_consigne_storage) }}
               level: warning
 
-          # Mode Manuel
-          - service: input_select.select_option
-            target: { entity_id: !input mode_entity }
-            data: { option: "Manuel" }
-
-          # CORRECTION : Toujours forcer la consigne de boost (même si on vient du mode Arrêt)
+          # ═══════════════════════════════════════════════════════════════
+          # CORRECTION ORDRE CRITIQUE pour sortie du mode Arrêt
+          # ═══════════════════════════════════════════════════════════════
+          
+          # ÉTAPE 1 : Fixer la consigne de boost EN PREMIER
           - service: input_number.set_value
             target: { entity_id: !input consigne_entity }
             data: { value: "{{ boost_target_temp }}" }
           
           - service: system_log.write
             data:
-              message: "[BOOST START DEBUG] Consigne de boost forcée à {{ boost_target_temp }}°"
+              message: "[BOOST START DEBUG] ✅ Consigne fixée à {{ boost_target_temp }}°"
+              level: warning
+          
+          # ÉTAPE 2 : Attendre que le Thermostat TPI se déclenche et recalcule
+          # Le TPI a un trigger sur state de entity_consigne
+          # Délai de sécurité pour être sûr qu'il a le temps de calculer
+          - delay:
+              seconds: 2
+          
+          - service: system_log.write
+            data:
+              message: "[BOOST START DEBUG] Délai écoulé, TPI a dû recalculer la puissance"
+              level: warning
+
+          # ÉTAPE 3 : ENSUITE passer en mode Manuel
+          # Le Blueprint Pilotage va activer le thermostat TPI
+          # qui a maintenant la bonne consigne et la bonne puissance calculée
+          - service: input_select.select_option
+            target: { entity_id: !input mode_entity }
+            data: { option: "Manuel" }
+          
+          - service: system_log.write
+            data:
+              message: >-
+                [BOOST START DEBUG] ✅ Mode Manuel activé
+                Consigne={{ states(consigne_entity) }}°
+                Puissance={{ states('input_number.radiateur_' ~ area_id ~ '_puissance') }}%
               level: warning
 
           # UI: heure de fin
@@ -424,7 +447,7 @@ action:
                 Consigne custom={{ states(custom_consigne_entity) }}
               level: warning
 
-          # ===== RESTAURATION INTELLIGENTE - CORRECTION FINALE v0.76 =====
+          # ===== RESTAURATION INTELLIGENTE - v0.76/v0.77 =====
           - choose:
               # Option 1 : Restaurer l'état précédent - Comparaison robuste
               - conditions: >-
