@@ -1,10 +1,10 @@
 blueprint:
   name: Boost Chauffage by C.
   description: >
-    version Boost : v0.77 - 2025-11-02
+    version Boost : v0.78 - 2025-11-02
 
     Correction finale pour le boost depuis le mode Arrêt.
-    Ordre critique : Consigne → Délai 2s (TPI recalcule) → Mode Manuel.
+    Ordre critique : Mode Manuel (active TPI) → Délai → Consigne → Délai (TPI recalcule).
     Comparaison robuste pour la restauration de l'état précédent.
     
 
@@ -261,41 +261,43 @@ action:
               level: warning
 
           # ═══════════════════════════════════════════════════════════════
-          # CORRECTION ORDRE CRITIQUE pour sortie du mode Arrêt
+          # CORRECTION v0.78 : Activer TPI AVANT de changer la consigne
           # ═══════════════════════════════════════════════════════════════
           
-          # ÉTAPE 1 : Fixer la consigne de boost EN PREMIER
-          - service: input_number.set_value
-            target: { entity_id: !input consigne_entity }
-            data: { value: "{{ boost_target_temp }}" }
-          
-          - service: system_log.write
-            data:
-              message: "[BOOST START DEBUG] ✅ Consigne fixée à {{ boost_target_temp }}°"
-              level: warning
-          
-          # ÉTAPE 2 : Attendre que le Thermostat TPI se déclenche et recalcule
-          # Le TPI a un trigger sur state de entity_consigne
-          # Délai de sécurité pour être sûr qu'il a le temps de calculer
-          - delay:
-              seconds: 2
-          
-          - service: system_log.write
-            data:
-              message: "[BOOST START DEBUG] Délai écoulé, TPI a dû recalculer la puissance"
-              level: warning
-
-          # ÉTAPE 3 : ENSUITE passer en mode Manuel
-          # Le Blueprint Pilotage va activer le thermostat TPI
-          # qui a maintenant la bonne consigne et la bonne puissance calculée
+          # ÉTAPE 1 : Passer en mode Manuel AVANT tout
+          # Cela va activer le Thermostat TPI via le Blueprint Pilotage
           - service: input_select.select_option
             target: { entity_id: !input mode_entity }
             data: { option: "Manuel" }
           
           - service: system_log.write
             data:
+              message: "[BOOST START DEBUG] ✅ Mode Manuel activé (TPI va démarrer)"
+              level: warning
+          
+          # ÉTAPE 2 : Petit délai pour que le Blueprint Pilotage active le TPI
+          - delay:
+              milliseconds: 500
+          
+          # ÉTAPE 3 : Maintenant on change la consigne
+          # Le TPI est actif et va se déclencher sur le changement
+          - service: input_number.set_value
+            target: { entity_id: !input consigne_entity }
+            data: { value: "{{ boost_target_temp }}" }
+          
+          - service: system_log.write
+            data:
+              message: "[BOOST START DEBUG] ✅ Consigne fixée à {{ boost_target_temp }}° (TPI va recalculer)"
+              level: warning
+          
+          # ÉTAPE 4 : Attendre que le TPI recalcule la puissance
+          - delay:
+              seconds: 2
+          
+          - service: system_log.write
+            data:
               message: >-
-                [BOOST START DEBUG] ✅ Mode Manuel activé
+                [BOOST START DEBUG] ✅ Configuration terminée
                 Consigne={{ states(consigne_entity) }}°
                 Puissance={{ states('input_number.radiateur_' ~ area_id ~ '_puissance') }}%
               level: warning
@@ -447,7 +449,7 @@ action:
                 Consigne custom={{ states(custom_consigne_entity) }}
               level: warning
 
-          # ===== RESTAURATION INTELLIGENTE - v0.76/v0.77 =====
+          # ===== RESTAURATION INTELLIGENTE - v0.76/v0.77/v0.78 =====
           - choose:
               # Option 1 : Restaurer l'état précédent - Comparaison robuste
               - conditions: >-
