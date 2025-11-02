@@ -1,10 +1,10 @@
 blueprint:
   name: Boost Chauffage by C.
   description: >
-    version Boost : v0.74 - 2025-11-02
+    version Boost : v0.76 - 2025-11-02
 
-    Version de debug pour diagnostiquer le problème de restauration du mode précédent.
-    Correction complète des erreurs de syntaxe entity_id et condition.
+    Correction finale de la restauration de l'état précédent (comparaison robuste insensible aux apostrophes).
+    Correction du boost depuis le mode Arrêt (forçage de la consigne).
     
 
   domain: automation
@@ -262,14 +262,20 @@ action:
                 prev_consigne stockée={{ states(prev_consigne_storage) }}
               level: warning
 
-          # Mode Manuel + consigne de boost
+          # Mode Manuel
           - service: input_select.select_option
             target: { entity_id: !input mode_entity }
             data: { option: "Manuel" }
 
+          # CORRECTION : Toujours forcer la consigne de boost (même si on vient du mode Arrêt)
           - service: input_number.set_value
             target: { entity_id: !input consigne_entity }
             data: { value: "{{ boost_target_temp }}" }
+          
+          - service: system_log.write
+            data:
+              message: "[BOOST START DEBUG] Consigne de boost forcée à {{ boost_target_temp }}°"
+              level: warning
 
           # UI: heure de fin
           - service: input_datetime.set_datetime
@@ -410,18 +416,19 @@ action:
             data:
               message: >-
                 [BOOST STOP DEBUG] Arrêt du boost {{ area_label }}:
-                Comportement configuré={{ states(restore_choice) }}
-                Mode précédent stocké={{ states(prev_mode_storage) }}
+                Comportement configuré='{{ states(restore_choice) }}'
+                Mode précédent stocké='{{ states(prev_mode_storage) }}'
                 Consigne précédente stockée={{ states(prev_consigne_storage) }}
-                Mode personnalisé={{ states(custom_mode_entity) }}
+                Mode personnalisé='{{ states(custom_mode_entity) }}'
                 Override consigne={{ states(override_consigne_switch) }}
                 Consigne custom={{ states(custom_consigne_entity) }}
               level: warning
 
-          # ===== RESTAURATION INTELLIGENTE =====
+          # ===== RESTAURATION INTELLIGENTE - CORRECTION FINALE v0.76 =====
           - choose:
-              # Option 1 : Restaurer l'état précédent
-              - conditions: "{{ states(restore_choice) == 'Restaurer état précédent' }}"
+              # Option 1 : Restaurer l'état précédent - Comparaison robuste
+              - conditions: >-
+                  {{ 'état précédent' in states(restore_choice)|lower or 'etat precedent' in states(restore_choice)|lower }}
                 sequence:
                   - service: system_log.write
                     data:
@@ -438,6 +445,10 @@ action:
                       message: "[BOOST STOP DEBUG] Mode restauré à : {{ states(prev_mode_storage) }}"
                       level: warning
                   
+                  # Petit délai pour laisser le mode se stabiliser
+                  - delay:
+                      milliseconds: 200
+                  
                   - service: input_number.set_value
                     target: { entity_id: "{{ consigne_entity }}" }
                     data: 
@@ -448,8 +459,9 @@ action:
                       message: "[BOOST STOP DEBUG] Consigne restaurée à : {{ states(prev_consigne_storage) }}"
                       level: warning
 
-              # Option 2 : Mode personnalisé
-              - conditions: "{{ states(restore_choice) == 'Mode personnalisé' }}"
+              # Option 2 : Mode personnalisé - Comparaison robuste
+              - conditions: >-
+                  {{ 'personnalis' in states(restore_choice)|lower }}
                 sequence:
                   - service: system_log.write
                     data:
@@ -467,7 +479,7 @@ action:
                       option: "{{ target_mode }}"
 
                   - delay:
-                      milliseconds: 100
+                      milliseconds: 200
 
                   - if:
                       - condition: template
@@ -482,7 +494,9 @@ action:
             default:
               - service: system_log.write
                 data:
-                  message: "[BOOST STOP DEBUG] ❌ AUCUNE CONDITION MATCHÉE - Passage en Presence par défaut"
+                  message: >-
+                    [BOOST STOP DEBUG] ❌ AUCUNE CONDITION MATCHÉE - Passage en Presence par défaut
+                    Valeur reçue: '{{ states(restore_choice) }}'
                   level: error
               
               - service: input_select.select_option
@@ -523,7 +537,7 @@ action:
                           persistent: false
                           sticky: false
 
-          # Sync UI - CORRECTION FINALE avec if/then
+          # Sync UI
           - if:
               - condition: state
                 entity_id: !input boost_switch
