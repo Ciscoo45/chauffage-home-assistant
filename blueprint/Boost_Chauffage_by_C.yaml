@@ -1,9 +1,14 @@
 blueprint:
   name: Boost Chauffage by C.
   description: >
-    version Boost : v1.00 - 2025-11-02
+    version Boost : v1.01 - 2025-11-03
 
     Blueprint de boost temporaire dérogatif pour le chauffage avec restauration intelligente de mode en fin de boost.
+    
+    Correction v1.01 :
+    - Fix restauration état précédent après boost via télécommande
+    - Synchronisation immédiate du switch boost
+    - Amélioration robustesse de la détection d'état
     
     Fonctionnalités :
     - Boost manuel via UI ou télécommande Ikea
@@ -241,6 +246,20 @@ action:
       # ======= DÉMARRAGE =======
       - conditions: "{{ trigger.id in ['boost_start_remote','boost_start_ui'] }}"
         sequence:
+          # CORRECTION v1.01 : Sync UI IMMÉDIATEMENT si déclenché par télécommande
+          - if:
+              - condition: trigger
+                id: boost_start_remote
+              - condition: state
+                entity_id: !input boost_switch
+                state: "off"
+            then:
+              - service: input_boolean.turn_on
+                target: { entity_id: !input boost_switch }
+              # Petit délai pour que le changement se propage
+              - delay:
+                  milliseconds: 100
+
           # Mémoriser l'état AVANT de modifier
           - service: input_text.set_value
             target: { entity_id: "{{ prev_mode_storage }}" }
@@ -306,15 +325,6 @@ action:
                               title: "Arrêter"
                             - action: "{{ extend_action_id }}"
                               title: "+{{ extend_step }} min"
-
-          # Sync UI si déclenché physiquement
-          - if:
-              - condition: state
-                entity_id: !input boost_switch
-                state: "off"
-            then:
-              - service: input_boolean.turn_on
-                target: { entity_id: !input boost_switch }
 
       # ======= ACTIONS DE NOTIF (stop / +X) =======
       - conditions: "{{ trigger.id == 'boost_notif_action' }}"
@@ -399,6 +409,20 @@ action:
       # ======= ARRÊT (UI / télécommande / timer.finished) =======
       - conditions: "{{ trigger.id in ['boost_stop_remote','boost_stop_ui','boost_expired_timer'] }}"
         sequence:
+          # CORRECTION v1.01 : Sync UI IMMÉDIATEMENT si arrêt par télécommande
+          - if:
+              - condition: trigger
+                id: boost_stop_remote
+              - condition: state
+                entity_id: !input boost_switch
+                state: "on"
+            then:
+              - service: input_boolean.turn_off
+                target: { entity_id: !input boost_switch }
+              # Petit délai pour que le changement se propage
+              - delay:
+                  milliseconds: 100
+
           # Si c'est l'expiration par timer, on s'assure qu'on est toujours en boost
           - choose:
               - conditions: "{{ trigger.id == 'boost_expired_timer' }}"
@@ -492,14 +516,5 @@ action:
                           tag: "{{ notif_tag }}"
                           persistent: false
                           sticky: false
-
-          # Sync UI
-          - if:
-              - condition: state
-                entity_id: !input boost_switch
-                state: "on"
-            then:
-              - service: input_boolean.turn_off
-                target: { entity_id: !input boost_switch }
 
 mode: restart
