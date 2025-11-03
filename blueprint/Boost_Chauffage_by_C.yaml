@@ -1,23 +1,43 @@
 blueprint:
   name: Boost Chauffage by C.
   description: >
-    version Boost : v1.01 - 2025-11-03
+    version Boost : v1.02 - 2025-11-03
 
     Blueprint de boost temporaire dérogatif pour le chauffage avec restauration intelligente de mode en fin de boost.
+
+    
+    Correction v1.02 :
+    
+    - Fix désactivation du switch boost à l'expiration du timer
+    
+    - Notifications correctement supprimées en fin de boost
+
     
     Correction v1.01 :
+    
     - Fix restauration état précédent après boost via télécommande
+    
     - Synchronisation immédiate du switch boost
+    
     - Amélioration robustesse de la détection d'état
+
     
     Fonctionnalités :
+    
     - Boost manuel via UI ou télécommande Ikea
+    
     - Durée et consigne personnalisables
+    
     - Extension de durée via notification
+    
     - Restauration intelligente de l'état précédent ou mode personnalisé
+    
     - Compatible avec tous les modes (y compris Arrêt)
+    
     - Notifications persistantes avec actions
+    
     - Affichage de l'heure de fin
+
     
     Auteur : Ciscoo45
     
@@ -409,27 +429,37 @@ action:
       # ======= ARRÊT (UI / télécommande / timer.finished) =======
       - conditions: "{{ trigger.id in ['boost_stop_remote','boost_stop_ui','boost_expired_timer'] }}"
         sequence:
-          # CORRECTION v1.01 : Sync UI IMMÉDIATEMENT si arrêt par télécommande
-          - if:
-              - condition: trigger
-                id: boost_stop_remote
-              - condition: state
-                entity_id: !input boost_switch
-                state: "on"
-            then:
-              - service: input_boolean.turn_off
-                target: { entity_id: !input boost_switch }
-              # Petit délai pour que le changement se propage
-              - delay:
-                  milliseconds: 100
+          # CORRECTION v1.02 : Désactiver le switch boost POUR TOUS LES TYPES D'ARRÊT
+          - choose:
+              # Si arrêt par télécommande
+              - conditions: "{{ trigger.id == 'boost_stop_remote' }}"
+                sequence:
+                  - condition: state
+                    entity_id: !input boost_switch
+                    state: "on"
+                  - service: input_boolean.turn_off
+                    target: { entity_id: !input boost_switch }
+                  - delay:
+                      milliseconds: 100
 
-          # Si c'est l'expiration par timer, on s'assure qu'on est toujours en boost
+              # Si expiration du timer
+              - conditions: "{{ trigger.id == 'boost_expired_timer' }}"
+                sequence:
+                  - condition: state
+                    entity_id: !input boost_switch
+                    state: "on"
+                  - service: input_boolean.turn_off
+                    target: { entity_id: !input boost_switch }
+                  - delay:
+                      milliseconds: 100
+
+          # Si c'est l'expiration par timer, vérifier qu'on était bien en boost
           - choose:
               - conditions: "{{ trigger.id == 'boost_expired_timer' }}"
                 sequence:
                   - condition: template
                     value_template: >-
-                      {{ is_state(boost_switch, 'on') or states(mode_entity) == 'Manuel' }}
+                      {{ states(mode_entity) == 'Manuel' }}
             default: []
 
           # Restauration intelligente
