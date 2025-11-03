@@ -27,15 +27,15 @@ Available forks here:
     - optional Climate mode, to drive Climate entities in HA instead of relays
         (ex. thru GCE RFplayer 1000 to drive heaters with Delta Dore X2D receiver)
     - optional inverted mode (ex. for SonOff ZBmini relay + diode)
+    - limited time boost period with restore mode choice
     - note: still need to create a group of sensors in case of multi open-windows sensors per room
 
 [Later] To do
 
-    - add support for a limited time boost period
     - add support for target temperature auto-change option in case of EDF Tempo Red day
     - delay so every Thermostat doesn't start at the same moment (load optimization)
     - auto-absence mode thru location sharing in case nobody's home, with last status remembered for return
-    - maybe: humidity threshold not to be exceeded (auto sanity boost)
+    - auto-hygro: humidity threshold not to be exceeded
     - maybe: option to accept optional load shedding during peak demand, as a civic act (Voltalis like)
 
 [Doc] Install
