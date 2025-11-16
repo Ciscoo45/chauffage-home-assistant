@@ -3,7 +3,7 @@ blueprint:
   description: >
 
     
-    version Boost : v1.08 - 2025-11-16
+    version Boost : v1.09 - 2025-11-16
 
     auteur : Ciscoo45
     
@@ -59,7 +59,7 @@ blueprint:
       selector: { entity: { domain: timer } }
 
     timer_entity:
-      name: ⏰ Horaire de fin de Boost (input_datetime)
+      name: ⏰ Heure de fin de Boost (input_datetime)
       description: pour afficher l'heure de fin dans l'UI (chauffage_boost > input_dateime)
       selector: { entity: { domain: input_datetime } }
 
