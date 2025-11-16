@@ -3,7 +3,7 @@ blueprint:
   description: >
 
     
-    version Boost : v1.07 - 2025-11-16
+    version Boost : v1.08 - 2025-11-16
 
     auteur : Ciscoo45
     
@@ -115,7 +115,7 @@ blueprint:
       selector: { entity: { domain: input_boolean } }
 
     restore_consigne_custom:
-      name: "[Si mode personnalisé + consigne forcée] Consigne à forcer en fin (°C)"
+      name: "[Si mode personnalisé + consigne forcée] Température de consigne forcée en fin (°C)"
       description: Consigne à appliquer si l'override est activé (chauffage_boost > input_number)
       selector: { entity: { domain: input_number } }
 
