@@ -3,7 +3,7 @@ blueprint:
   description: >
 
     
-    version Boost : v1.09 - 2025-11-16
+    version Boost : v1.10 - 2025-11-16
 
     auteur : Ciscoo45
     
@@ -110,7 +110,7 @@ blueprint:
       selector: { entity: { domain: input_select } }
 
     restore_override_consigne:
-      name: "[Si mode personnalisé] Avoir le choix de forcer une consigne spécifique en fin de boost"
+      name: "[Si mode personnalisé] Choix de forcer une consigne spécifique en fin de boost"
       description: Activer pour imposer une consigne différente de celle de la programmation auto du Scheduler (chauffage_boost > input_boolean)
       selector: { entity: { domain: input_boolean } }
 
