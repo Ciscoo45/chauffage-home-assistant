@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Boost
   description: >
   
-    version Boost : v1.02.1 - 2025-11-16
+    version Boost : v1.03 - 2025-11-16
 
     Blueprint de boost temporaire dérogatif pour le chauffage avec restauration intelligente de mode en fin de boost.
 
@@ -48,14 +48,17 @@ blueprint:
   input:
     piece:
       name: Pièce
+      icon: mdi:home
       selector: { area: {} }
 
     users_group:
       name: Groupe des utilisateurs éligibles
+      icon: mdi:account-multiple
       selector: { entity: { domain: group } }
 
     remote_button:
       name: "[Optionnel] Télécommande Ikea Styrbar / Rodret"
+      icon: mdi:remote
       default: ""
       selector:
         device:
@@ -64,15 +67,18 @@ blueprint:
 
     boost_switch:
       name: Commutateur Boost (Dashboard)
+      icon: mdi:toggle-switch-off
       selector: { entity: { domain: input_boolean } }
 
     boost_timer:
-      name: Timer de boost (timer.*)
-      description: Helper timer qui fera foi pour l'expiration (services timer.start / évènement timer.finished)
+      name: Timer de boost
+      icon: mdi:timer-sand
+      description: Fera foi pour l'expiration (chauffage_boost > timer)
       selector: { entity: { domain: timer } }
 
     timer_entity:
       name: Horaire de fin de Boost (input_datetime)
+      icon: mdi:clock-end
       description: input_datetime (date+heure) utilisé pour afficher l'heure de fin dans l'UI
       selector: { entity: { domain: input_datetime } }
 
