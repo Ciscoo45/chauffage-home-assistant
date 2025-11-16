@@ -3,7 +3,7 @@ blueprint:
   description: >
 
     
-    version Boost : v1.04 - 2025-11-16
+    version Boost : v1.05 - 2025-11-16
     
 
     Blueprint de boost temporaire dérogatif pour le chauffage avec restauration intelligente de mode en fin de boost.
@@ -49,32 +49,32 @@ blueprint:
           manufacturer: IKEA of Sweden
 
     boost_switch:
-      name: Commutateur Boost (Dashboard)
+      name: 🎚️ Commutateur Boost (Dashboard)
       description: (chauffage_boost > input_boolean)
       selector: { entity: { domain: input_boolean } }
 
     boost_timer:
-      name: Timer de boost
+      name: ⌛ Timer de boost
       description: pour le calcul de l'expiration (chauffage_boost > timer)
       selector: { entity: { domain: timer } }
 
     timer_entity:
-      name: Horaire de fin de Boost (input_datetime)
+      name: ⏰ Horaire de fin de Boost (input_datetime)
       description: pour afficher l'heure de fin dans l'UI (chauffage_boost > input_dateime)
       selector: { entity: { domain: input_datetime } }
 
     mode_entity:
-      name: Module Chauffage - Mode
+      name: 📋 Module Chauffage - Mode
       description: Lié au blueprint principal de pilotage du chauffage (chauffage > input_select)
       selector: { entity: { domain: input_select } }
 
     consigne_entity:
-      name: Module Chauffage - Consigne
+      name: 🌡️ Module Chauffage - Consigne
       description: Lié au blueprint principal de pilotage du chauffage (chauffage > input_number)
       selector: { entity: { domain: input_number } }
 
     boost_temp_helper:
-      name: Consigne de teméprature de boost (°C)
+      name: 🎯 Consigne de température de boost (°C)
       description: (chauffage_boost > input_number)
       selector: { entity: { domain: input_number } }
 
@@ -94,13 +94,13 @@ blueprint:
       selector: { number: { min: 1, max: 1200, step: 5, mode: slider } }
 
     boost_extend_step_minutes:
-      name: Pas d'extension par défaut (minutes)
+      name: 👣 Pas d'extension par défaut (minutes)
       default: 10
       selector: { number: { min: 1, max: 60, step: 5, mode: slider } }
 
     # === Restauration intelligente ===
     restore_behavior:
-      name: Comportement en fin de boost
+      name: 😇 Comportement en fin de boost
       description: Restaurer l'état précédent ou choisir un mode spécifique (chauffage_boost > input_select)
       selector: { entity: { domain: input_select } }
 
@@ -120,12 +120,12 @@ blueprint:
       selector: { entity: { domain: input_number } }
 
     previous_mode_storage:
-      name: Enregistrement du Mode précédent
+      name: 💾 Enregistrement du 📋 Mode précédent
       description: pour mémoriser le mode existant avant le boost (chauffage_boost > input_text)
       selector: { entity: { domain: input_text } }
 
     previous_consigne_storage:
-      name: Enregistrement de la Consigne précédente
+      name: 💾 Enregistrement de la 🌡️ Consigne précédente
       description: pour mémoriser la consigne existante avant boost (chauffage_boost > input_number)
       selector: { entity: { domain: input_number } }
 
