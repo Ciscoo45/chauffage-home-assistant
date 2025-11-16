@@ -1,5 +1,5 @@
 blueprint:
-  name: Chauffage by C - Pilotage Semaine et WE/fériés
+  name: Chauffage by C. - Pilotage Semaine et WE/fériés
   description: "
     
     version Chauff : v1.02 - 2025-11-16
@@ -248,7 +248,7 @@ blueprint:
     
     # Paramétrage du Blueprint
     "
-  source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Chauffage_by_C_-_Pilotage_Week-Vs-WE.yaml
+  source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Chauffage_by_C._-_Pilotage_Week-Vs-WE.yaml
   domain: automation
 
 
@@ -417,6 +417,7 @@ action:
 
           
 mode: single
+
 
 
 
