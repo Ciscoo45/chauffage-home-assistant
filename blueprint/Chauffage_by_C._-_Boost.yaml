@@ -3,7 +3,7 @@ blueprint:
   description: >
 
     
-    version Boost : v1.06 - 2025-11-16
+    version Boost : v1.07 - 2025-11-16
 
     auteur : Ciscoo45
     
@@ -64,17 +64,17 @@ blueprint:
       selector: { entity: { domain: input_datetime } }
 
     mode_entity:
-      name: 📋 Module Chauffage - Mode
-      description: Lié au blueprint principal de pilotage du chauffage (chauffage > input_select)
+      name: 📋 Module Chauffage - Radiateur Mode
+      description: lié au blueprint principal de pilotage du chauffage (chauffage > input_select)
       selector: { entity: { domain: input_select } }
 
     consigne_entity:
-      name: 🌡️ Module Chauffage - Consigne
-      description: Lié au blueprint principal de pilotage du chauffage (chauffage > input_number)
+      name: 🌡️ Module Chauffage - Radiateur Consigne
+      description: lié au blueprint principal de pilotage du chauffage (chauffage > input_number)
       selector: { entity: { domain: input_number } }
 
     boost_temp_helper:
-      name: 🎯 Consigne de température de boost (°C)
+      name: 🎯 Consigne de début de boost (°C)
       description: (chauffage_boost > input_number)
       selector: { entity: { domain: input_number } }
 
@@ -84,7 +84,7 @@ blueprint:
       selector: { number: { min: 8, max: 26, step: 0.5, mode: slider } }
 
     boost_duration_helper:
-      name: Durée de boost (minutes)
+      name: Durée de boost
       description: (chauffage_boost > input_number)
       selector: { entity: { domain: input_number } }
 
@@ -105,7 +105,7 @@ blueprint:
       selector: { entity: { domain: input_select } }
 
     restore_mode_custom:
-      name: "[Si mode personnalisé] Mode à appliquer en fin de boost"
+      name: "[Si mode personnalisé] Mode à restaurer en fin de boost"
       description: Mode de chauffage à appliquer en fin de boost (chauffage_boost > input_select)
       selector: { entity: { domain: input_select } }
 
@@ -115,7 +115,7 @@ blueprint:
       selector: { entity: { domain: input_boolean } }
 
     restore_consigne_custom:
-      name: "[Si mode personnalisé + consigne forcée] Consigne à foercer en fin (°C)"
+      name: "[Si mode personnalisé + consigne forcée] Consigne à forcer en fin (°C)"
       description: Consigne à appliquer si l'override est activé (chauffage_boost > input_number)
       selector: { entity: { domain: input_number } }
 
