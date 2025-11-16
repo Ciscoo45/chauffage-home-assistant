@@ -41,7 +41,7 @@ blueprint:
     
     Auteur : Ciscoo45
     
-
+  source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Chauffage_by_C._-_Boost.yaml
   domain: automation
 
   input:
