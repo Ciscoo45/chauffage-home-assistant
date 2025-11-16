@@ -3,7 +3,9 @@ blueprint:
   description: >
 
     
-    version Boost : v1.05 - 2025-11-16
+    version Boost : v1.06 - 2025-11-16
+
+    auteur : Ciscoo45
     
 
     Blueprint de boost temporaire dérogatif pour le chauffage avec restauration intelligente de mode en fin de boost.
@@ -25,9 +27,7 @@ blueprint:
     
     - Affichage de l'heure de fin
 
-    
-    Auteur : Ciscoo45
-    
+     
   source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Chauffage_by_C._-_Boost.yaml
   domain: automation
 
