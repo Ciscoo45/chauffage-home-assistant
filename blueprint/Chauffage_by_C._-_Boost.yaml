@@ -33,18 +33,15 @@ blueprint:
 
   input:
     piece:
-      name: Pièce
-      icon: mdi:home
+      name: 🏠 Pièce
       selector: { area: {} }
 
     users_group:
-      name: Groupe des utilisateurs éligibles
-      icon: mdi:account-multiple
+      name: 👥 Groupe des utilisateurs éligibles aux notifications
       selector: { entity: { domain: group } }
 
     remote_button:
-      name: "[Optionnel] Télécommande Ikea Styrbar / Rodret"
-      icon: mdi:remote
+      name: "[Optionnel] 🎮 Télécommande Ikea Styrbar / Rodret"
       default: ""
       selector:
         device:
@@ -53,40 +50,42 @@ blueprint:
 
     boost_switch:
       name: Commutateur Boost (Dashboard)
-      icon: mdi:toggle-switch-off
+      description: (chauffage_boost > input_boolean)
       selector: { entity: { domain: input_boolean } }
 
     boost_timer:
       name: Timer de boost
-      icon: mdi:timer-sand
-      description: Fera foi pour l'expiration (chauffage_boost > timer)
+      description: pour le calcul de l'expiration (chauffage_boost > timer)
       selector: { entity: { domain: timer } }
 
     timer_entity:
       name: Horaire de fin de Boost (input_datetime)
-      icon: mdi:clock-end
-      description: input_datetime (date+heure) utilisé pour afficher l'heure de fin dans l'UI
+      description: pour afficher l'heure de fin dans l'UI (chauffage_boost > input_dateime)
       selector: { entity: { domain: input_datetime } }
 
     mode_entity:
-      name: Entité Mode du module Chauffage
+      name: Module Chauffage - Mode
+      description: Lié au blueprint principal de pilotage du chauffage (chauffage > input_select)
       selector: { entity: { domain: input_select } }
 
     consigne_entity:
-      name: Entité Consigne du module Chauffage
+      name: Module Chauffage - Consigne
+      description: Lié au blueprint principal de pilotage du chauffage (chauffage > input_number)
       selector: { entity: { domain: input_number } }
 
     boost_temp_helper:
-      name: Helper — Consigne de boost (°C)
+      name: Consigne de teméprature de boost (°C)
+      description: (chauffage_boost > input_number)
       selector: { entity: { domain: input_number } }
 
     consigne_boost_valeur_de_depart:
-      name: Consigne par défaut (°C)
+      name: Consigne de boost par défaut (°C)
       default: 21
-      selector: { number: { min: 15, max: 30, step: 0.5, mode: slider } }
+      selector: { number: { min: 8, max: 26, step: 0.5, mode: slider } }
 
     boost_duration_helper:
-      name: Helper — Durée de boost (minutes)
+      name: Durée de boost (minutes)
+      description: (chauffage_boost > input_number)
       selector: { entity: { domain: input_number } }
 
     duree_boost_valeur_de_depart:
@@ -95,39 +94,39 @@ blueprint:
       selector: { number: { min: 1, max: 1200, step: 5, mode: slider } }
 
     boost_extend_step_minutes:
-      name: Pas d'extension (minutes)
+      name: Pas d'extension par défaut (minutes)
       default: 10
       selector: { number: { min: 1, max: 60, step: 5, mode: slider } }
 
     # === Restauration intelligente ===
     restore_behavior:
       name: Comportement en fin de boost
-      description: Restaurer l'état précédent ou choisir un mode spécifique
+      description: Restaurer l'état précédent ou choisir un mode spécifique (chauffage_boost > input_select)
       selector: { entity: { domain: input_select } }
 
     restore_mode_custom:
-      name: "[Si mode personnalisé] Mode à appliquer"
-      description: Mode de chauffage à appliquer en fin de boost
+      name: "[Si mode personnalisé] Mode à appliquer en fin de boost"
+      description: Mode de chauffage à appliquer en fin de boost (chauffage_boost > input_select)
       selector: { entity: { domain: input_select } }
 
     restore_override_consigne:
-      name: "[Si mode personnalisé] Forcer une consigne spécifique"
-      description: Activer pour imposer une consigne différente de celle du Scheduler
+      name: "[Si mode personnalisé] Avoir le choix de forcer une consigne spécifique en fin de boost"
+      description: Activer pour imposer une consigne différente de celle de la programmation auto du Scheduler (chauffage_boost > input_boolean)
       selector: { entity: { domain: input_boolean } }
 
     restore_consigne_custom:
-      name: "[Si mode personnalisé + consigne forcée] Consigne (°C)"
-      description: Consigne à appliquer si l'override est activé
+      name: "[Si mode personnalisé + consigne forcée] Consigne à foercer en fin (°C)"
+      description: Consigne à appliquer si l'override est activé (chauffage_boost > input_number)
       selector: { entity: { domain: input_number } }
 
     previous_mode_storage:
-      name: Helper de stockage - Mode précédent
-      description: input_text pour mémoriser le mode avant boost
+      name: Enregistrement du Mode précédent
+      description: pour mémoriser le mode existant avant le boost (chauffage_boost > input_text)
       selector: { entity: { domain: input_text } }
 
     previous_consigne_storage:
-      name: Helper de stockage - Consigne précédente
-      description: input_number pour mémoriser la consigne avant boost
+      name: Enregistrement de la Consigne précédente
+      description: pour mémoriser la consigne existante avant boost (chauffage_boost > input_number)
       selector: { entity: { domain: input_number } }
 
     sync_helpers_on_reload:
