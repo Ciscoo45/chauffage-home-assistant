@@ -1,28 +1,14 @@
 blueprint:
   name: Chauffage by C. - Boost
   description: >
-  
-    version Boost : v1.03 - 2025-11-16
+
+    
+    version Boost : v1.04 - 2025-11-16
+    
 
     Blueprint de boost temporaire dérogatif pour le chauffage avec restauration intelligente de mode en fin de boost.
 
-    
-    Correction v1.02 :
-    
-    - Fix désactivation du switch boost à l'expiration du timer
-    
-    - Notifications correctement supprimées en fin de boost
-
-    
-    Correction v1.01 :
-    
-    - Fix restauration état précédent après boost via télécommande
-    
-    - Synchronisation immédiate du switch boost
-    
-    - Amélioration robustesse de la détection d'état
-
-    
+           
     Fonctionnalités :
     
     - Boost manuel via UI ou télécommande Ikea
