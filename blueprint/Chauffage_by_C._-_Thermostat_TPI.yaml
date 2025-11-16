@@ -1,5 +1,5 @@
 blueprint:
-  name: Chauffage by C - Thermostat TPI
+  name: Chauffage by C. - Thermostat TPI
   description: "
 
     version TPI : v.1.02 - 2025-11-16
@@ -224,7 +224,7 @@ blueprint:
     
     # Paramétrage du Blueprint
     "
-  source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Chauffage_by_C_-_Thermostat_TPI.yaml
+  source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Chauffage_by_C._-_Thermostat_TPI.yaml
   domain: automation
 
 
