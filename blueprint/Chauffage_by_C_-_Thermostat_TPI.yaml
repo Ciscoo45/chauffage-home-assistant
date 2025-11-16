@@ -224,7 +224,7 @@ blueprint:
     
     # Paramétrage du Blueprint
     "
-  source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Thermostat_TPI__by_C.yaml
+  source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Chauffage_by_C_-_Thermostat_TPI.yaml
   domain: automation
 
 
