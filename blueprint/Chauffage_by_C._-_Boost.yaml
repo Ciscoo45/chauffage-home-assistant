@@ -3,7 +3,7 @@ blueprint:
   description: >
 
     
-    version Boost : v1.10 - 2025-11-16
+    version Boost : v1.11 - 2025-11-16
 
     auteur : Ciscoo45
     
@@ -131,6 +131,7 @@ blueprint:
 
     sync_helpers_on_reload:
       name: Initialiser les helpers à chaque redémarrage / rechargement
+      description: Si actif, on reset les paramètres de consigne et durée à ceux définis dans le Blueprint. Si désactivé, on garde les paramètres définis sur le dashboard Lovelace lorsqu'on relance/recharge Home Assistant.
       default: true
       selector: { boolean: {} }
 
