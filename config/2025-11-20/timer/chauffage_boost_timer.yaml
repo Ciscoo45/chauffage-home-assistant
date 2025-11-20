@@ -1,0 +1,79 @@
+
+### Définition des Helpers INPUT_TIMER pour le Blueprint Chauffage Boost : Timer boost
+
+## pour Chambre Ss-Sol
+boost_chambre_sssol:
+  name: "Timer Boost Chambre Ss-Sol"
+  duration: "00:00:00"  # Durée par défaut (0 = désarmé au démarrage)
+  restore: true         # (Optionnel) restaure l’état après redémarrage
+  icon: mdi:timer-sand
+
+## pour Bureau
+boost_bureau:
+  name: "Timer Boost Bureau"
+  duration: "00:00:00"
+  restore: true
+  icon: mdi:timer-sand
+
+## pour Cuisine
+boost_cuisine:
+  name: "Timer Boost Cuisine"
+  duration: "00:00:00"
+  restore: true
+  icon: mdi:timer-sand
+
+## pour Salon
+boost_salon:
+  name: "Timer Boost Salon"
+  duration: "00:00:00"
+  restore: true
+  icon: mdi:timer-sand
+
+## pour SdB
+boost_sdb:
+  name: "Timer Boost SdB"
+  duration: "00:00:00"
+  restore: true
+  icon: mdi:timer-sand
+
+## pour Michel
+boost_michel:
+  name: "Timer Boost Michel"
+  duration: "00:00:00"
+  restore: true
+  icon: mdi:timer-sand
+
+## pour Voitures
+boost_voitures:
+  name: "Timer Boost Voitures"
+  duration: "00:00:00"
+  restore: true
+  icon: mdi:timer-sand
+
+## pour Couloir
+boost_couloir:
+  name: "Timer Boost Couloir"
+  duration: "00:00:00"
+  restore: true
+  icon: mdi:timer-sand
+
+## pour Atelier
+boost_atelier:
+  name: "Timer Boost Atelier"
+  duration: "00:00:00"
+  restore: true
+  icon: mdi:timer-sand
+
+## pour Telmo
+boost_telmo:
+  name: "Timer Boost Telmo"
+  duration: "00:00:00"
+  restore: true
+  icon: mdi:timer-sand
+
+## pour SdB Etg
+boost_sdb_etg:
+  name: "Timer Boost SdB Etg"
+  duration: "00:00:00"
+  restore: true
+  icon: mdi:timer-sand

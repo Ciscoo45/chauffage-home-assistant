@@ -1,0 +1,29 @@
+
+### Capteur "Info ondulée SANS l'onduleur" ajusté
+### Corrige le problème d'historique de la barre négative en ajustant la valeur actuelle
+
+- sensor:
+    # Capteur d'énergie ajusté
+    - name: "Info Ondulée Ajustée Energy"
+      unique_id: info_ondule_ajuste_energy
+      unit_of_measurement: "kWh"
+      device_class: energy
+      state_class: total_increasing
+      icon: mdi:lightning-bolt
+      state: >
+        {% set base_historique = 521.77 %}
+        {% set capteur_actuel = states('sensor.smart_plug_1912185416891825187948e1e913bbd0_energy') | float(0) / 1000 %}
+        {{ (base_historique + capteur_actuel) | round(2) }}
+      availability: >
+        {{ states('sensor.smart_plug_1912185416891825187948e1e913bbd0_energy') not in ['unavailable', 'unknown', 'none'] }}
+
+    # Capteur de coût ajusté
+    - name: "Info Ondulée Ajustée Cost"
+      unique_id: info_ondule_ajuste_cost
+      unit_of_measurement: "EUR"
+      device_class: monetary
+      state_class: total_increasing
+      icon: mdi:currency-eur
+      state: >
+        {% set energy = states('sensor.info_ondule_ajuste_energy') | float(0) %}
+        {{ (energy * 0.18) | round(2) }}

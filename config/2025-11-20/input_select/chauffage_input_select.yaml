@@ -1,0 +1,79 @@
+
+### Définition des Helpers INPUT_SELCT pour le Blueprint Chauffage by C. : Mode
+
+## Définition de l'ancre pour les paramètres communs
+mode_defaults: &mode_defaults
+  options:
+    - Presence
+    - Absence
+    - Manuel
+    - Hors-gel
+    - Arret
+  icon: mdi:format-list-bulleted
+
+
+## pour SS-Sol
+
+# pour Chambre SS-Sol
+radiateur_chambre_sssol_mode:
+  <<: *mode_defaults
+  name: Radiateur Chambre Sous-sol Mode
+
+
+## pour RdC
+
+# pour Bureau
+radiateur_bureau_mode:
+  <<: *mode_defaults
+  name: Radiateur Bureau Mode
+
+# pour Cuisine
+radiateur_cuisine_mode:
+  <<: *mode_defaults
+  name: Radiateur Cuisine Mode
+
+# pour Salon
+radiateur_salon_mode:
+  <<: *mode_defaults
+  name: Radiateur Salon Mode
+
+# pour SdB
+radiateur_sdb_mode:
+  <<: *mode_defaults
+  name: Radiateur SdB Mode
+
+# pour Michel
+radiateur_michel_mode:
+  <<: *mode_defaults
+  name: Radiateur Michel Mode
+
+# pour Voitures
+radiateur_voitures_mode:
+  <<: *mode_defaults
+  name: Radiateur Voitures Mode
+
+# pour Coumloir
+radiateur_couloir_mode:
+  <<: *mode_defaults
+  name: Radiateur Couloir Mode
+
+
+## pour 1ier Etage
+
+# pour Atelier
+radiateur_atelier_mode:
+  <<: *mode_defaults
+  name: Radiateur Atelier Mode
+
+# pour Telmo
+radiateur_telmo_mode:
+  <<: *mode_defaults
+  name: Radiateur Telmo Mode
+
+# pour Sdb Etg
+radiateur_sdb_etg_mode:
+  <<: *mode_defaults
+  name: Radiateur Sdb Etg Mode
+
+
+

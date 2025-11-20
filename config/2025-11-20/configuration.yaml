@@ -1,0 +1,83 @@
+###########################################################################################################
+# Loads default set of integrations. Do not remove.
+default_config:
+
+
+
+###########################################################################################################
+# Load frontend themes from the themes folder
+frontend:
+  themes: !include_dir_merge_named theme/
+# couleurs pour statuts particuliers
+#  my_theme:
+#    state-switch-radiateur_salon-active-color: "#ef0024"
+#    state-cover-garage_door-open-color: "#ff0000"
+#    state-media_player-inactive-color: "#795548"
+
+
+
+###########################################################################################################
+### Intégration http
+# commun
+http:
+
+
+
+
+##########################################################################################################
+### Emplacement des tableaux de bord 
+### Mode hybride - Avec interface graphique et stockage dans base Storage + Dashboards en YAML
+lovelace:
+  mode: storage
+  dashboards:
+    chauffage-mell-export:
+      mode: yaml
+      title: Chauffage Mell Export
+      icon: mdi:content-copy
+      show_in_sidebar: true
+      filename: dashboard/chauffage_mell_20251120.yaml
+
+
+
+###########################################################################################################
+### Separate config yaml files :
+# https://gist.github.com/frenck/20a3236cf64bf5bbcb907ecc7cf665cd
+
+## Automations I create in the UI
+automation ui: !include automations.yaml
+## My own handmade automations (plusieurs fichiers dans un sous-dossier automations)
+automation manual: !include_dir_merge_list automation/
+
+## LISTES, dans des sous-dossiers
+# https://www.home-assistant.io/docs/configuration/splitting_configuration/#example-include_dir_merge_list
+binary_sensor: !include_dir_merge_list binary_sensor/
+notify: !include_dir_merge_list notify/
+sensor: !include_dir_merge_list sensor/
+template: !include_dir_merge_list template/
+
+## DICTIONARIES, dans des sous-dossiers
+# https://www.home-assistant.io/docs/configuration/splitting_configuration/#example-include_dir_merge_named
+input_select: !include_dir_merge_named input_select/
+input_number: !include_dir_merge_named input_number/
+input_boolean: !include_dir_merge_named input_boolean/
+input_datetime: !include_dir_merge_named input_datetime/
+input_text: !include_dir_merge_named input_text/
+group: !include_dir_merge_named group/
+script: !include_dir_merge_named script/
+switch: !include_dir_merge_named switch/
+utility_meter: !include_dir_merge_named utility_meter/
+# fifth: !include_dir_merge_named ./fifth
+timer: !include_dir_merge_named timer/
+homeassistant:
+  packages: !include_dir_merge_named  package/
+  # customize: !include_dir_merge_named  customize/
+
+## Classiques dans un fichier yaml distinct
+# switch: !include switch.yaml
+# scene: !include scene.yaml
+# script: !include scripts.yaml  -> déplacé dans dossier Script
+command_line: !include command_line.yaml
+# zone: !include zone.yaml
+# device_tracker: !include device_tracker.yaml
+
+

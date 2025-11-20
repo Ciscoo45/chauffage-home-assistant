@@ -1,0 +1,17 @@
+
+### Déclarations des DEVICES par USERS pour le Blueprint Chauffage Boost by C. 
+### *** Users à déclarer dans Group déjà + leur créer un compte HA
+
+# pour Michel et ses devices
+- platform: group
+  name: user_michel
+  services:
+    - service: mobile_app_pixel_4a_5g
+    - service: mobile_app_sm_t720  #Tab_Michel
+
+# pour François et ses devices
+- platform: group
+  name: user_ciscoo
+  services:
+    - service: mobile_app_pixel_7_pro
+    - service: mobile_app_sm_t720_fr  #Tab_Ciscoo

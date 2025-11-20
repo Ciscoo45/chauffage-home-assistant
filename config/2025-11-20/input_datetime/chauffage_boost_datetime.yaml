@@ -1,0 +1,79 @@
+
+### Définition des Helpers INPUT_DATETIME pour le Blueprint Chauffage Boost by C. : Boost end
+
+## pour Chambre Ss-Sol
+boost_end_chambre_sssol:
+  name: "Heure de fin du boost Chambre Ss-Sol"
+  has_date: true
+  has_time: true
+  icon: mdi:clock-end
+
+## pour Bureau
+boost_end_bureau:
+  name: "Heure de fin du boost Bureau"
+  has_date: true
+  has_time: true
+  icon: mdi:clock-end
+
+## pour Cuisine
+boost_end_cuisine:
+  name: "Heure de fin du boost Cuisine"
+  has_date: true
+  has_time: true
+  icon: mdi:clock-end
+
+## pour Salon
+boost_end_salon:
+  name: "Heure de fin du boost Salon"
+  has_date: true
+  has_time: true
+  icon: mdi:clock-end
+
+## pour SdB
+boost_end_sdb:
+  name: "Heure de fin du boost SdB"
+  has_date: true
+  has_time: true
+  icon: mdi:clock-end
+
+## pour Michel
+boost_end_michel:
+  name: "Heure de fin du boost Michel"
+  has_date: true
+  has_time: true
+  icon: mdi:clock-end
+
+## pour Voitures
+boost_end_voitures:
+  name: "Heure de fin du boost Voitures"
+  has_date: true
+  has_time: true
+  icon: mdi:clock-end
+
+## pour Couloir
+boost_end_couloir:
+  name: "Heure de fin du boost Couloir"
+  has_date: true
+  has_time: true
+  icon: mdi:clock-end
+
+## pour Atelier
+boost_end_atelier:
+  name: "Heure de fin du boost Atelier"
+  has_date: true
+  has_time: true
+  icon: mdi:clock-end
+
+## pour Telmo
+boost_end_telmo:
+  name: "Heure de fin du boost Telmo"
+  has_date: true
+  has_time: true
+  icon: mdi:clock-end
+
+## pour SdB Etg
+boost_end_sdb_etg:
+  name: "Heure de fin du boost SdB Etg"
+  has_date: true
+  has_time: true
+  icon: mdi:clock-end

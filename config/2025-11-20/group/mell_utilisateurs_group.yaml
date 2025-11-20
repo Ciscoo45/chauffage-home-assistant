@@ -1,0 +1,12 @@
+
+#############################################
+### Groupe d'UTILISATEURS à Mell
+### Devices à déclarer dans le dossier NOTIFY + créer un compte HA pour chaque user
+### Utilisé notamment dans : Chauffage_by_C._-_Boost.yaml
+
+mell_utilisateurs:
+  name: Utilisateurs de Mell
+  icon: mdi:account-multiple
+  entities:
+    - person.michel
+    - person.ciscoo

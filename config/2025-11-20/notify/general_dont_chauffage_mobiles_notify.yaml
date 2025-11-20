@@ -1,0 +1,10 @@
+
+### Usage général HA + Blueprint Chauffage by C.
+
+- platform: group
+  name: "mobiles"
+  services:
+    - service: mobile_app_pixel_7_pro #Ciscoo
+    - service: mobile_app_pixel_4a_5g  #Michel
+#    - service: mobile_app_sm_t720  #Tab_Michel
+#    - service: mobile_app_sm_t720_fr  #Tab_Ciscoo

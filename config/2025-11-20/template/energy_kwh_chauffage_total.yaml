@@ -1,0 +1,58 @@
+
+### Capteur cumulé pour tous les chauffages
+
+- sensor:
+    # Énergie totale de tous les radiateurs
+    - name: "Chauffage TOTAL Energy"
+      unique_id: chauffage_total_energy
+      unit_of_measurement: "kWh"
+      device_class: energy
+      state_class: total_increasing
+      icon: mdi:radiator
+      state: >
+        {% set total = 0 %}
+        {% set total = total + (states('sensor.thermostat_kwh_consommes_atelier') | float(0)) %}
+        {% set total = total + (states('sensor.thermostat_kwh_consommes_bureau') | float(0)) %}
+        {% set total = total + (states('sensor.thermostat_kwh_consommes_chambre_sssol') | float(0)) %}
+        {% set total = total + (states('sensor.thermostat_kwh_consommes_couloir') | float(0)) %}
+        {% set total = total + (states('sensor.thermostat_kwh_consommes_cuisine') | float(0)) %}
+        {% set total = total + (states('sensor.thermostat_kwh_consommes_michel') | float(0)) %}
+        {% set total = total + (states('sensor.thermostat_kwh_consommes_salon') | float(0)) %}
+        {% set total = total + (states('sensor.thermostat_kwh_consommes_sdb') | float(0)) %}
+        {% set total = total + (states('sensor.thermostat_kwh_consommes_sdb_etg') | float(0)) %}
+        {% set total = total + (states('sensor.thermostat_kwh_consommes_telmo') | float(0)) %}
+        {% set total = total + (states('sensor.thermostat_kwh_consommes_voitures') | float(0)) %}
+        {{ total | round(2) }}
+
+    # Coût total de tous les radiateurs
+    - name: "Chauffage TOTAL Cost"
+      unique_id: chauffage_total_cost
+      unit_of_measurement: "EUR"
+      device_class: monetary
+      state_class: total_increasing
+      icon: mdi:currency-eur
+      state: >
+        {% set energy = states('sensor.chauffage_total_energy') | float(0) %}
+        {{ (energy * 0.18) | round(2) }}
+
+    # Puissance instantanée totale (si capteurs de puissance disponibles)
+    - name: "Chauffage TOTAL Puissance"
+      unique_id: chauffage_total_power
+      unit_of_measurement: "W"
+      device_class: power
+      state_class: measurement
+      icon: mdi:flash
+      state: >
+        {% set total = 0 %}
+        {% set total = total + (states('sensor.thermostat_puissance_atelier') | float(0)) %}
+        {% set total = total + (states('sensor.thermostat_puissance_bureau') | float(0)) %}
+        {% set total = total + (states('sensor.thermostat_puissance_chambre_sssol') | float(0)) %}
+        {% set total = total + (states('sensor.thermostat_puissance_couloir') | float(0)) %}
+        {% set total = total + (states('sensor.thermostat_puissance_cuisine') | float(0)) %}
+        {% set total = total + (states('sensor.thermostat_puissance_michel') | float(0)) %}
+        {% set total = total + (states('sensor.thermostat_puissance_salon') | float(0)) %}
+        {% set total = total + (states('sensor.thermostat_puissance_sdb') | float(0)) %}
+        {% set total = total + (states('sensor.thermostat_puissance_sdb_etg') | float(0)) %}
+        {% set total = total + (states('sensor.thermostat_puissance_telmo') | float(0)) %}
+        {% set total = total + (states('sensor.thermostat_puissance_voitures') | float(0)) %}
+        {{ total | round(0) }}
