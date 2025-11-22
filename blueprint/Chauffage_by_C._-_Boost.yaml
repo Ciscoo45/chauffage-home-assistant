@@ -59,7 +59,7 @@ blueprint:
       selector: { entity: { domain: timer } }
 
     timer_entity:
-      name: ⏰ Heure de fin de Boost (input_datetime)
+      name: ⏰ Heure de fin de Boost
       description: pour afficher l'heure de fin dans l'UI (chauffage_boost > input_dateime)
       selector: { entity: { domain: input_datetime } }
 
