@@ -132,7 +132,7 @@ blueprint:
     sync_helpers_on_reload:
       name: Initialiser les helpers à chaque redémarrage / rechargement
       description: Si actif, on reset les paramètres de consigne et durée à ceux définis dans le Blueprint. Si désactivé, on garde les paramètres définis sur le dashboard Lovelace lorsqu'on relance/recharge Home Assistant.
-      default: true
+      default: false
       selector: { boolean: {} }
 
 # ========= Déclencheurs =========
