@@ -3,7 +3,7 @@ blueprint:
   description: >
 
     
-    version Boost : v1.11 - 2025-11-16
+    version Boost : v1.12 - 2025-11-24
 
     auteur : Ciscoo45
     
@@ -26,6 +26,8 @@ blueprint:
     - Notifications persistantes avec actions
     
     - Affichage de l'heure de fin
+    
+    - Persistance des paramètres de boost entre redémarrages
 
      
   source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Chauffage_by_C._-_Boost.yaml
@@ -131,7 +133,10 @@ blueprint:
 
     sync_helpers_on_reload:
       name: Initialiser les helpers à chaque redémarrage / rechargement
-      description: Si actif, on reset les paramètres de consigne et durée à ceux définis dans le Blueprint. Si désactivé, on garde les paramètres définis sur le dashboard Lovelace lorsqu'on relance/recharge Home Assistant.
+      description: |
+        Si actif, on reset les paramètres de consigne et durée à ceux définis dans le Blueprint.
+        Si désactivé, les helpers gardent leur dernière valeur (persistance entre redémarrages).
+        IMPORTANT: Pour que la persistance fonctionne, les helpers doivent être déclarés dans configuration.yaml
       default: false
       selector: { boolean: {} }
 
@@ -244,7 +249,7 @@ action:
       # ======= INIT HELPERS =======
       - conditions: "{{ trigger.id in ['init_on_start','init_on_reload'] and not sync_reload }}"
         sequence:
-          - stop: "Initialisation des helpers désactivée."
+          - stop: "Initialisation des helpers désactivée - conservation des valeurs persistantes."
 
       - conditions: "{{ trigger.id in ['init_on_start','init_on_reload'] and sync_reload }}"
         sequence:
@@ -254,7 +259,7 @@ action:
           - service: input_number.set_value
             target: { entity_id: !input boost_temp_helper }
             data: { value: "{{ default_temp|float }}" }
-          - stop: "Helpers initialisés."
+          - stop: "Helpers réinitialisés aux valeurs par défaut."
 
       # ======= DÉMARRAGE =======
       - conditions: "{{ trigger.id in ['boost_start_remote','boost_start_ui'] }}"
@@ -461,18 +466,29 @@ action:
               - conditions: >-
                   {{ 'état précédent' in states(restore_choice)|lower or 'etat precedent' in states(restore_choice)|lower }}
                 sequence:
+                  - variables:
+                      previous_mode: "{{ states(prev_mode_storage) }}"
+                      previous_consigne: "{{ states(prev_consigne_storage) | float(14) }}"
+                  
+                  # Restaurer le mode
                   - service: input_select.select_option
                     target: { entity_id: "{{ mode_entity }}" }
                     data: 
-                      option: "{{ states(prev_mode_storage) }}"
+                      option: "{{ previous_mode }}"
                   
                   - delay:
                       milliseconds: 200
                   
-                  - service: input_number.set_value
-                    target: { entity_id: "{{ consigne_entity }}" }
-                    data: 
-                      value: "{{ states(prev_consigne_storage) | float(14) }}"
+                  # NOUVEAU : Restaurer la consigne UNIQUEMENT si le mode précédent était "Manuel"
+                  - if:
+                      - condition: template
+                        value_template: "{{ previous_mode == 'Manuel' }}"
+                    then:
+                      - service: input_number.set_value
+                        target: { entity_id: "{{ consigne_entity }}" }
+                        data: 
+                          value: "{{ previous_consigne }}"
+                    # Sinon : ne rien faire, laisser le Scheduler gérer la consigne via le blueprint principal
 
               # Option 2 : Mode personnalisé
               - conditions: >-
@@ -483,6 +499,7 @@ action:
                       override_active: "{{ is_state(override_consigne_switch, 'on') }}"
                       target_consigne: "{{ states(custom_consigne_entity) | float(14) }}"
                   
+                  # Restaurer le mode personnalisé
                   - service: input_select.select_option
                     target: { entity_id: "{{ mode_entity }}" }
                     data: 
@@ -491,6 +508,7 @@ action:
                   - delay:
                       milliseconds: 200
 
+                  # MODIFIÉ : Appliquer la consigne UNIQUEMENT si l'override est activé
                   - if:
                       - condition: template
                         value_template: "{{ override_active }}"
@@ -499,16 +517,13 @@ action:
                         target: { entity_id: "{{ consigne_entity }}" }
                         data: 
                           value: "{{ target_consigne }}"
+                    # Sinon : ne pas toucher à la consigne, laisser le Scheduler faire son travail
 
-            # Par défaut (sécurité) : Presence à 14°C
+            # Par défaut (sécurité) : Presence sans toucher à la consigne
             default:
               - service: input_select.select_option
                 target: { entity_id: !input mode_entity }
                 data: { option: "Presence" }
-              
-              - service: input_number.set_value
-                target: { entity_id: !input consigne_entity }
-                data: { value: 14 }
 
           # Stoppe le timer
           - service: timer.cancel
