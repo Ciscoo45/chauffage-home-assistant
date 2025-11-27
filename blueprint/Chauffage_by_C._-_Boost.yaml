@@ -19,15 +19,13 @@ blueprint:
     
     - Extension de durée via notification
     
-    - Restauration intelligente de l'état précédent ou mode personnalisé
+    - Restauration intelligente : ne restaure la consigne que si le mode précédent était Manuel
     
     - Compatible avec tous les modes (y compris Arrêt)
     
     - Notifications persistantes avec actions
     
     - Affichage de l'heure de fin
-    
-    - Persistance des paramètres de boost entre redémarrages
 
      
   source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Chauffage_by_C._-_Boost.yaml
@@ -133,10 +131,7 @@ blueprint:
 
     sync_helpers_on_reload:
       name: Initialiser les helpers à chaque redémarrage / rechargement
-      description: |
-        Si actif, on reset les paramètres de consigne et durée à ceux définis dans le Blueprint.
-        Si désactivé, les helpers gardent leur dernière valeur (persistance entre redémarrages).
-        IMPORTANT: Pour que la persistance fonctionne, les helpers doivent être déclarés dans configuration.yaml
+      description: Si actif, on reset les paramètres de consigne et durée à ceux définis dans le Blueprint. Si désactivé, on garde les paramètres définis sur le dashboard Lovelace lorsqu'on re[...]
       default: false
       selector: { boolean: {} }
 
@@ -249,7 +244,7 @@ action:
       # ======= INIT HELPERS =======
       - conditions: "{{ trigger.id in ['init_on_start','init_on_reload'] and not sync_reload }}"
         sequence:
-          - stop: "Initialisation des helpers désactivée - conservation des valeurs persistantes."
+          - stop: "Initialisation des helpers désactivée."
 
       - conditions: "{{ trigger.id in ['init_on_start','init_on_reload'] and sync_reload }}"
         sequence:
@@ -259,7 +254,7 @@ action:
           - service: input_number.set_value
             target: { entity_id: !input boost_temp_helper }
             data: { value: "{{ default_temp|float }}" }
-          - stop: "Helpers réinitialisés aux valeurs par défaut."
+          - stop: "Helpers initialisés."
 
       # ======= DÉMARRAGE =======
       - conditions: "{{ trigger.id in ['boost_start_remote','boost_start_ui'] }}"
@@ -460,7 +455,7 @@ action:
                       {{ states(mode_entity) == 'Manuel' }}
             default: []
 
-          # Restauration intelligente
+          # ===== MODIFICATION POINT 1 : RESTAURATION INTELLIGENTE =====
           - choose:
               # Option 1 : Restaurer l'état précédent
               - conditions: >-
@@ -470,7 +465,7 @@ action:
                       previous_mode: "{{ states(prev_mode_storage) }}"
                       previous_consigne: "{{ states(prev_consigne_storage) | float(14) }}"
                   
-                  # Restaurer le mode
+                  # Toujours restaurer le mode
                   - service: input_select.select_option
                     target: { entity_id: "{{ mode_entity }}" }
                     data: 
@@ -480,6 +475,7 @@ action:
                       milliseconds: 200
                   
                   # NOUVEAU : Restaurer la consigne UNIQUEMENT si le mode précédent était "Manuel"
+                  # Sinon, laisser le Scheduler gérer la consigne
                   - if:
                       - condition: template
                         value_template: "{{ previous_mode == 'Manuel' }}"
@@ -488,7 +484,6 @@ action:
                         target: { entity_id: "{{ consigne_entity }}" }
                         data: 
                           value: "{{ previous_consigne }}"
-                    # Sinon : ne rien faire, laisser le Scheduler gérer la consigne via le blueprint principal
 
               # Option 2 : Mode personnalisé
               - conditions: >-
@@ -509,6 +504,7 @@ action:
                       milliseconds: 200
 
                   # MODIFIÉ : Appliquer la consigne UNIQUEMENT si l'override est activé
+                  # Sinon, laisser le Scheduler gérer
                   - if:
                       - condition: template
                         value_template: "{{ override_active }}"
@@ -517,7 +513,6 @@ action:
                         target: { entity_id: "{{ consigne_entity }}" }
                         data: 
                           value: "{{ target_consigne }}"
-                    # Sinon : ne pas toucher à la consigne, laisser le Scheduler faire son travail
 
             # Par défaut (sécurité) : Presence sans toucher à la consigne
             default:
