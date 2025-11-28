@@ -1,0 +1,21 @@
+
+# ========================================
+# GESTION TEMPO - ACTIVATION/DÉSACTIVATION
+# ========================================
+
+# Switch global (toutes les pièces)
+tempo_global_actif:
+  name: "Gestion Tempo Globale"
+  icon: mdi:calendar-clock
+  initial: true
+
+# ========== PAR PIÈCE - SdB ==========
+radiateur_sdb_tempo_actif:
+  name: "SdB - Gestion Tempo"
+  icon: mdi:home-thermometer
+  initial: true
+
+radiateur_sdb_show_tempo_config:
+  name: "SdB - Afficher Config Tempo"
+  icon: mdi:tune
+  initial: false

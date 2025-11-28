@@ -1,0 +1,118 @@
+
+### Définition des Helpers INPUT_SELCT pour le Blueprint Chauffage Boost by C. : Restore behavior, Restore custom mode
+
+
+## Définition de l'ancre pour les paramètres communs
+base_restore_behavior: &base_restore_behavior
+  icon: mdi:restore
+  options:
+    - "Restaurer l'état précédent"
+    - "Mode personnalisé"
+  initial: "Restaurer l'état précédent"
+base_restore_custom_mode: &base_restore_custom_mode
+  options:
+    - Presence
+    - Absence
+    - Manuel
+    - Hors-gel
+    - Arret
+  icon: mdi:format-list-bulleted
+  initial: Presence
+  # icon: mdi:thermostat
+
+## pour Chambre Ss-Sol
+radiateur_chambre_sssol_restore_behavior:
+  <<: *base_restore_behavior
+  name: "Chambre Ss-Sol - Comportement en fin de Boost"
+radiateur_chambre_sssol_restore_custom_mode:
+  <<: *base_restore_custom_mode
+  name: "Chambre Ss-Sol - Mode à restaurer en fin de Boost"
+
+## pour Bureau
+radiateur_bureau_restore_behavior:
+  <<: *base_restore_behavior
+  name: "Bureau - Comportement en fin de Boost"
+radiateur_bureau_restore_custom_mode:
+  <<: *base_restore_custom_mode
+  name: "Bureau - Mode à restaurer en fin de Boost"
+
+## pour Cuisine
+radiateur_cuisine_restore_behavior:
+  <<: *base_restore_behavior
+  name: "Cuisine - Comportement en fin de Boost"
+radiateur_cuisine_restore_custom_mode:
+  <<: *base_restore_custom_mode
+  name: "Cuisine - Mode à restaurer en fin de Boost"
+
+## pour Salon
+radiateur_salon_restore_behavior:
+  <<: *base_restore_behavior
+  name: "Salon - Comportement en fin de Boost"
+radiateur_salon_restore_custom_mode:
+  <<: *base_restore_custom_mode
+  name: "Salon - Mode à restaurer en fin de Boost"
+
+## pour SdB
+radiateur_sdb_restore_behavior:
+  <<: *base_restore_behavior
+  name: "SdB - Comportement en fin de Boost"
+  initial:   "Mode personnalisé"
+radiateur_sdb_restore_custom_mode:
+  <<: *base_restore_custom_mode
+  name: "SdB - Mode à restaurer en fin de Boost"
+
+## pour Michel
+radiateur_michel_restore_behavior:
+  <<: *base_restore_behavior
+  name: "Michel - Comportement en fin de Boost"
+radiateur_michel_restore_custom_mode:
+  <<: *base_restore_custom_mode
+  name: "Michel - Mode à restaurer en fin de Boost"
+
+## pour Voitures
+radiateur_voitures_restore_behavior:
+  <<: *base_restore_behavior
+  name: "Voitures - Comportement en fin de Boost"
+radiateur_voitures_restore_custom_mode:
+  <<: *base_restore_custom_mode
+  name: "Voitures - Mode à restaurer en fin de Boost"
+
+## pour Couloir
+radiateur_couloir_restore_behavior:
+  <<: *base_restore_behavior
+  name: "Couloir - Comportement en fin de Boost"
+radiateur_couloir_restore_custom_mode:
+  <<: *base_restore_custom_mode
+  name: "Couloir - Mode à restaurer en fin de Boost"
+
+## pour Atelier
+radiateur_atelier_restore_behavior:
+  <<: *base_restore_behavior
+  name: "Atelier - Comportement en fin de Boost"
+radiateur_atelier_restore_custom_mode:
+  <<: *base_restore_custom_mode
+  name: "Atelier - Mode à restaurer en fin de Boost"
+
+## pour Garçonnière
+radiateur_garconniere_restore_behavior:
+  <<: *base_restore_behavior
+  name: "Garçonnière - Comportement en fin de Boost"
+radiateur_garconniere_restore_custom_mode:
+  <<: *base_restore_custom_mode
+  name: "Garçonnière - Mode à restaurer en fin de Boost"
+
+## pour Telmo
+radiateur_telmo_restore_behavior:
+  <<: *base_restore_behavior
+  name: "Telmo - Comportement en fin de Boost"
+radiateur_telmo_restore_custom_mode:
+  <<: *base_restore_custom_mode
+  name: "Telmo - Mode à restaurer en fin de Boost"
+
+## pour SdB Etg
+radiateur_sdb_etg_restore_behavior:
+  <<: *base_restore_behavior
+  name: "SdB Etg - Comportement en fin de Boost"
+radiateur_sdb_etg_restore_custom_mode:
+  <<: *base_restore_custom_mode
+  name: "SdB Etg - Mode à restaurer en fin de Boost"

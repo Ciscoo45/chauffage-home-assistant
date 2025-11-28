@@ -1,0 +1,218 @@
+
+### Définition des Helpers INPUT_BOOLEAN pour le Blueprint Chauffage Boost by C. : Boost, Restore override consigne, Show boost config
+
+
+## pour Chambre Ss-sol
+# Déclencheur virtuel pour le dashboard
+boost_chambre_sssol:
+  name: "Boost Chambre Ss-sol"
+  initial: false
+  icon: mdi:toggle-switch-off
+# Activer l'override de consigne
+radiateur_chambre_sssol_restore_override_consigne:
+  name: "Chambre Ss-sol - Choix de forcer une consigne dérogative en fin de boost"
+  icon: mdi:thermometer-chevron-down
+  initial: false
+# Toggle pour afficher/masquer la configuration boost dans la carte Lovelace
+radiateur_chambre_sssol_show_boost_config:
+  name: "Chambre Ss-sol - Afficher config Boost"
+  icon: mdi:cog
+  initial: false
+
+
+## pour Bureau
+# Déclencheur virtuel pour le dashboard
+boost_bureau:
+  name: "Boost Bureau"
+  initial: false
+  icon: mdi:toggle-switch-off
+# Activer l'override de consigne
+radiateur_bureau_restore_override_consigne:
+  name: "Bureau - Choix de forcer une consigne dérogative en fin de boost"
+  icon: mdi:thermometer-chevron-down
+  initial: false
+# Toggle pour afficher/masquer la configuration boost dans la carte Lovelace
+radiateur_bureau_show_boost_config:
+  name: "Bureau - Afficher config Boost"
+  icon: mdi:cog
+  initial: false
+
+
+## pour Cuisine
+# Déclencheur virtuel pour le dashboard
+boost_cuisine:
+  name: "Boost Cuisine"
+  initial: false
+  icon: mdi:toggle-switch-off
+# Activer l'override de consigne
+radiateur_cuisine_restore_override_consigne:
+  name: "Cuisine - Choix de forcer une consigne dérogative en fin de boost"
+  icon: mdi:thermometer-chevron-down
+  initial: false
+# Toggle pour afficher/masquer la configuration boost dans la carte Lovelace
+radiateur_cuisine_show_boost_config:
+  name: "Cuisine - Afficher config Boost"
+  icon: mdi:cog
+  initial: false
+
+
+## pour Salon
+# Déclencheur virtuel pour le dashboard
+boost_salon:
+  name: "Boost Salon"
+  initial: false
+  icon: mdi:toggle-switch-off
+# Activer l'override de consigne
+radiateur_salon_restore_override_consigne:
+  name: "Salon - Choix de forcer une consigne dérogative en fin de boost"
+  icon: mdi:thermometer-chevron-down
+  initial: false
+# Toggle pour afficher/masquer la configuration boost dans la carte Lovelace
+radiateur_salon_show_boost_config:
+  name: "Salon - Afficher config Boost"
+  icon: mdi:cog
+  initial: false
+
+
+## pour SdB
+# Déclencheur virtuel pour le dashboard
+boost_sdb:
+  name: "Boost SdB"
+  initial: false
+  icon: mdi:toggle-switch-off
+# Activer l'override de consigne
+radiateur_sdb_restore_override_consigne:
+  name: "SdB - Choix de forcer une consigne dérogative en fin de boost"
+  icon: mdi:thermometer-chevron-down
+  initial: true
+# Toggle pour afficher/masquer la configuration boost dans la carte Lovelace
+radiateur_sdb_show_boost_config:
+  name: "SdB - Afficher config Boost"
+  icon: mdi:cog
+  initial: false
+
+
+## pour Michel
+# Déclencheur virtuel pour le dashboard
+boost_michel:
+  name: "Boost Michel"
+  initial: false
+  icon: mdi:toggle-switch-off
+# Activer l'override de consigne
+radiateur_michel_restore_override_consigne:
+  name: "Michel - Choix de forcer une consigne dérogative en fin de boost"
+  icon: mdi:thermometer-chevron-down
+  initial: false
+# Toggle pour afficher/masquer la configuration boost dans la carte Lovelace
+radiateur_michel_show_boost_config:
+  name: "Michel - Afficher config Boost"
+  icon: mdi:cog
+  initial: false
+
+
+## pour Voitures
+# Déclencheur virtuel pour le dashboard
+boost_voitures:
+  name: "Boost Voitures"
+  initial: false
+  icon: mdi:toggle-switch-off
+# Activer l'override de consigne
+radiateur_voitures_restore_override_consigne:
+  name: "Voitures - Choix de forcer une consigne dérogative en fin de boost"
+  icon: mdi:thermometer-chevron-down
+  initial: false
+# Toggle pour afficher/masquer la configuration boost dans la carte Lovelace
+radiateur_voitures_show_boost_config:
+  name: "Voitures - Afficher config Boost"
+  icon: mdi:cog
+  initial: false
+
+
+## pour Couloir
+# Déclencheur virtuel pour le dashboard
+boost_couloir:
+  name: "Boost Couloir"
+  initial: false
+  icon: mdi:toggle-switch-off
+# Activer l'override de consigne
+radiateur_couloir_restore_override_consigne:
+  name: "Couloir - Choix de forcer une consigne dérogative en fin de boost"
+  icon: mdi:thermometer-chevron-down
+  initial: false
+# Toggle pour afficher/masquer la configuration boost dans la carte Lovelace
+radiateur_couloir_show_boost_config:
+  name: "Couloir - Afficher config Boost"
+  icon: mdi:cog
+  initial: false
+
+
+## pour Atelier
+# Déclencheur virtuel pour le dashboard
+boost_atelier:
+  name: "Boost Atelier"
+  initial: false
+  icon: mdi:toggle-switch-off
+# Activer l'override de consigne
+radiateur_atelier_restore_override_consigne:
+  name: "Atelier - Choix de forcer une consigne dérogative en fin de boost"
+  icon: mdi:thermometer-chevron-down
+  initial: false
+# Toggle pour afficher/masquer la configuration boost dans la carte Lovelace
+radiateur_atelier_show_boost_config:
+  name: "Atelier - Afficher config Boost"
+  icon: mdi:cog
+  initial: false
+
+
+## pour Garçonnière
+# Déclencheur virtuel pour le dashboard
+boost_garconniere:
+  name: "Boost Garçonnière"
+  initial: false
+  icon: mdi:toggle-switch-off
+# Activer l'override de consigne
+radiateur_garconniere_restore_override_consigne:
+  name: "Garçonnière- Choix de forcer une consigne dérogative en fin de boost"
+  icon: mdi:thermometer-chevron-down
+  initial: false
+# Toggle pour afficher/masquer la configuration boost dans la carte Lovelace
+radiateur_garconniere_show_boost_config:
+  name: "Garçonnière - Afficher config Boost"
+  icon: mdi:cog
+  initial: false
+
+
+## pour Telmo
+# Déclencheur virtuel pour le dashboard
+boost_telmo:
+  name: "Boost Telmo"
+  initial: false
+  icon: mdi:toggle-switch-off
+# Activer l'override de consigne
+radiateur_telmo_restore_override_consigne:
+  name: "Telmo - Choix de forcer une consigne dérogative en fin de boost"
+  icon: mdi:thermometer-chevron-down
+  initial: false
+# Toggle pour afficher/masquer la configuration boost dans la carte Lovelace
+radiateur_telmo_show_boost_config:
+  name: "Telmo - Afficher config Boost"
+  icon: mdi:cog
+  initial: false
+
+
+## pour SdB_Etg
+# Déclencheur virtuel pour le dashboard
+boost_sdb_etg:
+  name: "Boost SdB Etg"
+  initial: false
+  icon: mdi:toggle-switch-off
+# Activer l'override de consigne
+radiateur_sdb_etg_restore_override_consigne:
+  name: "SdB Etg - Choix de forcer une consigne dérogative en fin de boost"
+  icon: mdi:thermometer-chevron-down
+  initial: false
+# Toggle pour afficher/masquer la configuration boost dans la carte Lovelace
+radiateur_sdb_etg_show_boost_config:
+  name: "SdB Etg - Afficher config Boost"
+  icon: mdi:cog
+  initial: false

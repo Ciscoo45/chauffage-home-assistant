@@ -1,0 +1,18 @@
+theme_tempo:
+  # Bleu nuit: HC Bleu
+  energy-grid-consumption-color-0: "#0f056b"
+  # Bleu -magenta : HP Bleu
+  energy-grid-consumption-color-1: "#3737e9"
+  # Gris: HC Blanc
+  energy-grid-consumption-color-2: "#cccccc"
+  # Blanc : HP Blanc
+  energy-grid-consumption-color-3: "#fff"
+  # Rouge sang: HC Rouge
+  energy-grid-consumption-color-4: "#850606"
+  # Red : HP Rouge
+  energy-grid-consumption-color-5: "#E60000"
+  # Standard : Tarif Base
+  energy-grid-consumption-color-6: "#9eb75c"
+  modes:
+    light: {}
+    dark: {}

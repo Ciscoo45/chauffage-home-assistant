@@ -1,0 +1,153 @@
+
+### Sensor viruel pour le suivi sur le tableau Energie de la consommation de l'onduleur informatique (100W 24/7)
+
+- sensor:
+  - name: Onduleur kWh consommés
+    unique_id: onduleur_kwh_total
+    device_class: energy
+    state_class: total_increasing
+    unit_of_measurement: 'kWh'
+    state: >
+      {{
+        (now() - '2025-11-24 00:00:00'|as_datetime|as_local).total_seconds() / 3600 * 0.1
+      }}
+      
+
+
+
+##################################################################################
+### Définition des Helpers SENSOR pour le Blueprint Chauffage by C. : compteurs de kWh
+### **** penser à changer la puissance de chauffe pour chacune des pièces ****
+
+
+## pour le sensor Chauffage TOTAL : sensor.radiateur_kwh_chauffage_total
+- sensor:
+  - name: Thermostat kWh consommés Chauffage TOTAL
+    unique_id: radiateur_kwh_chauffage_total
+    device_class: energy
+    state_class: total_increasing
+    unit_of_measurement: 'kWh'
+    state: >
+      {{
+        (states('sensor.temps_allumage_radiateur_bureau')|float(0) * 0.75) +
+        (states('sensor.temps_allumage_radiateur_cuisine')|float(0) * 1.50) +
+        (states('sensor.temps_allumage_radiateur_salon')|float(0) * 3.00) +
+        (states('sensor.temps_allumage_radiateur_sdb')|float(0) * 1.25) +
+        (states('sensor.temps_allumage_radiateur_michel')|float(0) * 1.25) +
+        (states('sensor.temps_allumage_radiateur_voitures')|float(0) * 1.00) +
+        (states('sensor.temps_allumage_radiateur_couloir')|float(0) * 1.50) +
+        (states('sensor.temps_allumage_radiateur_atelier')|float(0) * 1.60) +
+        (states('sensor.temps_allumage_radiateur_garconniere')|float(0) * 1.00) +
+        (states('sensor.temps_allumage_radiateur_telmo')|float(0) * 2.00) +
+        (states('sensor.temps_allumage_radiateur_sdb_etg')|float(0) * 1.50) +
+        (states('sensor.temps_allumage_radiateur_chambre_sssol')|float(0) * 1.50)
+      }}
+
+
+## pour Bureau : sensor.radiateur_kwh_bureau
+- sensor:
+  - name: Thermostat kWh consommés Bureau
+    unique_id: radiateur_kwh_bureau
+    device_class: energy
+    state_class: total_increasing
+    unit_of_measurement: 'kWh'
+    state: "{{ states('sensor.temps_allumage_radiateur_bureau')|float(0) * 0.75 }}"
+
+## pour Cuisine : sensor.radiateur_kwh_cuisine
+- sensor:
+  - name: Thermostat kWh consommés Cuisine
+    unique_id: radiateur_kwh_cuisine
+    device_class: energy
+    state_class: total_increasing
+    unit_of_measurement: 'kWh'
+    state: "{{ states('sensor.temps_allumage_radiateur_cuisine')|float(0) * 1.50 }}"
+
+## pour Salon : sensor.radiateur_kwh_salon
+- sensor:
+  - name: Thermostat kWh consommés Salon
+    unique_id: radiateur_kwh_salon
+    device_class: energy
+    state_class: total_increasing
+    unit_of_measurement: 'kWh'
+    state: "{{ states('sensor.temps_allumage_radiateur_salon')|float(0) * 3.00 }}"
+
+## pour SdB : sensor.radiateur_kwh_sdb
+- sensor:
+  - name: Thermostat kWh consommés SdB
+    unique_id: radiateur_kwh_sdb
+    device_class: energy
+    state_class: total_increasing
+    unit_of_measurement: 'kWh'
+    state: "{{ states('sensor.temps_allumage_radiateur_sdb')|float(0) * 1.25 }}"
+
+## pour Michel : sensor.radiateur_kwh_michel
+- sensor:
+  - name: Thermostat kWh consommés Michel
+    unique_id: radiateur_kwh_michel
+    device_class: energy
+    state_class: total_increasing
+    unit_of_measurement: 'kWh'
+    state: "{{ states('sensor.temps_allumage_radiateur_michel')|float(0) * 1.25 }}"
+
+## pour Voitures : sensor.radiateur_kwh_voitures
+- sensor:
+  - name: Thermostat kWh consommés Voitures
+    unique_id: radiateur_kwh_voitures
+    device_class: energy
+    state_class: total_increasing
+    unit_of_measurement: 'kWh'
+    state: "{{ states('sensor.temps_allumage_radiateur_voitures')|float(0) * 1.00 }}"
+
+## pour Couloir : sensor.radiateur_kwh_couloir
+- sensor:
+  - name: Thermostat kWh consommés Couloir
+    unique_id: radiateur_kwh_couloir
+    device_class: energy
+    state_class: total_increasing
+    unit_of_measurement: 'kWh'
+    state: "{{ states('sensor.temps_allumage_radiateur_couloir')|float(0) * 1.50 }}"
+
+## pour Atelier : sensor.radiateur_kwh_atelier
+- sensor:
+  - name: Thermostat kWh consommés Atelier
+    unique_id: radiateur_kwh_atelier
+    device_class: energy
+    state_class: total_increasing
+    unit_of_measurement: 'kWh'
+    state: "{{ states('sensor.temps_allumage_radiateur_atelier')|float(0) * 1.60 }}"
+
+## pour Garçonnière : sensor.radiateur_kwh_garconniere
+- sensor:
+  - name: Thermostat kWh consommés Garçonnière
+    unique_id: radiateur_kwh_garconniere
+    device_class: energy
+    state_class: total_increasing
+    unit_of_measurement: 'kWh'
+    state: "{{ states('sensor.temps_allumage_radiateur_garconniere')|float(0) * 1.00 }}"
+
+## pour Telmo : sensor.radiateur_kwh_telmo
+- sensor:
+  - name: Thermostat kWh consommés Telmo
+    unique_id: radiateur_kwh_telmo
+    device_class: energy
+    state_class: total_increasing
+    unit_of_measurement: 'kWh'
+    state: "{{ states('sensor.temps_allumage_radiateur_telmo')|float(0) * 2.00 }}"
+
+## pour SdB Etg : sensor.radiateur_kwh_sdb_etg
+- sensor:
+  - name: Thermostat kWh consommés SdB Etg
+    unique_id: radiateur_kwh_sdb_etg
+    device_class: energy
+    state_class: total_increasing
+    unit_of_measurement: 'kWh'
+    state: "{{ states('sensor.temps_allumage_radiateur_sdb_etg')|float(0) * 1.50 }}"
+
+## pour Chambre SS-Sol : sensor.radiateur_kwh_chambre_sssol
+- sensor:
+  - name: Thermostat kWh consommés Chambre SS-Sol
+    unique_id: radiateur_kwh_chambre_sssol
+    device_class: energy
+    state_class: total_increasing
+    unit_of_measurement: 'kWh'
+    state: "{{ states('sensor.temps_allumage_radiateur_chambre_sssol')|float(0) * 1.50 }}"

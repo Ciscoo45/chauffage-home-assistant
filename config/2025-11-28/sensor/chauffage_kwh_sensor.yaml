@@ -1,0 +1,115 @@
+# yaml-language-server: $schema=null
+
+###########################################################################################################################
+### Définition des Helpers SENSOR pour le Blueprint Chauffage by C. : Compteurs temps de chauffe
+### Calcul des temps de chauffe totaux (pour calcul via template d'un compteur de kWh)
+### **** PEUT NECESSITER DE REBOOTER POUR APPLIQUER LES CHANGEMENTS ****
+### **** tous avec la même config, peu importe le type de radiateur piloté ****
+
+## pour Bureau : sensor.temps_allumage_radiateur_bureau
+- platform: history_stats
+  name: temps_allumage_radiateur_bureau
+  entity_id: binary_sensor.etat_radiateur_bureau
+  state: "on"
+  type: time
+  start: "{{ now().replace(hour=0, minute=0, second=0, microsecond=0) }}"
+  end: "{{ now() }}"
+
+## pour Cuisine : sensor.temps_allumage_radiateur_cuisine
+- platform: history_stats
+  name: temps_allumage_radiateur_cuisine
+  entity_id: binary_sensor.etat_radiateur_cuisine
+  state: "on"
+  type: time
+  start: "{{ now().replace(hour=0, minute=0, second=0, microsecond=0) }}"
+  end: "{{ now() }}"
+
+## pour Salon : sensor.temps_allumage_radiateur_salon
+- platform: history_stats
+  name: temps_allumage_radiateur_salon
+  entity_id: binary_sensor.etat_radiateur_salon
+  state: "on"
+  type: time
+  start: "{{ now().replace(hour=0, minute=0, second=0, microsecond=0) }}"
+  end: "{{ now() }}"
+
+## pour SdB : sensor.temps_allumage_radiateur_sdb
+- platform: history_stats
+  name: temps_allumage_radiateur_sdb
+  entity_id: binary_sensor.etat_radiateur_sdb
+  state: "on"
+  type: time
+  start: "{{ now().replace(hour=0, minute=0, second=0, microsecond=0) }}"
+  end: "{{ now() }}"
+
+## pour Michel : sensor.temps_allumage_radiateur_michel
+- platform: history_stats
+  name: temps_allumage_radiateur_michel
+  entity_id: binary_sensor.etat_radiateur_michel
+  state: "on"
+  type: time
+  start: "{{ now().replace(hour=0, minute=0, second=0, microsecond=0) }}"
+  end: "{{ now() }}"
+
+## pour Voitures : sensor.temps_allumage_radiateur_voitures
+- platform: history_stats
+  name: temps_allumage_radiateur_voitures
+  entity_id: binary_sensor.etat_radiateur_voitures
+  state: "on"
+  type: time
+  start: "{{ now().replace(hour=0, minute=0, second=0, microsecond=0) }}"
+  end: "{{ now() }}"
+
+## pour Couloir : sensor.temps_allumage_radiateur_couloir
+- platform: history_stats
+  name: temps_allumage_radiateur_couloir
+  entity_id: binary_sensor.etat_radiateur_couloir
+  state: "on"
+  type: time
+  start: "{{ now().replace(hour=0, minute=0, second=0, microsecond=0) }}"
+  end: "{{ now() }}"
+
+## pour Atelier : sensor.temps_allumage_radiateur_atelier
+- platform: history_stats
+  name: temps_allumage_radiateur_atelier
+  entity_id: binary_sensor.etat_radiateur_atelier
+  state: "on"
+  type: time
+  start: "{{ now().replace(hour=0, minute=0, second=0, microsecond=0) }}"
+  end: "{{ now() }}"
+
+## pour Garçonnière : sensor.temps_allumage_radiateur_garconniere
+- platform: history_stats
+  name: temps_allumage_radiateur_garconniere
+  entity_id: binary_sensor.etat_radiateur_garconniere
+  state: "on"
+  type: time
+  start: "{{ now().replace(hour=0, minute=0, second=0, microsecond=0) }}"
+  end: "{{ now() }}"
+
+## pour Telmo : sensor.temps_allumage_radiateur_telmo
+- platform: history_stats
+  name: temps_allumage_radiateur_telmo
+  entity_id: binary_sensor.etat_radiateur_telmo
+  state: "on"
+  type: time
+  start: "{{ now().replace(hour=0, minute=0, second=0, microsecond=0) }}"
+  end: "{{ now() }}"
+
+## pour SdB Etg : sensor.temps_allumage_radiateur_sdb_etg
+- platform: history_stats
+  name: temps_allumage_radiateur_sdb_etg
+  entity_id: binary_sensor.etat_radiateur_sdb_etg
+  state: "on"
+  type: time
+  start: "{{ now().replace(hour=0, minute=0, second=0, microsecond=0) }}"
+  end: "{{ now() }}"
+
+## pour Chambre SS-Sol : sensor.temps_allumage_radiateur_chambre_sssol
+- platform: history_stats
+  name: temps_allumage_radiateur_chambre_sssol
+  entity_id: binary_sensor.etat_radiateur_chambre_sssol
+  state: "on"
+  type: time
+  start: "{{ now().replace(hour=0, minute=0, second=0, microsecond=0) }}"
+  end: "{{ now() }}"

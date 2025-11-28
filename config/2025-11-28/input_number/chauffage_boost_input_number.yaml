@@ -1,0 +1,200 @@
+
+### Définition des Helpers INPUT_NUMBER pour le Blueprint Chauffage Boost by C. : Consigne, Durée, Consigne custom, Previous consigne
+
+
+## Définition des ancres pour les paramètres communs
+base_boost_consigne: &base_boost_consigne
+  min: 5
+  max: 24
+  step: 0.5
+  unit_of_measurement: °C
+  icon: mdi:target
+base_boost_duree: &base_boost_duree
+  min: 1
+  max: 1200
+  step: 5
+  # mode: box
+  unit_of_measurement: min
+  icon: mdi:clock
+base_restore_consigne_custom: &base_restore_consigne_custom
+  min: 0
+  max: 24
+  step: 0.5
+  unit_of_measurement: "°C"
+  icon: mdi:thermometer
+  initial: 14
+base_previous_consigne: &base_previous_consigne
+  min: 0
+  max: 24
+  step: 0.5
+  unit_of_measurement: "°C"
+  icon: mdi:memory
+  initial: 14
+
+## pour Chambre Ss-Sol
+radiateur_chambre_sssol_boost_consigne:
+  <<: *base_boost_consigne
+  name: "Radiateur Chambre Ss-Sol Consigne de début de Boost"
+radiateur_chambre_sssol_boost_duree:
+  <<: *base_boost_duree
+  name: "Radiateur Chambre Ss-Sol Durée de Boost"
+radiateur_chambre_sssol_restore_consigne_custom:
+  <<: *base_restore_consigne_custom
+  name: "Chambre Ss-Sol - Température de consigne forcée en fin de boost"
+radiateur_chambre_sssol_previous_consigne:
+  <<: *base_previous_consigne
+  name: "Chambre Ss-Sol - Consigne précédente mémorisée"
+
+## pour Bureau
+radiateur_bureau_boost_consigne:
+  <<: *base_boost_consigne
+  name: "Radiateur Bureau Consigne de début de Boost"
+radiateur_bureau_boost_duree:
+  <<: *base_boost_duree
+  name: "Radiateur Bureau Durée de Boost"
+radiateur_bureau_restore_consigne_custom:
+  <<: *base_restore_consigne_custom
+  name: "Bureau - Température de consigne forcée en fin de boost"
+radiateur_bureau_previous_consigne:
+  <<: *base_previous_consigne
+  name: "Bureau - Consigne précédente mémorisée"
+
+## pour Cuisine
+radiateur_cuisine_boost_consigne:
+  <<: *base_boost_consigne
+  name: "Radiateur Cuisine Consigne de début de Boost"
+radiateur_cuisine_boost_duree:
+  <<: *base_boost_duree
+  name: "Radiateur Cuisine Durée de Boost"
+radiateur_cuisine_restore_consigne_custom:
+  <<: *base_restore_consigne_custom
+  name: "Cuisine - Température de consigne forcée en fin de boost"
+radiateur_cuisine_previous_consigne:
+  <<: *base_previous_consigne
+  name: "Cuisine - Consigne précédente mémorisée"
+
+## pour Salon
+radiateur_salon_boost_consigne:
+  <<: *base_boost_consigne
+  name: "Radiateur Salon Consigne de début de Boost"
+radiateur_salon_boost_duree:
+  <<: *base_boost_duree
+  name: "Radiateur Salon Durée de Boost"
+radiateur_salon_restore_consigne_custom:
+  <<: *base_restore_consigne_custom
+  name: "Salon - Température de consigne forcée en fin de boost"
+radiateur_salon_previous_consigne:
+  <<: *base_previous_consigne
+  name: "Salon - Consigne précédente mémorisée"
+
+## pour SdB
+radiateur_sdb_boost_consigne:
+  <<: *base_boost_consigne
+  name: "Radiateur SdB Consigne de début de Boost"
+radiateur_sdb_boost_duree:
+  <<: *base_boost_duree
+  name: "Radiateur SdB Durée de Boost"
+radiateur_sdb_restore_consigne_custom:
+  <<: *base_restore_consigne_custom
+  name: "SdB - Température de consigne forcée en fin de boost"
+radiateur_sdb_previous_consigne:
+  <<: *base_previous_consigne
+  name: "SdB - Consigne précédente mémorisée"
+
+## pour Michel
+radiateur_michel_boost_consigne:
+  <<: *base_boost_consigne
+  name: "Radiateur Michel Consigne de début de Boost"
+radiateur_michel_boost_duree:
+  <<: *base_boost_duree
+  name: "Radiateur Michel Durée de Boost"
+radiateur_michel_restore_consigne_custom:
+  <<: *base_restore_consigne_custom
+  name: "Michel - Température de consigne forcée en fin de boost"
+radiateur_michel_previous_consigne:
+  <<: *base_previous_consigne
+  name: "Michel - Consigne précédente mémorisée"
+
+## pour Voitures
+radiateur_voitures_boost_consigne:
+  <<: *base_boost_consigne
+  name: "Radiateur Voitures Consigne de début de Boost"
+radiateur_voitures_boost_duree:
+  <<: *base_boost_duree
+  name: "Radiateur Voitures Durée de Boost"
+radiateur_voitures_restore_consigne_custom:
+  <<: *base_restore_consigne_custom
+  name: "Voitures - Température de consigne forcée en fin de boost"
+radiateur_voitures_previous_consigne:
+  <<: *base_previous_consigne
+  name: "Voitures - Consigne précédente mémorisée"
+
+## pour Couloir
+radiateur_couloir_boost_consigne:
+  <<: *base_boost_consigne
+  name: "Radiateur Couloir Consigne de début de Boost"
+radiateur_couloir_boost_duree:
+  <<: *base_boost_duree
+  name: "Radiateur Couloir Durée de Boost"
+radiateur_couloir_restore_consigne_custom:
+  <<: *base_restore_consigne_custom
+  name: "Couloir - Température de consigne forcée en fin de boost"
+radiateur_couloir_previous_consigne:
+  <<: *base_previous_consigne
+  name: "Couloir - Consigne précédente mémorisée"
+
+## pour Atelier
+radiateur_atelier_boost_consigne:
+  <<: *base_boost_consigne
+  name: "Radiateur Atelier Consigne de début de Boost"
+radiateur_atelier_boost_duree:
+  <<: *base_boost_duree
+  name: "Radiateur Atelier Durée de Boost"
+radiateur_atelier_restore_consigne_custom:
+  <<: *base_restore_consigne_custom
+  name: "Atelier - Température de consigne forcée en fin de boost"
+radiateur_atelier_previous_consigne:
+  <<: *base_previous_consigne
+  name: "Atelier - Consigne précédente mémorisée"
+
+## pour Garçonnière
+radiateur_garconniere_boost_consigne:
+  <<: *base_boost_consigne
+  name: "Radiateur Garçonnière Consigne de début de Boost"
+radiateur_garconniere_boost_duree:
+  <<: *base_boost_duree
+  name: "Radiateur Garçonnière Durée de Boost"
+radiateur_garconniere_restore_consigne_custom:
+  <<: *base_restore_consigne_custom
+  name: "Garçonnière - Température de consigne forcée en fin de boost"
+radiateur_garconniere_previous_consigne:
+  <<: *base_previous_consigne
+  name: "Garçonnière - Consigne précédente mémorisée"
+
+## pour Telmo
+radiateur_telmo_boost_consigne:
+  <<: *base_boost_consigne
+  name: "Radiateur Telmo Consigne de début de Boost"
+radiateur_telmo_boost_duree:
+  <<: *base_boost_duree
+  name: "Radiateur Telmo Durée de Boost"
+radiateur_telmo_restore_consigne_custom:
+  <<: *base_restore_consigne_custom
+  name: "Telmo - Température de consigne forcée en fin de boost"
+radiateur_telmo_previous_consigne:
+  <<: *base_previous_consigne
+  name: "Telmo - Consigne précédente mémorisée"
+
+## pour SdB Etg
+radiateur_sdb_etg_boost_consigne:
+  <<: *base_boost_consigne
+  name: "Radiateur SdB Etg Consigne de début de Boost"
+radiateur_sdb_etg_boost_duree:
+  <<: *base_boost_duree
+  name: "Radiateur SdB Etg Durée de Boost"
+radiateur_sdb_etg_restore_consigne_custom:
+  <<: *base_restore_consigne_custom
+  name: "SdB Etg - Température de consigne forcée en fin de boost"
+radiateur_sdb_etg_previous_consigne:
+  <<: *base_previous_consigne
+  name: "SdB Etg - Consigne précédente mémorisée"

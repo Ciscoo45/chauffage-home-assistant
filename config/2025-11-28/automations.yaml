@@ -1,0 +1,918 @@
+- id: '1738521922811'
+  alias: Voitures Rodret Allumer
+  description: Allume tous les spots et bandeaux LEDs
+  triggers:
+  - device_id: 2127cd8891032cd7cb2aa79e344d3a85
+    domain: zha
+    type: remote_button_short_press
+    subtype: turn_on
+    trigger: device
+  conditions: []
+  actions:
+  - action: light.turn_on
+    metadata: {}
+    data: {}
+    target:
+      area_id: chambrevoitures
+  mode: single
+- id: '1738523861760'
+  alias: Voitures Eteindre
+  description: ''
+  triggers:
+  - device_id: 2127cd8891032cd7cb2aa79e344d3a85
+    domain: zha
+    type: remote_button_short_press
+    subtype: turn_off
+    trigger: device
+  conditions: []
+  actions:
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      area_id: chambrevoitures
+  mode: single
+- id: '1760869565144'
+  alias: Light LEDstrip via tél. Tradfri - 01 ON - Telmo
+  description: ZHA - Light - LED strip depuis Tradfri - 01 - ON via Grand soleil
+  triggers:
+  - event_type: zha_event
+    event_data:
+      device_ieee: bc:8d:7e:ff:fe:7f:33:77
+      command: 'on'
+    trigger: event
+  actions:
+  - choose:
+    - conditions:
+      - condition: or
+        conditions:
+        - condition: time
+          after: '20:00:00'
+        - condition: time
+          before: 08:00:00
+      sequence:
+      - target:
+          entity_id: light.led_strip_ikea_ormanas_telmo
+        data:
+          brightness_pct: 1
+        action: light.turn_on
+    default:
+    - target:
+        entity_id: light.led_strip_ikea_ormanas_telmo
+      data:
+        brightness_pct: 100
+      action: light.turn_on
+  mode: single
+- id: '1760869629862'
+  alias: Light LEDstrip via tél. Tradfri - 02 OFF - Telmo
+  description: ZHA - Light - LED strip depuis Tradfri - 02 - OFF via Petit soleil
+  triggers:
+  - event_type: zha_event
+    event_data:
+      device_ieee: bc:8d:7e:ff:fe:7f:33:77
+      command: 'off'
+    trigger: event
+  actions:
+  - target:
+      entity_id: light.led_strip_ikea_ormanas_telmo
+    action: light.turn_off
+  mode: restart
+- id: '1760869715402'
+  alias: Light LEDstrip via tél. Tradfri - 03 -10% - Telmo
+  description: ZHA - Light - LED strip depuis Tradfri - 03 - -10% via flèche drt
+  triggers:
+  - event_type: zha_event
+    event_data:
+      device_ieee: bc:8d:7e:ff:fe:7f:33:77
+      cluster_id: 5
+      command: press
+    trigger: event
+  conditions:
+  - condition: template
+    value_template: "{{ (trigger.event.data.args | length > 0)\n   and (trigger.event.data.args[0]
+      == 257) }}\n"
+  actions:
+  - target:
+      entity_id: light.led_strip_ikea_ormanas_telmo
+    data:
+      brightness_step_pct: -10
+    action: light.turn_on
+  mode: queued
+  max: 20
+- id: '1760869769922'
+  alias: Light LEDstrip via tél. Tradfri - 04 +10% - Telmo
+  description: ZHA - Light - LED strip depuis Tradfri - 04 - +10% via flèche drt
+  triggers:
+  - event_type: zha_event
+    event_data:
+      device_ieee: bc:8d:7e:ff:fe:7f:33:77
+      cluster_id: 5
+      command: press
+    trigger: event
+  conditions:
+  - condition: template
+    value_template: "{{ (trigger.event.data.args | length > 0)\n   and (trigger.event.data.args[0]
+      == 256) }}\n"
+  actions:
+  - target:
+      entity_id: light.led_strip_ikea_ormanas_telmo
+    data:
+      brightness_step_pct: 10
+    action: light.turn_on
+  mode: queued
+  max: 20
+- id: '1760872783326'
+  alias: Light LEDstrip via tél. Tradfri - 05 cycle couleur- - Telmo
+  description: ZHA - Light - LED strip depuis Tradfri - 05 Hold pour cycle couleur-
+    - Telmo
+  triggers:
+  - event_type: zha_event
+    event_data:
+      device_ieee: bc:8d:7e:ff:fe:7f:33:77
+      cluster_id: 5
+      command: press
+    trigger: event
+  conditions:
+  - condition: template
+    value_template: '{{ (trigger.event.data.args | length > 0) and (trigger.event.data.args[0]
+      == 257) }}
+
+      '
+  actions:
+  - if:
+    - condition: state
+      entity_id: light.led_strip_ikea_ormanas_telmo
+      state: 'off'
+    then:
+    - target:
+        entity_id: light.led_strip_ikea_ormanas_telmo
+      action: light.turn_on
+  - repeat:
+      until:
+      - condition: template
+        value_template: '{{ wait.trigger is not none }}'
+      sequence:
+      - wait_for_trigger:
+        - event_type: zha_event
+          event_data:
+            device_ieee: bc:8d:7e:ff:fe:7f:33:77
+            cluster_id: 5
+            command: release
+          trigger: event
+        timeout: '00:00:00.15'
+        continue_on_timeout: true
+      - choose:
+        - conditions:
+          - condition: template
+            value_template: '{{ wait.trigger is not none }}'
+          sequence: []
+        default:
+        - choose:
+          - conditions: "{{ 'hs' in (state_attr('light.led_strip_ikea_ormanas_telmo','supported_color_modes')
+              or [])\n   or 'xy' in (state_attr('light.led_strip_ikea_ormanas_telmo','supported_color_modes')
+              or []) }}\n"
+            sequence:
+            - target:
+                entity_id: light.led_strip_ikea_ormanas_telmo
+              data:
+                hs_color:
+                - '{{ ((state_attr(''light.led_strip_ikea_ormanas_telmo'',''hs_color'')[0]
+                  | default(0)) - 5) % 360 }}'
+                - '{{ state_attr(''light.led_strip_ikea_ormanas_telmo'',''hs_color'')[1]
+                  | default(100) }}'
+              action: light.turn_on
+          - conditions:
+            - condition: template
+              value_template: '{{ ''color_temp'' in (state_attr(''light.led_strip_ikea_ormanas_telmo'',''supported_color_modes'')
+                or []) }}'
+            sequence:
+            - variables:
+                cur: '{{ state_attr(''light.led_strip_ikea_ormanas_telmo'',''color_temp'')
+                  | default(370) }}'
+                min_m: '{{ state_attr(''light.led_strip_ikea_ormanas_telmo'',''min_mireds'')
+                  | default(153) }}'
+                max_m: '{{ state_attr(''light.led_strip_ikea_ormanas_telmo'',''max_mireds'')
+                  | default(500) }}'
+                step: 5
+                next: '{% set n = cur + step %} {% if n > max_m %}{{ max_m }}{% else
+                  %}{{ n }}{% endif %}'
+            - target:
+                entity_id: light.led_strip_ikea_ormanas_telmo
+              data:
+                color_temp: '{{ next }}'
+              action: light.turn_on
+  mode: restart
+- id: '1760873129176'
+  alias: Light LEDstrip via tél. Tradfri - 06 cycle couleur+ - Telmo
+  description: ZHA - Light - LED strip depuis Tradfri - 06 Hold pour cycle couleur+
+    - Telmo
+  triggers:
+  - event_type: zha_event
+    event_data:
+      device_ieee: bc:8d:7e:ff:fe:7f:33:77
+      cluster_id: 5
+      command: press
+    trigger: event
+  conditions:
+  - condition: template
+    value_template: '{{ (trigger.event.data.args | length > 0) and (trigger.event.data.args[0]
+      == 256) }}
+
+      '
+  actions:
+  - if:
+    - condition: state
+      entity_id: light.led_strip_ikea_ormanas_telmo
+      state: 'off'
+    then:
+    - target:
+        entity_id: light.led_strip_ikea_ormanas_telmo
+      action: light.turn_on
+  - repeat:
+      until:
+      - condition: template
+        value_template: '{{ wait.trigger is not none }}'
+      sequence:
+      - wait_for_trigger:
+        - event_type: zha_event
+          event_data:
+            device_ieee: bc:8d:7e:ff:fe:7f:33:77
+            cluster_id: 5
+            command: release
+          trigger: event
+        timeout: '00:00:00.15'
+        continue_on_timeout: true
+      - choose:
+        - conditions: '{{ wait.trigger is not none }}'
+          sequence: []
+        default:
+        - choose:
+          - conditions: "{{ 'hs' in (state_attr('light.led_strip_ikea_ormanas_telmo','supported_color_modes')
+              or [])\n   or 'xy' in (state_attr('light.led_strip_ikea_ormanas_telmo','supported_color_modes')
+              or []) }}\n"
+            sequence:
+            - target:
+                entity_id: light.led_strip_ikea_ormanas_telmo
+              data:
+                hs_color:
+                - '{{ ((state_attr(''light.led_strip_ikea_ormanas_telmo'',''hs_color'')[0]
+                  | default(0)) + 5) % 360 }}'
+                - '{{ state_attr(''light.led_strip_ikea_ormanas_telmo'',''hs_color'')[1]
+                  | default(100) }}'
+              action: light.turn_on
+          - conditions: '{{ ''color_temp'' in (state_attr(''light.led_strip_ikea_ormanas_telmo'',''supported_color_modes'')
+              or []) }}'
+            sequence:
+            - variables:
+                cur: '{{ state_attr(''light.led_strip_ikea_ormanas_telmo'',''color_temp'')
+                  | default(370) }}'
+                min_m: '{{ state_attr(''light.led_strip_ikea_ormanas_telmo'',''min_mireds'')
+                  | default(153) }}'
+                max_m: '{{ state_attr(''light.led_strip_ikea_ormanas_telmo'',''max_mireds'')
+                  | default(500) }}'
+                step: 5
+                next: '{% set n = cur - step %} {% if n < min_m %}{{ min_m }}{% else
+                  %}{{ n }}{% endif %}'
+            - target:
+                entity_id: light.led_strip_ikea_ormanas_telmo
+              data:
+                color_temp: '{{ next }}'
+              action: light.turn_on
+  mode: restart
+- id: '1763290671304'
+  alias: Chauffage by C. - Thermostat TPI - Atelier
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Thermostat_TPI.yaml
+    input:
+      coeff_c: 0.8
+      coeff_t: 0.025
+      entity_consigne: input_number.radiateur_atelier_consigne
+      entity_temp_ext: sensor.temperature_exterieure_virtuelle_consolidee
+      entity_temp_int: sensor.temperature_sonoff_atelier
+      entity_fenetre: binary_sensor.fenetre_virtuelle_onoff
+      entity_puissance: input_number.radiateur_atelier_puissance
+      entity_chauffage:
+      - switch.radiateur_inv_atelier
+      entity_mode_inverse: true
+- id: '1763290959503'
+  alias: Chauffage by C. - Thermostat TPI - Bureau
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Thermostat_TPI.yaml
+    input:
+      coeff_c: 0.78
+      coeff_t: 0.016
+      entity_consigne: input_number.radiateur_bureau_consigne
+      entity_temp_ext: sensor.temperature_exterieure_virtuelle_consolidee
+      entity_temp_int: sensor.temperature_sonoff_bureau
+      entity_fenetre: binary_sensor.fenetre_virtuelle_onoff
+      entity_puissance: input_number.radiateur_bureau_puissance
+      entity_chauffage:
+      - switch.radiateur_inv_bureau
+      entity_mode_inverse: true
+- id: '1763291067775'
+  alias: Chauffage by C. - Thermostat TPI - Chambre SS-Sol
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Thermostat_TPI.yaml
+    input:
+      coeff_c: 0.55
+      coeff_t: 0.027
+      entity_consigne: input_number.radiateur_chambre_sssol_consigne
+      entity_temp_ext: sensor.temperature_exterieure_virtuelle_consolidee
+      entity_temp_int: sensor.temperature_sonoff_chambre_sssol
+      entity_fenetre: binary_sensor.fenetre_virtuelle_onoff
+      entity_puissance: input_number.radiateur_chambre_sssol_puissance
+      entity_chauffage:
+      - switch.radiateur_inv_chambre_sssol
+      entity_mode_inverse: true
+- id: '1763291225698'
+  alias: Chauffage by C. - Thermostat TPI - Couloir
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Thermostat_TPI.yaml
+    input:
+      coeff_c: 0.66
+      coeff_t: 0.015
+      entity_consigne: input_number.radiateur_couloir_consigne
+      entity_temp_ext: sensor.temperature_exterieure_virtuelle_consolidee
+      entity_temp_int: sensor.temperature_sonoff_couloir
+      entity_fenetre: binary_sensor.fenetre_virtuelle_onoff
+      entity_puissance: input_number.radiateur_couloir_puissance
+      entity_chauffage:
+      - climate.x2d_elec_thermostat_a5_couloir
+      entity_mode_climate: true
+- id: '1763291321865'
+  alias: Chauffage by C. - Thermostat TPI - Cuisine
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Thermostat_TPI.yaml
+    input:
+      coeff_c: 0.7
+      coeff_t: 0.028
+      entity_consigne: input_number.radiateur_cuisine_consigne
+      entity_temp_ext: sensor.temperature_exterieure_virtuelle_consolidee
+      entity_temp_int: sensor.temperature_sonoff_cuisine
+      entity_fenetre: binary_sensor.fenetre_virtuelle_onoff
+      entity_puissance: input_number.radiateur_cuisine_puissance
+      entity_chauffage:
+      - climate.x2d_elec_thermostat_a6_cuisine
+      entity_mode_climate: true
+- id: '1763291448865'
+  alias: Chauffage by C. - Thermostat TPI - Michel
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Thermostat_TPI.yaml
+    input:
+      coeff_c: 0.7
+      coeff_t: 0.018
+      entity_consigne: input_number.radiateur_michel_consigne
+      entity_temp_ext: sensor.temperature_exterieure_virtuelle_consolidee
+      entity_temp_int: sensor.temperature_sonoff_michel
+      entity_fenetre: binary_sensor.fenetre_virtuelle_onoff
+      entity_puissance: input_number.radiateur_michel_puissance
+      entity_chauffage:
+      - switch.radiateur_inv_michel
+      entity_mode_inverse: true
+- id: '1763291567377'
+  alias: Chauffage by C. - Thermostat TPI - Salon
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Thermostat_TPI.yaml
+    input:
+      coeff_c: 0.48
+      coeff_t: 0.017
+      entity_consigne: input_number.radiateur_salon_consigne
+      entity_temp_ext: sensor.temperature_exterieure_virtuelle_consolidee
+      entity_temp_int: sensor.temperature_sonoff_salon
+      entity_fenetre: binary_sensor.fenetre_virtuelle_onoff
+      entity_puissance: input_number.radiateur_salon_puissance
+      entity_chauffage:
+      - climate.x2d_elec_thermostat_a2_salon_est
+      - climate.x2d_elec_thermostat_a3_salon_sud
+      entity_mode_climate: true
+- id: '1763291663961'
+  alias: Chauffage by C. - Thermostat TPI - SdB
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Thermostat_TPI.yaml
+    input:
+      coeff_c: 0.36
+      coeff_t: 0.009
+      entity_consigne: input_number.radiateur_sdb_consigne
+      entity_temp_ext: sensor.temperature_exterieure_virtuelle_consolidee
+      entity_temp_int: sensor.temperature_sonoff_sdb
+      entity_fenetre: binary_sensor.fenetre_virtuelle_onoff
+      entity_puissance: input_number.radiateur_sdb_puissance
+      entity_chauffage:
+      - switch.radiateur_inv_sdb
+      entity_mode_inverse: true
+- id: '1763291867277'
+  alias: Chauffage by C. - Thermostat TPI - SdB Etg
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Thermostat_TPI.yaml
+    input:
+      coeff_c: 0.7
+      coeff_t: 0.022
+      entity_consigne: input_number.radiateur_sdb_etg_consigne
+      entity_temp_ext: sensor.temperature_exterieure_virtuelle_consolidee
+      entity_temp_int: sensor.temperature_sonoff_sdb_etg
+      entity_fenetre: binary_sensor.fenetre_virtuelle_onoff
+      entity_puissance: input_number.radiateur_sdb_etg_puissance
+      entity_chauffage:
+      - switch.radiateur_inv_sdb_etg
+      entity_mode_inverse: true
+- id: '1763291984229'
+  alias: Chauffage by C. - Thermostat TPI - Telmo
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Thermostat_TPI.yaml
+    input:
+      coeff_c: 0.87
+      coeff_t: 0.023
+      entity_consigne: input_number.radiateur_telmo_consigne
+      entity_temp_ext: sensor.temperature_exterieure_virtuelle_consolidee
+      entity_temp_int: sensor.temperature_sonoff_telmo
+      entity_fenetre: binary_sensor.fenetre_virtuelle_onoff
+      entity_puissance: input_number.radiateur_telmo_puissance
+      entity_chauffage:
+      - switch.radiateur_inv_telmo
+      entity_mode_inverse: true
+- id: '1763292070121'
+  alias: Chauffage by C. - Thermostat TPI - Voitures
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Thermostat_TPI.yaml
+    input:
+      coeff_c: 0.67
+      coeff_t: 0.017
+      entity_consigne: input_number.radiateur_voitures_consigne
+      entity_temp_ext: sensor.temperature_exterieure_virtuelle_consolidee
+      entity_temp_int: sensor.temperature_sonoff_voitures
+      entity_fenetre: binary_sensor.fenetre_virtuelle_onoff
+      entity_puissance: input_number.radiateur_voitures_puissance
+      entity_chauffage:
+      - switch.radiateur_inv_voitures
+      entity_mode_inverse: true
+- id: '1763292220304'
+  alias: Chauffage by C. - Pilotage - Atelier
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Pilotage_Week-Vs-WE.yaml
+    input:
+      entity_consigne: input_number.radiateur_atelier_consigne
+      entity_mode: input_select.radiateur_atelier_mode
+      entity_schedule_presence:
+      - switch.schedule_atelier_presence_sem
+      - switch.schedule_atelier_presence_we
+      entity_schedule_absence:
+      - switch.schedule_atelier_absence_quo
+      entity_thermostat_tpi: automation.chauffage_by_c_thermostat_tpi_atelier
+- id: '1763292344012'
+  alias: Chauffage by C. - Pilotage - Bureau
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Pilotage_Week-Vs-WE.yaml
+    input:
+      entity_consigne: input_number.radiateur_bureau_consigne
+      entity_mode: input_select.radiateur_bureau_mode
+      entity_schedule_presence:
+      - switch.schedule_bureau_presence_quo
+      entity_schedule_absence:
+      - switch.schedule_bureau_absence_quo
+      entity_thermostat_tpi: automation.chauffage_by_c_thermostat_tpi_bureau
+- id: '1763292433715'
+  alias: Chauffage by C. - Pilotage - Chambre Ss-Sol
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Pilotage_Week-Vs-WE.yaml
+    input:
+      entity_consigne: input_number.radiateur_chambre_sssol_consigne
+      entity_mode: input_select.radiateur_chambre_sssol_mode
+      entity_schedule_presence:
+      - switch.schedule_chambre_sssol_presence_quo
+      entity_schedule_absence:
+      - switch.schedule_chambre_sssol_absence_quo
+      entity_thermostat_tpi: automation.chauffage_by_c_thermostat_tpi_chambre_ss_sol
+- id: '1763292520836'
+  alias: Chauffage by C. - Pilotage - Couloir
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Pilotage_Week-Vs-WE.yaml
+    input:
+      entity_consigne: input_number.radiateur_couloir_consigne
+      entity_mode: input_select.radiateur_couloir_mode
+      entity_schedule_presence:
+      - switch.schedule_couloir_presence_quo
+      entity_schedule_absence:
+      - switch.schedule_couloir_absence_quo
+      entity_thermostat_tpi: automation.chauffage_by_c_thermostat_tpi_couloir
+- id: '1763292661360'
+  alias: Chauffage by C. - Pilotage - Cuisine
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Pilotage_Week-Vs-WE.yaml
+    input:
+      entity_consigne: input_number.radiateur_cuisine_consigne
+      entity_mode: input_select.radiateur_cuisine_mode
+      entity_schedule_presence:
+      - switch.schedule_cuisine_presence_quo
+      entity_schedule_absence:
+      - switch.schedule_cuisine_absence_quo
+      entity_thermostat_tpi: automation.chauffage_by_c_thermostat_tpi_cuisine
+- id: '1763292730886'
+  alias: Chauffage by C. - Pilotage - Michel
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Pilotage_Week-Vs-WE.yaml
+    input:
+      entity_consigne: input_number.radiateur_michel_consigne
+      entity_mode: input_select.radiateur_michel_mode
+      entity_schedule_presence:
+      - switch.schedule_michel_presence_quo
+      entity_schedule_absence:
+      - switch.schedule_michel_absence_quo
+      entity_thermostat_tpi: automation.chauffage_by_c_thermostat_tpi_michel
+- id: '1763292785842'
+  alias: Chauffage by C. - Pilotage - Salon
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Pilotage_Week-Vs-WE.yaml
+    input:
+      entity_consigne: input_number.radiateur_salon_consigne
+      entity_mode: input_select.radiateur_salon_mode
+      entity_schedule_presence:
+      - switch.schedule_salon_presence_quo
+      entity_schedule_absence:
+      - switch.schedule_salon_absence_quo
+      entity_thermostat_tpi: automation.chauffage_by_c_thermostat_tpi_salon
+- id: '1763292867759'
+  alias: Chauffage by C. - Pilotage - SdB
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Pilotage_Week-Vs-WE.yaml
+    input:
+      entity_consigne: input_number.radiateur_sdb_consigne
+      entity_mode: input_select.radiateur_sdb_mode
+      entity_schedule_presence:
+      - switch.schedule_sdb_presence_quo
+      entity_schedule_absence:
+      - switch.schedule_sdb_absence_quo
+      entity_thermostat_tpi: automation.chauffage_by_c_thermostat_tpi_sdb
+- id: '1763292929445'
+  alias: Chauffage by C. - Pilotage - SdB Etg
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Pilotage_Week-Vs-WE.yaml
+    input:
+      entity_consigne: input_number.radiateur_sdb_etg_consigne
+      entity_mode: input_select.radiateur_sdb_etg_mode
+      entity_schedule_presence:
+      - switch.schedule_sdb_etg_presence_quo
+      entity_schedule_absence:
+      - switch.schedule_sdb_etg_absence_quo
+      entity_thermostat_tpi: automation.boost_chauffage_by_c_sdb_etg
+- id: '1763293017129'
+  alias: Chauffage by C. - Pilotage - Telmo
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Pilotage_Week-Vs-WE.yaml
+    input:
+      entity_consigne: input_number.radiateur_telmo_consigne
+      entity_mode: input_select.radiateur_telmo_mode
+      entity_schedule_presence:
+      - switch.schedule_telmo_presence_quo
+      entity_schedule_absence:
+      - switch.schedule_telmo_absence_quo
+      entity_thermostat_tpi: automation.chauffage_by_c_thermostat_tpi_telmo
+- id: '1763293072864'
+  alias: Chauffage by C. - Pilotage - Voitures
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Pilotage_Week-Vs-WE.yaml
+    input:
+      entity_consigne: input_number.radiateur_voitures_consigne
+      entity_mode: input_select.radiateur_voitures_mode
+      entity_schedule_presence:
+      - switch.schedule_voitures_presence_quo
+      entity_schedule_absence:
+      - switch.schedule_voitures_absence_quo
+      entity_thermostat_tpi: automation.chauffage_by_c_thermostat_tpi_voitures
+- id: '1763300937939'
+  alias: Chauffage by C. - Boost - Atelier
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Boost.yaml
+    input:
+      piece: atelier
+      users_group: group.mell_utilisateurs
+      boost_switch: input_boolean.boost_atelier
+      boost_timer: timer.boost_atelier
+      timer_entity: input_datetime.boost_end_atelier
+      mode_entity: input_select.radiateur_atelier_mode
+      consigne_entity: input_number.radiateur_atelier_consigne
+      boost_temp_helper: input_number.radiateur_atelier_boost_consigne
+      consigne_boost_valeur_de_depart: 19
+      boost_duration_helper: input_number.radiateur_atelier_boost_duree
+      restore_behavior: input_select.radiateur_atelier_restore_behavior
+      restore_mode_custom: input_select.radiateur_atelier_restore_custom_mode
+      restore_override_consigne: input_boolean.radiateur_atelier_restore_override_consigne
+      restore_consigne_custom: input_number.radiateur_atelier_restore_consigne_custom
+      previous_mode_storage: input_text.radiateur_atelier_previous_mode
+      previous_consigne_storage: input_number.radiateur_atelier_previous_consigne
+      sync_helpers_on_reload: false
+- id: '1763306125680'
+  alias: Chauffage by C. - Boost - SdB
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Boost.yaml
+    input:
+      piece: sdb
+      users_group: group.mell_utilisateurs
+      remote_button: 9a717b09b02a3c4f5238e95817fc9354
+      boost_switch: input_boolean.boost_sdb
+      boost_timer: timer.boost_sdb
+      timer_entity: input_datetime.boost_end_sdb
+      mode_entity: input_select.radiateur_sdb_mode
+      consigne_entity: input_number.radiateur_sdb_consigne
+      boost_temp_helper: input_number.radiateur_sdb_boost_consigne
+      boost_duration_helper: input_number.radiateur_sdb_boost_duree
+      restore_behavior: input_select.radiateur_sdb_restore_behavior
+      restore_mode_custom: input_select.radiateur_sdb_restore_custom_mode
+      restore_override_consigne: input_boolean.radiateur_sdb_restore_override_consigne
+      restore_consigne_custom: input_number.radiateur_sdb_restore_consigne_custom
+      previous_mode_storage: input_text.radiateur_sdb_previous_mode
+      previous_consigne_storage: input_number.radiateur_sdb_previous_consigne
+      sync_helpers_on_reload: false
+- id: '1763306403882'
+  alias: Chauffage by C. - Boost - SdB Etg
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Boost.yaml
+    input:
+      piece: sdb_etage
+      users_group: group.mell_utilisateurs
+      remote_button: 89d49384a40bf6aaf3f19599ae3129b4
+      boost_switch: input_boolean.boost_sdb_etg
+      boost_timer: timer.boost_sdb_etg
+      timer_entity: input_datetime.boost_end_sdb_etg
+      mode_entity: input_select.radiateur_sdb_etg_mode
+      consigne_entity: input_number.radiateur_sdb_etg_consigne
+      boost_temp_helper: input_number.radiateur_sdb_etg_boost_consigne
+      consigne_boost_valeur_de_depart: 22
+      boost_duration_helper: input_number.radiateur_sdb_etg_boost_duree
+      restore_behavior: input_select.radiateur_sdb_etg_restore_behavior
+      restore_mode_custom: input_select.radiateur_sdb_etg_restore_custom_mode
+      restore_override_consigne: input_boolean.radiateur_sdb_etg_restore_override_consigne
+      restore_consigne_custom: input_number.radiateur_sdb_etg_restore_consigne_custom
+      previous_mode_storage: input_text.radiateur_sdb_etg_previous_mode
+      previous_consigne_storage: input_number.radiateur_sdb_etg_previous_consigne
+      sync_helpers_on_reload: false
+- id: '1763311336684'
+  alias: Chauffage by C. - Boost - Chambre Ss-Sol
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Boost.yaml
+    input:
+      piece: chambre_ss_sol
+      users_group: group.mell_utilisateurs
+      boost_switch: input_boolean.boost_chambre_sssol
+      boost_timer: timer.boost_chambre_sssol
+      timer_entity: input_datetime.boost_end_chambre_sssol
+      mode_entity: input_select.radiateur_chambre_sssol_mode
+      consigne_entity: input_number.radiateur_chambre_sssol_consigne
+      boost_temp_helper: input_number.radiateur_chambre_sssol_boost_consigne
+      consigne_boost_valeur_de_depart: 17
+      boost_duration_helper: input_number.radiateur_chambre_sssol_boost_duree
+      duree_boost_valeur_de_depart: 500
+      restore_behavior: input_select.radiateur_chambre_sssol_restore_behavior
+      restore_mode_custom: input_select.radiateur_chambre_sssol_restore_custom_mode
+      restore_override_consigne: input_boolean.radiateur_chambre_sssol_restore_override_consigne
+      restore_consigne_custom: input_number.radiateur_chambre_sssol_restore_consigne_custom
+      previous_mode_storage: input_text.radiateur_chambre_sssol_previous_mode
+      previous_consigne_storage: input_number.radiateur_chambre_sssol_previous_consigne
+      sync_helpers_on_reload: false
+- id: '1763312654861'
+  alias: Chauffage by C. - Boost - Bureau
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Boost.yaml
+    input:
+      piece: bureau
+      users_group: group.mell_utilisateurs
+      boost_switch: input_boolean.boost_bureau
+      boost_timer: timer.boost_bureau
+      timer_entity: input_datetime.boost_end_bureau
+      mode_entity: input_select.radiateur_bureau_mode
+      consigne_entity: input_number.radiateur_bureau_consigne
+      boost_temp_helper: input_number.radiateur_bureau_boost_consigne
+      consigne_boost_valeur_de_depart: 19.5
+      boost_duration_helper: input_number.radiateur_bureau_boost_duree
+      duree_boost_valeur_de_depart: 210
+      restore_behavior: input_select.radiateur_bureau_restore_behavior
+      restore_mode_custom: input_select.radiateur_bureau_restore_custom_mode
+      restore_override_consigne: input_boolean.radiateur_bureau_restore_override_consigne
+      restore_consigne_custom: input_number.radiateur_bureau_restore_consigne_custom
+      previous_mode_storage: input_text.radiateur_bureau_previous_mode
+      previous_consigne_storage: input_number.radiateur_bureau_previous_consigne
+      sync_helpers_on_reload: false
+- id: '1763312939904'
+  alias: Chauffage by C. - Boost - Cuisine
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Boost.yaml
+    input:
+      piece: cuisine
+      users_group: group.mell_utilisateurs
+      boost_switch: input_boolean.boost_cuisine
+      boost_timer: timer.boost_cuisine
+      timer_entity: input_datetime.boost_end_cuisine
+      mode_entity: input_select.radiateur_cuisine_mode
+      consigne_entity: input_number.radiateur_cuisine_consigne
+      boost_temp_helper: input_number.radiateur_cuisine_boost_consigne
+      consigne_boost_valeur_de_depart: 19
+      boost_duration_helper: input_number.radiateur_cuisine_boost_duree
+      duree_boost_valeur_de_depart: 90
+      restore_behavior: input_select.radiateur_cuisine_restore_behavior
+      restore_mode_custom: input_select.radiateur_cuisine_restore_custom_mode
+      restore_override_consigne: input_boolean.radiateur_cuisine_restore_override_consigne
+      restore_consigne_custom: input_number.radiateur_cuisine_restore_consigne_custom
+      previous_mode_storage: input_text.radiateur_cuisine_previous_mode
+      previous_consigne_storage: input_number.radiateur_cuisine_previous_consigne
+      sync_helpers_on_reload: false
+- id: '1763313190890'
+  alias: Chauffage by C. - Boost - Salon
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Boost.yaml
+    input:
+      piece: salon
+      users_group: group.mell_utilisateurs
+      boost_switch: input_boolean.boost_salon
+      boost_timer: timer.boost_salon
+      timer_entity: input_datetime.boost_end_salon
+      mode_entity: input_select.radiateur_salon_mode
+      consigne_entity: input_number.radiateur_salon_consigne
+      boost_temp_helper: input_number.radiateur_salon_boost_consigne
+      consigne_boost_valeur_de_depart: 19.5
+      boost_duration_helper: input_number.radiateur_salon_boost_duree
+      duree_boost_valeur_de_depart: 180
+      restore_behavior: input_select.radiateur_salon_restore_behavior
+      restore_mode_custom: input_select.radiateur_salon_restore_custom_mode
+      restore_override_consigne: input_boolean.radiateur_salon_restore_override_consigne
+      restore_consigne_custom: input_number.radiateur_salon_restore_consigne_custom
+      previous_mode_storage: input_text.radiateur_salon_previous_mode
+      previous_consigne_storage: input_number.radiateur_salon_previous_consigne
+      sync_helpers_on_reload: false
+- id: '1763313423859'
+  alias: Chauffage by C. - Boost - Michel
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Boost.yaml
+    input:
+      piece: michel
+      users_group: group.mell_utilisateurs
+      boost_switch: input_boolean.boost_michel
+      boost_timer: timer.boost_michel
+      timer_entity: input_datetime.boost_end_michel
+      mode_entity: input_select.radiateur_michel_mode
+      consigne_entity: input_number.radiateur_michel_consigne
+      boost_temp_helper: input_number.radiateur_michel_boost_consigne
+      consigne_boost_valeur_de_depart: 19
+      boost_duration_helper: input_number.radiateur_michel_boost_duree
+      duree_boost_valeur_de_depart: 900
+      restore_behavior: input_select.radiateur_michel_restore_behavior
+      restore_mode_custom: input_select.radiateur_michel_restore_custom_mode
+      restore_override_consigne: input_boolean.radiateur_michel_restore_override_consigne
+      restore_consigne_custom: input_number.radiateur_michel_restore_consigne_custom
+      previous_mode_storage: input_text.radiateur_michel_previous_mode
+      previous_consigne_storage: input_number.radiateur_michel_previous_consigne
+      sync_helpers_on_reload: false
+- id: '1763313640537'
+  alias: Chauffage by C. - Boost - Voitures
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Boost.yaml
+    input:
+      piece: chambrevoitures
+      users_group: group.mell_utilisateurs
+      boost_switch: input_boolean.boost_voitures
+      boost_timer: timer.boost_voitures
+      timer_entity: input_datetime.boost_end_voitures
+      mode_entity: input_select.radiateur_voitures_mode
+      consigne_entity: input_number.radiateur_voitures_consigne
+      boost_temp_helper: input_number.radiateur_voitures_boost_consigne
+      consigne_boost_valeur_de_depart: 16
+      boost_duration_helper: input_number.radiateur_voitures_boost_duree
+      duree_boost_valeur_de_depart: 900
+      restore_behavior: input_select.radiateur_voitures_restore_behavior
+      restore_mode_custom: input_select.radiateur_voitures_restore_custom_mode
+      restore_override_consigne: input_boolean.radiateur_voitures_restore_override_consigne
+      restore_consigne_custom: input_number.radiateur_voitures_restore_consigne_custom
+      previous_mode_storage: input_text.radiateur_voitures_previous_mode
+      previous_consigne_storage: input_number.radiateur_voitures_previous_consigne
+      sync_helpers_on_reload: false
+- id: '1763313928118'
+  alias: Chauffage by C. - Boost - Couloir
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Boost.yaml
+    input:
+      piece: couloir
+      users_group: group.mell_utilisateurs
+      boost_switch: input_boolean.boost_couloir
+      boost_timer: timer.boost_couloir
+      timer_entity: input_datetime.boost_end_couloir
+      mode_entity: input_select.radiateur_couloir_mode
+      consigne_entity: input_number.radiateur_couloir_consigne
+      boost_temp_helper: input_number.radiateur_couloir_boost_consigne
+      consigne_boost_valeur_de_depart: 17
+      boost_duration_helper: input_number.radiateur_couloir_boost_duree
+      duree_boost_valeur_de_depart: 445
+      restore_behavior: input_select.radiateur_couloir_restore_behavior
+      restore_mode_custom: input_select.radiateur_couloir_restore_custom_mode
+      restore_override_consigne: input_boolean.radiateur_couloir_restore_override_consigne
+      restore_consigne_custom: input_number.radiateur_couloir_restore_consigne_custom
+      previous_consigne_storage: input_number.radiateur_couloir_previous_consigne
+      previous_mode_storage: input_text.radiateur_couloir_previous_mode
+      sync_helpers_on_reload: false
+- id: '1763314138016'
+  alias: Chauffage by C. - Boost - Telmo
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Boost.yaml
+    input:
+      piece: chambre
+      users_group: group.mell_utilisateurs
+      boost_switch: input_boolean.boost_telmo
+      boost_timer: timer.boost_telmo
+      timer_entity: input_datetime.boost_end_telmo
+      mode_entity: input_select.radiateur_telmo_mode
+      consigne_entity: input_number.radiateur_telmo_consigne
+      boost_temp_helper: input_number.radiateur_telmo_boost_consigne
+      consigne_boost_valeur_de_depart: 19
+      boost_duration_helper: input_number.radiateur_telmo_boost_duree
+      duree_boost_valeur_de_depart: 410
+      restore_behavior: input_select.radiateur_telmo_restore_behavior
+      restore_mode_custom: input_select.radiateur_telmo_restore_custom_mode
+      restore_override_consigne: input_boolean.radiateur_telmo_restore_override_consigne
+      restore_consigne_custom: input_number.radiateur_telmo_restore_consigne_custom
+      previous_mode_storage: input_text.radiateur_telmo_previous_mode
+      previous_consigne_storage: input_number.radiateur_telmo_previous_consigne
+      sync_helpers_on_reload: false
+- id: '1763850273986'
+  alias: Chauffage by C. - Thermostat TPI - Garçonnière
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Thermostat_TPI.yaml
+    input:
+      coeff_c: 0.8
+      coeff_t: 0.025
+      entity_consigne: input_number.radiateur_garconniere_consigne
+      entity_temp_ext: sensor.temperature_exterieure_virtuelle_consolidee
+      entity_temp_int: sensor.temperature_sonoff_atelier
+      entity_fenetre: binary_sensor.fenetre_virtuelle_onoff
+      entity_puissance: input_number.radiateur_garconniere_puissance
+      entity_chauffage:
+      - switch.radiateur_inv_garconniere
+      entity_mode_inverse: true
+- id: '1763850374466'
+  alias: Chauffage by C. - Pilotage - Garçonnière
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Pilotage_Week-Vs-WE.yaml
+    input:
+      entity_consigne: input_number.radiateur_garconniere_consigne
+      entity_mode: input_select.radiateur_garconniere_mode
+      entity_schedule_presence:
+      - switch.schedule_garconniere_presence_sem
+      - switch.schedule_garconniere_presence_we
+      entity_schedule_absence:
+      - switch.schedule_garconniere_absence_quo
+      entity_thermostat_tpi: automation.chauffage_by_c_thermostat_tpi_garconniere
+- id: '1763850642553'
+  alias: Chauffage by C. - Boost - Garçonnière
+  description: ''
+  use_blueprint:
+    path: Ciscoo45/Chauffage_by_C._-_Boost.yaml
+    input:
+      piece: garconniere
+      users_group: group.mell_utilisateurs
+      boost_switch: input_boolean.boost_garconniere
+      boost_timer: timer.boost_garconniere
+      timer_entity: input_datetime.boost_end_garconniere
+      mode_entity: input_select.radiateur_garconniere_mode
+      consigne_entity: input_number.radiateur_garconniere_consigne
+      boost_temp_helper: input_number.radiateur_garconniere_boost_consigne
+      consigne_boost_valeur_de_depart: 18
+      boost_duration_helper: input_number.radiateur_garconniere_boost_duree
+      duree_boost_valeur_de_depart: 240
+      restore_behavior: input_select.radiateur_garconniere_restore_behavior
+      restore_mode_custom: input_select.radiateur_garconniere_restore_custom_mode
+      restore_override_consigne: input_boolean.radiateur_garconniere_restore_override_consigne
+      restore_consigne_custom: input_number.radiateur_garconniere_restore_consigne_custom
+      previous_mode_storage: input_text.radiateur_garconniere_previous_mode
+      previous_consigne_storage: input_number.radiateur_garconniere_previous_consigne
+      sync_helpers_on_reload: false

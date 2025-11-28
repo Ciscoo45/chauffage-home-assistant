@@ -1,0 +1,53 @@
+# yaml-language-server: $schema=null
+
+#####################################################
+### Définition du Helper BINARY_SENSOR pour le Blueprint Chauffage by C. : Fenêtre virtuelle, toujours fermée par défaut
+### A utiliser si on ne dispose pas de capteur physique pour la/les fenêtes/portes d'une pièce, ou si la pièce n'a pas d'ouverture à monitorer
+- platform: template
+  sensors:
+    fenetre_virtuelle_onoff:
+        friendly_name: Fenetre virtuelle
+        value_template: 'off'
+        device_class: opening
+
+
+
+
+#####################################################
+### Définition du Helper BINARY_SENSOR pour le Blueprint Chauffage by C. : Groupes de programmation (Presence, Absence), pour semaine et WE
+### pour avoir sur la carte Lovelace évoluée l'icône du mode Présence activé quand l'une de ces programmations est active (ex. soit SEM soit WE)
+
+## pour Atelier : binary_sensor.schedule_atelier_presence_any
+# - platform: template
+#  sensors:
+    schedule_atelier_presence_any:
+      friendly_name: "Programmation présence atelier"
+      value_template: >-
+        {{ is_state('switch.schedule_atelier_presence_sem','on')
+          or is_state('switch.schedule_atelier_presence_we','on') }}
+      icon_template: mdi:home-account
+
+## pour Garçonnière : binary_sensor.schedule_garconniere_presence_any
+# - platform: template
+#  sensors:
+    schedule_garconniere_presence_any:
+      friendly_name: "Programmation présence garconniere"
+      value_template: >-
+        {{ is_state('switch.schedule_garconniere_presence_sem','on')
+          or is_state('switch.schedule_garconniere_presence_we','on') }}
+      icon_template: mdi:home-account
+
+
+#####################################################
+### Définition du Helper binary_sensor pour le Blueprint Chauffage by C. : Groupes de capteurs d'ouvertures (fenêtres, portes...)
+###Dans le cas où on a plusieurs ouvertures à monitorer dans une seule pièce
+
+## pour Salon
+#- platform: group
+#  unique_id: binary_sensor.ouvertures_salon_groupe
+#  name: "Ouvertures Salon Groupe"
+#  device_class: opening
+#  entities:
+#    - binary_sensor.ouverture_salon_sud
+#    - binary_sensor.ouverture_salon_ouest
+#    - binary_sensor.ouverture_salon_est

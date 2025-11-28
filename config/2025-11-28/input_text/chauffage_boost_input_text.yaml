@@ -1,0 +1,86 @@
+
+### Définition des Helpers INPUT_TEXT pour le Blueprint Chauffage Boost by C. : Previous mode
+
+## pour Chambre Ss-Sol
+radiateur_chambre_sssol_previous_mode:
+  name: "Chambre Ss-Sol - Mode précédent mémorisé"
+  icon: mdi:memory
+  initial: "Presence"
+  max: 50
+
+## pour Bureau
+radiateur_bureau_previous_mode:
+  name: "Bureau - Mode précédent mémorisé"
+  icon: mdi:memory
+  initial: "Presence"
+  max: 50
+
+## pour Cuisine
+radiateur_cuisine_previous_mode:
+  name: "Cuisine - Mode précédent mémorisé"
+  icon: mdi:memory
+  initial: "Presence"
+  max: 50
+
+## pour Salon
+radiateur_salon_previous_mode:
+  name: "Salon - Mode précédent mémorisé"
+  icon: mdi:memory
+  initial: "Presence"
+  max: 50
+
+## pour SdB
+radiateur_sdb_previous_mode:
+  name: "SdB - Mode précédent mémorisé"
+  icon: mdi:memory
+  initial: "Presence"
+  max: 50
+
+## pour Michel
+radiateur_michel_previous_mode:
+  name: "Michel - Mode précédent mémorisé"
+  icon: mdi:memory
+  initial: "Presence"
+  max: 50
+
+## pour Voitures
+radiateur_voitures_previous_mode:
+  name: "Voitures - Mode précédent mémorisé"
+  icon: mdi:memory
+  initial: "Presence"
+  max: 50
+
+## pour Couloir
+radiateur_couloir_previous_mode:
+  name: "Couloir - Mode précédent mémorisé"
+  icon: mdi:memory
+  initial: "Presence"
+  max: 50
+
+## pour Atelier
+radiateur_atelier_previous_mode:
+  name: "Atelier - Mode précédent mémorisé"
+  icon: mdi:memory
+  initial: "Presence"
+  max: 50
+
+## pour Garçonnière
+radiateur_garconniere_previous_mode:
+  name: "Garçonnière - Mode précédent mémorisé"
+  icon: mdi:memory
+  initial: "Presence"
+  max: 50
+
+## pour Telmo
+radiateur_telmo_previous_mode:
+  name: "Telmo - Mode précédent mémorisé"
+  icon: mdi:memory
+  initial: "Presence"
+  max: 50
+
+## pour SdB Etg
+radiateur_sdb_etg_previous_mode:
+  name: "SdB Etg - Mode précédent mémorisé"
+  icon: mdi:memory
+  initial: "Presence"
+  max: 50

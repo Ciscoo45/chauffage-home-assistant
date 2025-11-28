@@ -1,0 +1,525 @@
+blueprint:
+  name: Chauffage by C. - Boost
+  description: "\n\nversion Boost : v1.12 - 2025-11-24\nauteur : Ciscoo45\n\nBlueprint
+    de boost temporaire dérogatif pour le chauffage avec restauration intelligente
+    de mode en fin de boost.\n\n       \nFonctionnalités :\n- Boost manuel via UI
+    ou télécommande Ikea\n- Durée et consigne personnalisables\n- Extension de durée
+    via notification\n- Restauration intelligente : ne restaure la consigne que si
+    le mode précédent était Manuel\n- Compatible avec tous les modes (y compris Arrêt)\n-
+    Notifications persistantes avec actions\n- Affichage de l'heure de fin\n\n \n"
+  source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Chauffage_by_C._-_Boost.yaml
+  domain: automation
+  input:
+    piece:
+      name: "\U0001F3E0 Pièce"
+      selector:
+        area:
+          multiple: false
+    users_group:
+      name: "\U0001F465 Groupe des utilisateurs éligibles aux notifications"
+      selector:
+        entity:
+          domain:
+          - group
+          multiple: false
+          reorder: false
+    remote_button:
+      name: "[Optionnel] \U0001F3AE Télécommande Ikea Styrbar / Rodret"
+      default: ''
+      selector:
+        device:
+          integration: zha
+          manufacturer: IKEA of Sweden
+          multiple: false
+    boost_switch:
+      name: "\U0001F39A️ Commutateur Boost (Dashboard)"
+      description: (chauffage_boost > input_boolean)
+      selector:
+        entity:
+          domain:
+          - input_boolean
+          multiple: false
+          reorder: false
+    boost_timer:
+      name: ⌛ Timer de boost
+      description: pour le calcul de l'expiration (chauffage_boost > timer)
+      selector:
+        entity:
+          domain:
+          - timer
+          multiple: false
+          reorder: false
+    timer_entity:
+      name: ⏰ Heure de fin de Boost
+      description: pour afficher l'heure de fin dans l'UI (chauffage_boost > input_dateime)
+      selector:
+        entity:
+          domain:
+          - input_datetime
+          multiple: false
+          reorder: false
+    mode_entity:
+      name: "\U0001F4CB Module Chauffage - Radiateur Mode"
+      description: lié au blueprint principal de pilotage du chauffage (chauffage
+        > input_select)
+      selector:
+        entity:
+          domain:
+          - input_select
+          multiple: false
+          reorder: false
+    consigne_entity:
+      name: "\U0001F321️ Module Chauffage - Radiateur Consigne"
+      description: lié au blueprint principal de pilotage du chauffage (chauffage
+        > input_number)
+      selector:
+        entity:
+          domain:
+          - input_number
+          multiple: false
+          reorder: false
+    boost_temp_helper:
+      name: "\U0001F3AF Consigne de début de boost (°C)"
+      description: (chauffage_boost > input_number)
+      selector:
+        entity:
+          domain:
+          - input_number
+          multiple: false
+          reorder: false
+    consigne_boost_valeur_de_depart:
+      name: Consigne de boost par défaut (°C)
+      default: 21
+      selector:
+        number:
+          min: 8.0
+          max: 26.0
+          step: 0.5
+          mode: slider
+    boost_duration_helper:
+      name: Durée de boost
+      description: (chauffage_boost > input_number)
+      selector:
+        entity:
+          domain:
+          - input_number
+          multiple: false
+          reorder: false
+    duree_boost_valeur_de_depart:
+      name: Durée par défaut (minutes)
+      default: 40
+      selector:
+        number:
+          min: 1.0
+          max: 1200.0
+          step: 5.0
+          mode: slider
+    boost_extend_step_minutes:
+      name: "\U0001F463 Pas d'extension par défaut (minutes)"
+      default: 10
+      selector:
+        number:
+          min: 1.0
+          max: 60.0
+          step: 5.0
+          mode: slider
+    restore_behavior:
+      name: "\U0001F607 Comportement en fin de boost"
+      description: Restaurer l'état précédent ou choisir un mode spécifique (chauffage_boost
+        > input_select)
+      selector:
+        entity:
+          domain:
+          - input_select
+          multiple: false
+          reorder: false
+    restore_mode_custom:
+      name: '[Si mode personnalisé] Mode à restaurer en fin de boost'
+      description: Mode de chauffage à appliquer en fin de boost (chauffage_boost
+        > input_select)
+      selector:
+        entity:
+          domain:
+          - input_select
+          multiple: false
+          reorder: false
+    restore_override_consigne:
+      name: '[Si mode personnalisé] Choix de forcer une consigne spécifique en fin
+        de boost'
+      description: Activer pour imposer une consigne différente de celle de la programmation
+        auto du Scheduler (chauffage_boost > input_boolean)
+      selector:
+        entity:
+          domain:
+          - input_boolean
+          multiple: false
+          reorder: false
+    restore_consigne_custom:
+      name: '[Si mode personnalisé + consigne forcée] Température de consigne forcée
+        en fin (°C)'
+      description: Consigne à appliquer si l'override est activé (chauffage_boost
+        > input_number)
+      selector:
+        entity:
+          domain:
+          - input_number
+          multiple: false
+          reorder: false
+    previous_mode_storage:
+      name: "\U0001F4BE Enregistrement du \U0001F4CB Mode précédent"
+      description: pour mémoriser le mode existant avant le boost (chauffage_boost
+        > input_text)
+      selector:
+        entity:
+          domain:
+          - input_text
+          multiple: false
+          reorder: false
+    previous_consigne_storage:
+      name: "\U0001F4BE Enregistrement de la \U0001F321️ Consigne précédente"
+      description: pour mémoriser la consigne existante avant boost (chauffage_boost
+        > input_number)
+      selector:
+        entity:
+          domain:
+          - input_number
+          multiple: false
+          reorder: false
+    sync_helpers_on_reload:
+      name: Initialiser les helpers à chaque redémarrage / rechargement
+      description: Si actif, on reset les paramètres de consigne et durée à ceux définis
+        dans le Blueprint. Si désactivé, on garde les paramètres définis sur le dashboard
+        Lovelace lorsqu'on re[...]
+      default: false
+      selector:
+        boolean: {}
+trigger:
+- platform: event
+  event_type: zha_event
+  event_data:
+    device_id: !input remote_button
+    command: 'on'
+    cluster_id: 6
+  id: boost_start_remote
+- platform: event
+  event_type: zha_event
+  event_data:
+    device_id: !input remote_button
+    command: 'off'
+    cluster_id: 6
+  id: boost_stop_remote
+- platform: state
+  entity_id: !input boost_switch
+  from: 'off'
+  to: 'on'
+  id: boost_start_ui
+- platform: state
+  entity_id: !input boost_switch
+  from: 'on'
+  to: 'off'
+  id: boost_stop_ui
+- platform: event
+  event_type: mobile_app_notification_action
+  id: boost_notif_action
+- platform: homeassistant
+  event: start
+  id: init_on_start
+- platform: event
+  event_type: automation_reloaded
+  id: init_on_reload
+- platform: event
+  event_type: timer.finished
+  event_data:
+    entity_id: !input boost_timer
+  id: boost_expired_timer
+condition: []
+action:
+- variables:
+    area_id: !input piece
+    users_group_entity: !input users_group
+    boost_switch: !input boost_switch
+    mode_entity: !input mode_entity
+    consigne_entity: !input consigne_entity
+    duration_helper: !input boost_duration_helper
+    temp_helper: !input boost_temp_helper
+    timer_id: !input timer_entity
+    boost_timer_id: !input boost_timer
+    sync_reload: !input sync_helpers_on_reload
+    default_minutes: !input duree_boost_valeur_de_depart
+    default_temp: !input consigne_boost_valeur_de_depart
+    extend_step: !input boost_extend_step_minutes
+    restore_choice: !input restore_behavior
+    custom_mode_entity: !input restore_mode_custom
+    override_consigne_switch: !input restore_override_consigne
+    custom_consigne_entity: !input restore_consigne_custom
+    prev_mode_storage: !input previous_mode_storage
+    prev_consigne_storage: !input previous_consigne_storage
+    area_label: '{{ area_name(area_id) if area_name(area_id) is not none else area_id
+      }}'
+    notif_tag: '{{ ''boost_'' ~ area_id }}'
+    stop_action_id: '{{ (''boost_stop_'' ~ area_id)|lower }}'
+    extend_action_id: '{{ (''boost_extend_'' ~ area_id)|lower }}'
+    boost_minutes: '{{ [ [ states(duration_helper)|int(default_minutes), 1 ]|max,
+      600 ]|min }}'
+    boost_target_temp: '{{ [ [ states(temp_helper)|float(default_temp), 15 ]|max,
+      30 ]|min }}'
+    boost_end_ts: '{{ (now() + timedelta(minutes=boost_minutes)).timestamp()|int }}'
+    boost_end_hhmm: '{{ (now() + timedelta(minutes=boost_minutes)).strftime(''%H:%M'')
+      }}'
+    present_notify_entities: "{{\n  expand(state_attr(users_group_entity, 'entity_id')
+      | default([], true))\n  | selectattr('entity_id','match','^person\\\\.')\n  |
+      selectattr('state','equalto','home')\n  | map(attribute='entity_id')\n  | map('regex_replace',
+      '^person\\\\.', 'notify.user_')\n  | list\n}}"
+    has_targets: '{{ present_notify_entities | count > 0 }}'
+- choose:
+  - conditions: '{{ trigger.id in [''init_on_start'',''init_on_reload''] and not sync_reload
+      }}'
+    sequence:
+    - stop: Initialisation des helpers désactivée.
+  - conditions: '{{ trigger.id in [''init_on_start'',''init_on_reload''] and sync_reload
+      }}'
+    sequence:
+    - service: input_number.set_value
+      target:
+        entity_id: !input boost_duration_helper
+      data:
+        value: '{{ default_minutes|int }}'
+    - service: input_number.set_value
+      target:
+        entity_id: !input boost_temp_helper
+      data:
+        value: '{{ default_temp|float }}'
+    - stop: Helpers initialisés.
+  - conditions: '{{ trigger.id in [''boost_start_remote'',''boost_start_ui''] }}'
+    sequence:
+    - if:
+      - condition: trigger
+        id: boost_start_remote
+      - condition: state
+        entity_id: !input boost_switch
+        state: 'off'
+      then:
+      - service: input_boolean.turn_on
+        target:
+          entity_id: !input boost_switch
+      - delay:
+          milliseconds: 100
+    - service: input_text.set_value
+      target:
+        entity_id: '{{ prev_mode_storage }}'
+      data:
+        value: '{{ states(mode_entity) }}'
+    - service: input_number.set_value
+      target:
+        entity_id: '{{ prev_consigne_storage }}'
+      data:
+        value: '{{ states(consigne_entity) | float(14) }}'
+    - service: input_select.select_option
+      target:
+        entity_id: !input mode_entity
+      data:
+        option: Manuel
+    - delay:
+        milliseconds: 500
+    - service: input_number.set_value
+      target:
+        entity_id: !input consigne_entity
+      data:
+        value: '{{ boost_target_temp }}'
+    - delay:
+        seconds: 2
+    - service: input_datetime.set_datetime
+      target:
+        entity_id: !input timer_entity
+      data:
+        timestamp: '{{ boost_end_ts }}'
+    - service: timer.start
+      target:
+        entity_id: !input boost_timer
+      data:
+        duration: '{{ boost_minutes * 60 }}'
+    - if:
+      - condition: template
+        value_template: '{{ has_targets }}'
+      then:
+      - repeat:
+          for_each: '{{ present_notify_entities }}'
+          sequence:
+          - service: '{{ repeat.item }}'
+            data:
+              title: "\U0001F506 Boost chauffage {{ area_label }} activé"
+              message: Consigne {{ boost_target_temp|round(1) }}° • Fin {{ boost_end_hhmm
+                }} ({{ boost_minutes }} min)
+              data:
+                tag: '{{ notif_tag }}'
+                persistent: true
+                sticky: true
+                actions:
+                - action: '{{ stop_action_id }}'
+                  title: Arrêter
+                - action: '{{ extend_action_id }}'
+                  title: +{{ extend_step }} min
+  - conditions: '{{ trigger.id == ''boost_notif_action'' }}'
+    sequence:
+    - choose:
+      - conditions: "{{ trigger.event is defined\n   and trigger.event.data.tag ==
+          notif_tag\n   and trigger.event.data.action == stop_action_id }}"
+        sequence:
+        - service: input_boolean.turn_off
+          target:
+            entity_id: !input boost_switch
+        - stop: Stop via notif.
+      - conditions: "{{ trigger.event is defined\n   and trigger.event.data.tag ==
+          notif_tag\n   and trigger.event.data.action == extend_action_id }}"
+        sequence:
+        - variables:
+            current_end_ts: "{% set fa = state_attr(boost_timer_id, 'finishes_at')
+              %} {% if fa not in [none, 'none', 'unavailable', 'unknown', ''] %}\n
+              \ {{ as_timestamp(fa) | int(0) }}\n{% else %}\n  {{ now().timestamp()
+              | int }}\n{% endif %}"
+            new_end_ts: '{{ current_end_ts + (extend_step * 60) }}'
+            new_duration_seconds: '{{ (new_end_ts - now().timestamp() | int) | int
+              }}'
+        - service: timer.start
+          target:
+            entity_id: '{{ boost_timer_id }}'
+          data:
+            duration: '{{ new_duration_seconds }}'
+        - service: input_datetime.set_datetime
+          target:
+            entity_id: '{{ timer_id }}'
+          data:
+            timestamp: '{{ new_end_ts }}'
+        - variables:
+            present_notify_entities_loop: "{{\n  expand(state_attr(users_group_entity,
+              'entity_id') | default([], true))\n  | selectattr('entity_id','match','^person\\\\.')\n
+              \ | selectattr('state','equalto','home')\n  | map(attribute='entity_id')\n
+              \ | map('regex_replace', '^person\\\\.', 'notify.user_')\n  | list\n}}"
+            new_end_time: '{{ new_end_ts | int | timestamp_custom(''%H:%M'', true)
+              }}'
+            current_temp: '{{ states(consigne_entity) | float(boost_target_temp) }}'
+        - if:
+          - condition: template
+            value_template: '{{ present_notify_entities_loop | count > 0 }}'
+          then:
+          - repeat:
+              for_each: '{{ present_notify_entities_loop }}'
+              sequence:
+              - service: '{{ repeat.item }}'
+                data:
+                  title: "\U0001F506 Boost chauffage {{ area_label }} prolongé"
+                  message: Consigne {{ current_temp|round(1) }}° • Fin {{ new_end_time
+                    }}
+                  data:
+                    tag: '{{ notif_tag }}'
+                    persistent: true
+                    sticky: true
+                    actions:
+                    - action: '{{ stop_action_id }}'
+                      title: Arrêter
+                    - action: '{{ extend_action_id }}'
+                      title: +{{ extend_step }} min
+  - conditions: '{{ trigger.id in [''boost_stop_remote'',''boost_stop_ui'',''boost_expired_timer'']
+      }}'
+    sequence:
+    - choose:
+      - conditions: '{{ trigger.id == ''boost_stop_remote'' }}'
+        sequence:
+        - condition: state
+          entity_id: !input boost_switch
+          state: 'on'
+        - service: input_boolean.turn_off
+          target:
+            entity_id: !input boost_switch
+        - delay:
+            milliseconds: 100
+      - conditions: '{{ trigger.id == ''boost_expired_timer'' }}'
+        sequence:
+        - condition: state
+          entity_id: !input boost_switch
+          state: 'on'
+        - service: input_boolean.turn_off
+          target:
+            entity_id: !input boost_switch
+        - delay:
+            milliseconds: 100
+    - choose:
+      - conditions: '{{ trigger.id == ''boost_expired_timer'' }}'
+        sequence:
+        - condition: template
+          value_template: '{{ states(mode_entity) == ''Manuel'' }}'
+      default: []
+    - choose:
+      - conditions: '{{ ''état précédent'' in states(restore_choice)|lower or ''etat
+          precedent'' in states(restore_choice)|lower }}'
+        sequence:
+        - variables:
+            previous_mode: '{{ states(prev_mode_storage) }}'
+            previous_consigne: '{{ states(prev_consigne_storage) | float(14) }}'
+        - service: input_select.select_option
+          target:
+            entity_id: '{{ mode_entity }}'
+          data:
+            option: '{{ previous_mode }}'
+        - delay:
+            milliseconds: 200
+        - if:
+          - condition: template
+            value_template: '{{ previous_mode == ''Manuel'' }}'
+          then:
+          - service: input_number.set_value
+            target:
+              entity_id: '{{ consigne_entity }}'
+            data:
+              value: '{{ previous_consigne }}'
+      - conditions: '{{ ''personnalis'' in states(restore_choice)|lower }}'
+        sequence:
+        - variables:
+            target_mode: '{{ states(custom_mode_entity) }}'
+            override_active: '{{ is_state(override_consigne_switch, ''on'') }}'
+            target_consigne: '{{ states(custom_consigne_entity) | float(14) }}'
+        - service: input_select.select_option
+          target:
+            entity_id: '{{ mode_entity }}'
+          data:
+            option: '{{ target_mode }}'
+        - delay:
+            milliseconds: 200
+        - if:
+          - condition: template
+            value_template: '{{ override_active }}'
+          then:
+          - service: input_number.set_value
+            target:
+              entity_id: '{{ consigne_entity }}'
+            data:
+              value: '{{ target_consigne }}'
+      default:
+      - service: input_select.select_option
+        target:
+          entity_id: !input mode_entity
+        data:
+          option: Presence
+    - service: timer.cancel
+      target:
+        entity_id: '{{ boost_timer_id }}'
+    - variables:
+        present_notify_entities_end: "{{\n  expand(state_attr(users_group_entity,
+          'entity_id') | default([], true))\n  | selectattr('entity_id','match','^person\\\\.')\n
+          \ | selectattr('state','equalto','home')\n  | map(attribute='entity_id')\n
+          \ | map('regex_replace', '^person\\\\.', 'notify.user_')\n  | list\n}}"
+    - if:
+      - condition: template
+        value_template: '{{ present_notify_entities_end | count > 0 }}'
+      then:
+      - repeat:
+          for_each: '{{ present_notify_entities_end }}'
+          sequence:
+          - service: '{{ repeat.item }}'
+            data:
+              message: ✅ Boost chauffage {{ area_label }} terminé.
+              data:
+                tag: '{{ notif_tag }}'
+                persistent: false
+                sticky: false
+mode: restart

@@ -1,0 +1,89 @@
+# yaml-language-server: $schema=null
+
+###########################################################################################################################
+### Définition des Helpers BINARY_SENSOR pour le Blueprint Chauffage by C. et le suivi de consommation :
+### pour faire correspondre un binary_sensor à l'état de effectif (chauffe en cours, ou chauffe stoppée)
+### **** Attention : config différente si switch via relai ou si radiateur piloté par radio et donc thermostat/climate ****
+
+- platform: template
+  sensors:
+
+## Pour les radiateurs pilotés par SWITCH INVERSE
+
+
+    # pour Chambre SS-Sol : binary_sensor.etat_radiateur_chambre_sssol
+    etat_radiateur_chambre_sssol:
+      friendly_name: "Etat Radiateur Chambre SS-Sol"
+      value_template: "{{ is_state('switch.radiateur_inv_chambre_sssol', 'off') }}"
+      icon_template: "{{ 'mdi:thermostat' if is_state('switch.radiateur_inv_chambre_sssol', 'off') else 'mdi:thermostat-off' }}"
+
+
+    # pour Bureau : binary_sensor.etat_radiateur_bureau
+    etat_radiateur_bureau:
+      friendly_name: "Etat Radiateur Bureau"
+      value_template: "{{ is_state('switch.radiateur_inv_bureau', 'off') }}"
+      icon_template: "{{ 'mdi:thermostat' if is_state('switch.radiateur_inv_bureau', 'off') else 'mdi:thermostat-off' }}"
+
+    # pour SdB : binary_sensor.etat_radiateur_sdb
+    etat_radiateur_sdb:
+      friendly_name: "Etat Radiateur SdB"
+      value_template: "{{ is_state('switch.radiateur_inv_sdb', 'off') }}"
+      icon_template: "{{ 'mdi:thermostat' if is_state('switch.radiateur_inv_sdb', 'off') else 'mdi:thermostat-off' }}"
+
+    # pour Michel : binary_sensor.etat_radiateur_michel
+    etat_radiateur_michel:
+      friendly_name: "Etat Radiateur Michel"
+      value_template: "{{ is_state('switch.radiateur_inv_michel', 'off') }}"
+      icon_template: "{{ 'mdi:thermostat' if is_state('switch.radiateur_inv_michel', 'off') else 'mdi:thermostat-off' }}"
+
+    # pour Voitures : binary_sensor.etat_radiateur_voitures
+    etat_radiateur_voitures:
+      friendly_name: "Etat Radiateur Voitures"
+      value_template: "{{ is_state('switch.radiateur_inv_voitures', 'off') }}"
+      icon_template: "{{ 'mdi:thermostat' if is_state('switch.radiateur_inv_voitures', 'off') else 'mdi:thermostat-off' }}"
+
+
+    # pour Atelier : binary_sensor.etat_radiateur_atelier
+    etat_radiateur_atelier:
+      friendly_name: "Etat Radiateur Atelier"
+      value_template: "{{ is_state('switch.radiateur_inv_atelier', 'off') }}"
+      icon_template: "{{ 'mdi:thermostat' if is_state('switch.radiateur_inv_atelier', 'off') else 'mdi:thermostat-off' }}"
+
+    # pour Garçonnière : binary_sensor.etat_radiateur_garconniere
+    etat_radiateur_garconniere:
+      friendly_name: "Etat Radiateur Garçonniere"
+      value_template: "{{ is_state('switch.radiateur_inv_garconniere', 'off') }}"
+      icon_template: "{{ 'mdi:thermostat' if is_state('switch.radiateur_inv_garconniere', 'off') else 'mdi:thermostat-off' }}"
+
+    # pour Telmo : binary_sensor.etat_radiateur_telmo
+    etat_radiateur_telmo:
+      friendly_name: "Etat Radiateur Telmo"
+      value_template: "{{ is_state('switch.radiateur_inv_telmo', 'off') }}"
+      icon_template: "{{ 'mdi:thermostat' if is_state('switch.radiateur_inv_telmo', 'off') else 'mdi:thermostat-off' }}"
+
+    # pour SdB Etg : binary_sensor.etat_radiateur_sdb_etg
+    etat_radiateur_sdb_etg:
+      friendly_name: "Etat Radiateur SdB Etg"
+      value_template: "{{ is_state('switch.radiateur_inv_sdb_etg', 'off') }}"
+      icon_template: "{{ 'mdi:thermostat' if is_state('switch.radiateur_inv_sdb_etg', 'off') else 'mdi:thermostat-off' }}"
+
+
+## Pour les radiateurs pilotés par CLIMATE / THERMOSTAT
+
+    # pour Cuisine : binary_sensor.etat_radiateur_cuisine
+    etat_radiateur_cuisine:
+      friendly_name: "Etat Radiateur Cuisine"
+      value_template: "{{ is_state_attr('climate.x2d_elec_thermostat_a6_cuisine', 'preset_mode', 'Comfort') }}"
+      icon_template: "{{ 'mdi:thermostat' if is_state_attr('climate.x2d_elec_thermostat_a6_cuisine', 'preset_mode', 'Comfort') else 'mdi:thermostat-off' }}"
+
+    # pour Salon : binary_sensor.etat_radiateur_salon
+    etat_radiateur_salon:
+      friendly_name: "Etat Radiateur Salon"
+      value_template: "{{ is_state_attr('climate.x2d_elec_thermostat_a2_salon_est', 'preset_mode', 'Comfort') }}"
+      icon_template: "{{ 'mdi:thermostat' if is_state_attr('climate.x2d_elec_thermostat_a2_salon_est', 'preset_mode', 'Comfort') else 'mdi:thermostat-off' }}"
+
+    # pour Couloir : binary_sensor.etat_radiateur_couloir
+    etat_radiateur_couloir:
+      friendly_name: "Etat Radiateur Couloir"
+      value_template: "{{ is_state_attr('climate.x2d_elec_thermostat_a5_couloir', 'preset_mode', 'Comfort') }}"
+      icon_template: "{{ 'mdi:thermostat' if is_state_attr('climate.x2d_elec_thermostat_a5_couloir', 'preset_mode', 'Comfort') else 'mdi:thermostat-off' }}"

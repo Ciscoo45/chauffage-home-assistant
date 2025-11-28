@@ -1,0 +1,90 @@
+
+### Templates RTE Tempo via API gratuite api-couleur-tempo.fr sans compte
+
+- sensor:
+
+  - name: "Tempo Couleur Actuelle Texte"
+    unique_id: tempo_couleur_actuelle_texte
+    state: "{{ states('sensor.tempo_aujourd_hui') }}"
+    icon: mdi:palette
+    
+  - name: "Tempo Couleur Demain Texte"
+    unique_id: tempo_couleur_demain_texte
+    state: "{{ states('sensor.tempo_demain') }}"
+    icon: mdi:palette
+    
+  - name: "Tempo Période Actuelle"
+    unique_id: tempo_periode_actuelle
+    state: >
+      {% set horaire = state_attr('sensor.tempo_temps_reel', 'codeHoraire') %}
+      {% if horaire == 0 %}
+        Heures Creuses
+      {% elif horaire == 1 %}
+        Heures Pleines
+      {% else %}
+        {% set lib = state_attr('sensor.tempo_temps_reel', 'libTarif') %}
+        {% if lib is not none and 'HP' in lib %}
+          Heures Pleines
+        {% elif lib is not none and 'HC' in lib %}
+          Heures Creuses
+        {% else %}
+          Inconnu
+        {% endif %}
+      {% endif %}
+    icon: mdi:clock-outline
+    
+  - name: "Tempo Tarif Actuel"
+    unique_id: tempo_tarif_actuel
+    state: >
+      {% set tarif = state_attr('sensor.tempo_temps_reel', 'tarifKwh') %}
+      {% if tarif is not none and tarif != 0 %}
+        {{ tarif }}
+      {% else %}
+        unavailable
+      {% endif %}
+    unit_of_measurement: "€/kWh"
+    icon: mdi:currency-eur
+    availability: >
+      {{ state_attr('sensor.tempo_temps_reel', 'tarifKwh') not in [none, 0] }}
+    
+  - name: "Tempo Jours Restants Bleu"
+    unique_id: tempo_jours_restants_bleu
+    state: >
+      {{ state_attr('sensor.tempo_stats', 'joursBleusRestants') | int(300) }}
+    unit_of_measurement: "j"
+    icon: mdi:calendar-blank
+    
+  - name: "Tempo Jours Restants Blanc"
+    unique_id: tempo_jours_restants_blanc
+    state: >
+      {{ state_attr('sensor.tempo_stats', 'joursBlancsRestants') | int(43) }}
+    unit_of_measurement: "j"
+    icon: mdi:calendar-blank
+    
+  - name: "Tempo Jours Restants Rouge"
+    unique_id: tempo_jours_restants_rouge
+    state: >
+      {{ state_attr('sensor.tempo_stats', 'joursRougesRestants') | int(22) }}
+    unit_of_measurement: "j"
+    icon: mdi:calendar-blank
+    
+  - name: "Tempo Jours Consommes Bleu"
+    unique_id: tempo_jours_consommes_bleu
+    state: >
+      {{ state_attr('sensor.tempo_stats', 'joursBleusConsommes') | int(0) }}
+    unit_of_measurement: "j"
+    icon: mdi:calendar-check
+    
+  - name: "Tempo Jours Consommes Blanc"
+    unique_id: tempo_jours_consommes_blanc
+    state: >
+      {{ state_attr('sensor.tempo_stats', 'joursBlancsConsommes') | int(0) }}
+    unit_of_measurement: "j"
+    icon: mdi:calendar-check
+    
+  - name: "Tempo Jours Consommes Rouge"
+    unique_id: tempo_jours_consommes_rouge
+    state: >
+      {{ state_attr('sensor.tempo_stats', 'joursRougesConsommes') | int(0) }}
+    unit_of_measurement: "j"
+    icon: mdi:calendar-check

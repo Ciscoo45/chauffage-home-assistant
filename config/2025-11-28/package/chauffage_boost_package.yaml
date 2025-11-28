@@ -1,0 +1,990 @@
+
+### Création template pour le Blueprint Chauffage Boost by C. - pour l'affichage Boost On/Off dans la carte Lovelace : Boost Status, Puissance Display, Durée Display, Heure fin Display
+
+chauffage_boost_package:
+
+  template:
+
+
+## pour Chambre Ss-Sol
+    - sensor:
+        - name: "Boost Chambre Ss-Sol Status"
+          unique_id: boost_chambre_sssol_status
+          state: >
+            {% if is_state('input_boolean.boost_chambre_sssol', 'on') %}
+              Boost On
+            {% else %}
+              Boost Off
+            {% endif %}
+          icon: >
+            {% if is_state('input_boolean.boost_chambre_sssol', 'on') %}
+              mdi:lightning-bolt
+            {% else %}
+              mdi:lightning-bolt-outline
+            {% endif %}
+          attributes:
+            boost_active: "{{ is_state('input_boolean.boost_chambre_sssol', 'on') }}"
+            rgb_color: >
+              {% if is_state('input_boolean.boost_chambre_sssol', 'on') %}
+                [255, 165, 0]
+              {% else %}
+                [68, 115, 158]
+              {% endif %}
+        
+        # Sensor pour afficher la puissance avec couleur
+        - name: "Puissance Chambre Ss-Sol Display"
+          unique_id: puissance_chambre_sssol_display
+          state: "{{ states('input_number.radiateur_chambre_sssol_puissance') | int(0) }}"
+          unit_of_measurement: "%"
+          icon: mdi:flash
+          attributes:
+            rgb_color: >
+              {% set puissance = states('input_number.radiateur_chambre_sssol_puissance') | int(0) %}
+              {% if puissance > 0 %}
+                [255, 165, 0]
+              {% else %}
+                [68, 115, 158]
+              {% endif %}
+        
+        # Sensor pour afficher la durée de boost formatée
+        - name: "Durée Boost Chambre Ss-Sol Display"
+          unique_id: duree_boost_chambre_sssol_display
+          state: >
+            {% set minutes = states('input_number.radiateur_chambre_sssol_boost_duree') | int(0) %}
+            {% if minutes >= 60 %}
+              {% set heures = (minutes / 60) | int %}
+              {% set reste_min = minutes % 60 %}
+              {% if reste_min > 0 %}
+                {{ heures }}h{{ reste_min }}
+              {% else %}
+                {{ heures }}h
+              {% endif %}
+            {% else %}
+              {{ minutes }} min
+            {% endif %}
+          icon: mdi:timer-outline
+          attributes:
+            minutes_brut: "{{ states('input_number.radiateur_chambre_sssol_boost_duree') | int(0) }}"
+        
+        # Sensor pour afficher l'heure de fin de boost formatée en français
+        - name: "Fin Boost Chambre Ss-Sol Display"
+          unique_id: fin_boost_chambre_sssol_display
+          state: >
+            {% set dt = states('input_datetime.boost_end_chambre_sssol') %}
+            {% if dt not in ['unknown', 'unavailable', 'none', ''] %}
+              {% set mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 
+                            'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'] %}
+              {% set timestamp = as_timestamp(dt) %}
+              {% set jour = timestamp | timestamp_custom('%d', true) | int %}
+              {% set mois_num = timestamp | timestamp_custom('%m', true) | int %}
+              {% set annee = timestamp | timestamp_custom('%Y', true) %}
+              {% set heure = timestamp | timestamp_custom('%H:%M', true) %}
+              {{ jour }} {{ mois[mois_num - 1] }} {{ annee }} à {{ heure }}
+            {% else %}
+              -
+            {% endif %}
+          icon: mdi:clock-end
+          attributes:
+            heure_complete: "{{ states('input_datetime.boost_end_chambre_sssol') }}"
+
+
+## pour Bureau
+    - sensor:
+        - name: "Boost Bureau Status"
+          unique_id: boost_bureau_status
+          state: >
+            {% if is_state('input_boolean.boost_bureau', 'on') %}
+              Boost On
+            {% else %}
+              Boost Off
+            {% endif %}
+          icon: >
+            {% if is_state('input_boolean.boost_bureau', 'on') %}
+              mdi:lightning-bolt
+            {% else %}
+              mdi:lightning-bolt-outline
+            {% endif %}
+          attributes:
+            boost_active: "{{ is_state('input_boolean.boost_bureau', 'on') }}"
+            rgb_color: >
+              {% if is_state('input_boolean.boost_bureau', 'on') %}
+                [255, 165, 0]
+              {% else %}
+                [68, 115, 158]
+              {% endif %}
+        
+        # Sensor pour afficher la puissance avec couleur
+        - name: "Puissance Bureau Display"
+          unique_id: puissance_bureau_display
+          state: "{{ states('input_number.radiateur_bureau_puissance') | int(0) }}"
+          unit_of_measurement: "%"
+          icon: mdi:flash
+          attributes:
+            rgb_color: >
+              {% set puissance = states('input_number.radiateur_bureau_puissance') | int(0) %}
+              {% if puissance > 0 %}
+                [255, 165, 0]
+              {% else %}
+                [68, 115, 158]
+              {% endif %}
+        
+        # Sensor pour afficher la durée de boost formatée
+        - name: "Durée Boost Bureau Display"
+          unique_id: duree_boost_bureau_display
+          state: >
+            {% set minutes = states('input_number.radiateur_bureau_boost_duree') | int(0) %}
+            {% if minutes >= 60 %}
+              {% set heures = (minutes / 60) | int %}
+              {% set reste_min = minutes % 60 %}
+              {% if reste_min > 0 %}
+                {{ heures }}h{{ reste_min }}
+              {% else %}
+                {{ heures }}h
+              {% endif %}
+            {% else %}
+              {{ minutes }} min
+            {% endif %}
+          icon: mdi:timer-outline
+          attributes:
+            minutes_brut: "{{ states('input_number.radiateur_bureau_boost_duree') | int(0) }}"
+        
+        # Sensor pour afficher l'heure de fin de boost formatée en français
+        - name: "Fin Boost Bureau Display"
+          unique_id: fin_boost_bureau_display
+          state: >
+            {% set dt = states('input_datetime.boost_end_bureau') %}
+            {% if dt not in ['unknown', 'unavailable', 'none', ''] %}
+              {% set mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 
+                            'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'] %}
+              {% set timestamp = as_timestamp(dt) %}
+              {% set jour = timestamp | timestamp_custom('%d', true) | int %}
+              {% set mois_num = timestamp | timestamp_custom('%m', true) | int %}
+              {% set annee = timestamp | timestamp_custom('%Y', true) %}
+              {% set heure = timestamp | timestamp_custom('%H:%M', true) %}
+              {{ jour }} {{ mois[mois_num - 1] }} {{ annee }} à {{ heure }}
+            {% else %}
+              -
+            {% endif %}
+          icon: mdi:clock-end
+          attributes:
+            heure_complete: "{{ states('input_datetime.boost_end_bureau') }}"
+
+
+## pour Cuisine
+    - sensor:
+        - name: "Boost Cuisine Status"
+          unique_id: boost_cuisine_status
+          state: >
+            {% if is_state('input_boolean.boost_cuisine', 'on') %}
+              Boost On
+            {% else %}
+              Boost Off
+            {% endif %}
+          icon: >
+            {% if is_state('input_boolean.boost_cuisine', 'on') %}
+              mdi:lightning-bolt
+            {% else %}
+              mdi:lightning-bolt-outline
+            {% endif %}
+          attributes:
+            boost_active: "{{ is_state('input_boolean.boost_cuisine', 'on') }}"
+            rgb_color: >
+              {% if is_state('input_boolean.boost_cuisine', 'on') %}
+                [255, 165, 0]
+              {% else %}
+                [68, 115, 158]
+              {% endif %}
+        
+        # Sensor pour afficher la puissance avec couleur
+        - name: "Puissance Cuisine Display"
+          unique_id: puissance_cuisine_display
+          state: "{{ states('input_number.radiateur_cuisine_puissance') | int(0) }}"
+          unit_of_measurement: "%"
+          icon: mdi:flash
+          attributes:
+            rgb_color: >
+              {% set puissance = states('input_number.radiateur_cuisine_puissance') | int(0) %}
+              {% if puissance > 0 %}
+                [255, 165, 0]
+              {% else %}
+                [68, 115, 158]
+              {% endif %}
+        
+        # Sensor pour afficher la durée de boost formatée
+        - name: "Durée Boost Cuisine Display"
+          unique_id: duree_boost_cuisine_display
+          state: >
+            {% set minutes = states('input_number.radiateur_cuisine_boost_duree') | int(0) %}
+            {% if minutes >= 60 %}
+              {% set heures = (minutes / 60) | int %}
+              {% set reste_min = minutes % 60 %}
+              {% if reste_min > 0 %}
+                {{ heures }}h{{ reste_min }}
+              {% else %}
+                {{ heures }}h
+              {% endif %}
+            {% else %}
+              {{ minutes }} min
+            {% endif %}
+          icon: mdi:timer-outline
+          attributes:
+            minutes_brut: "{{ states('input_number.radiateur_cuisine_boost_duree') | int(0) }}"
+        
+        # Sensor pour afficher l'heure de fin de boost formatée en français
+        - name: "Fin Boost Cuisine Display"
+          unique_id: fin_boost_cuisine_display
+          state: >
+            {% set dt = states('input_datetime.boost_end_cuisine') %}
+            {% if dt not in ['unknown', 'unavailable', 'none', ''] %}
+              {% set mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 
+                            'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'] %}
+              {% set timestamp = as_timestamp(dt) %}
+              {% set jour = timestamp | timestamp_custom('%d', true) | int %}
+              {% set mois_num = timestamp | timestamp_custom('%m', true) | int %}
+              {% set annee = timestamp | timestamp_custom('%Y', true) %}
+              {% set heure = timestamp | timestamp_custom('%H:%M', true) %}
+              {{ jour }} {{ mois[mois_num - 1] }} {{ annee }} à {{ heure }}
+            {% else %}
+              -
+            {% endif %}
+          icon: mdi:clock-end
+          attributes:
+            heure_complete: "{{ states('input_datetime.boost_end_cuisine') }}"
+
+
+## pour Salon
+    - sensor:
+        - name: "Boost Salon Status"
+          unique_id: boost_salon_status
+          state: >
+            {% if is_state('input_boolean.boost_salon', 'on') %}
+              Boost On
+            {% else %}
+              Boost Off
+            {% endif %}
+          icon: >
+            {% if is_state('input_boolean.boost_salon', 'on') %}
+              mdi:lightning-bolt
+            {% else %}
+              mdi:lightning-bolt-outline
+            {% endif %}
+          attributes:
+            boost_active: "{{ is_state('input_boolean.boost_salon', 'on') }}"
+            rgb_color: >
+              {% if is_state('input_boolean.boost_salon', 'on') %}
+                [255, 165, 0]
+              {% else %}
+                [68, 115, 158]
+              {% endif %}
+        
+        # Sensor pour afficher la puissance avec couleur
+        - name: "Puissance Salon Display"
+          unique_id: puissance_salon_display
+          state: "{{ states('input_number.radiateur_salon_puissance') | int(0) }}"
+          unit_of_measurement: "%"
+          icon: mdi:flash
+          attributes:
+            rgb_color: >
+              {% set puissance = states('input_number.radiateur_salon_puissance') | int(0) %}
+              {% if puissance > 0 %}
+                [255, 165, 0]
+              {% else %}
+                [68, 115, 158]
+              {% endif %}
+        
+        # Sensor pour afficher la durée de boost formatée
+        - name: "Durée Boost Salon Display"
+          unique_id: duree_boost_salon_display
+          state: >
+            {% set minutes = states('input_number.radiateur_salon_boost_duree') | int(0) %}
+            {% if minutes >= 60 %}
+              {% set heures = (minutes / 60) | int %}
+              {% set reste_min = minutes % 60 %}
+              {% if reste_min > 0 %}
+                {{ heures }}h{{ reste_min }}
+              {% else %}
+                {{ heures }}h
+              {% endif %}
+            {% else %}
+              {{ minutes }} min
+            {% endif %}
+          icon: mdi:timer-outline
+          attributes:
+            minutes_brut: "{{ states('input_number.radiateur_salon_boost_duree') | int(0) }}"
+        
+        # Sensor pour afficher l'heure de fin de boost formatée en français
+        - name: "Fin Boost Salon Display"
+          unique_id: fin_boost_salon_display
+          state: >
+            {% set dt = states('input_datetime.boost_end_salon') %}
+            {% if dt not in ['unknown', 'unavailable', 'none', ''] %}
+              {% set mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 
+                            'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'] %}
+              {% set timestamp = as_timestamp(dt) %}
+              {% set jour = timestamp | timestamp_custom('%d', true) | int %}
+              {% set mois_num = timestamp | timestamp_custom('%m', true) | int %}
+              {% set annee = timestamp | timestamp_custom('%Y', true) %}
+              {% set heure = timestamp | timestamp_custom('%H:%M', true) %}
+              {{ jour }} {{ mois[mois_num - 1] }} {{ annee }} à {{ heure }}
+            {% else %}
+              -
+            {% endif %}
+          icon: mdi:clock-end
+          attributes:
+            heure_complete: "{{ states('input_datetime.boost_end_salon') }}"
+
+
+## pour SdB
+    - sensor:
+        - name: "Boost SdB Status"
+          unique_id: boost_sdb_status
+          state: >
+            {% if is_state('input_boolean.boost_sdb', 'on') %}
+              Boost On
+            {% else %}
+              Boost Off
+            {% endif %}
+          icon: >
+            {% if is_state('input_boolean.boost_sdb', 'on') %}
+              mdi:lightning-bolt
+            {% else %}
+              mdi:lightning-bolt-outline
+            {% endif %}
+          attributes:
+            boost_active: "{{ is_state('input_boolean.boost_sdb', 'on') }}"
+            rgb_color: >
+              {% if is_state('input_boolean.boost_sdb', 'on') %}
+                [255, 165, 0]
+              {% else %}
+                [68, 115, 158]
+              {% endif %}
+        
+        # Sensor pour afficher la puissance avec couleur
+        - name: "Puissance SdB Display"
+          unique_id: puissance_sdb_display
+          state: "{{ states('input_number.radiateur_sdb_puissance') | int(0) }}"
+          unit_of_measurement: "%"
+          icon: mdi:flash
+          attributes:
+            rgb_color: >
+              {% set puissance = states('input_number.radiateur_sdb_puissance') | int(0) %}
+              {% if puissance > 0 %}
+                [255, 165, 0]
+              {% else %}
+                [68, 115, 158]
+              {% endif %}
+        
+        # Sensor pour afficher la durée de boost formatée
+        - name: "Durée Boost SdB Display"
+          unique_id: duree_boost_sdb_display
+          state: >
+            {% set minutes = states('input_number.radiateur_sdb_boost_duree') | int(0) %}
+            {% if minutes >= 60 %}
+              {% set heures = (minutes / 60) | int %}
+              {% set reste_min = minutes % 60 %}
+              {% if reste_min > 0 %}
+                {{ heures }}h{{ reste_min }}
+              {% else %}
+                {{ heures }}h
+              {% endif %}
+            {% else %}
+              {{ minutes }} min
+            {% endif %}
+          icon: mdi:timer-outline
+          attributes:
+            minutes_brut: "{{ states('input_number.radiateur_sdb_boost_duree') | int(0) }}"
+        
+        # Sensor pour afficher l'heure de fin de boost formatée en français
+        - name: "Fin Boost SdB Display"
+          unique_id: fin_boost_sdb_display
+          state: >
+            {% set dt = states('input_datetime.boost_end_sdb') %}
+            {% if dt not in ['unknown', 'unavailable', 'none', ''] %}
+              {% set mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 
+                            'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'] %}
+              {% set timestamp = as_timestamp(dt) %}
+              {% set jour = timestamp | timestamp_custom('%d', true) | int %}
+              {% set mois_num = timestamp | timestamp_custom('%m', true) | int %}
+              {% set annee = timestamp | timestamp_custom('%Y', true) %}
+              {% set heure = timestamp | timestamp_custom('%H:%M', true) %}
+              {{ jour }} {{ mois[mois_num - 1] }} {{ annee }} à {{ heure }}
+            {% else %}
+              -
+            {% endif %}
+          icon: mdi:clock-end
+          attributes:
+            heure_complete: "{{ states('input_datetime.boost_end_sdb') }}"
+
+
+## pour Michel
+    - sensor:
+        - name: "Boost Michel Status"
+          unique_id: boost_michel_status
+          state: >
+            {% if is_state('input_boolean.boost_michel', 'on') %}
+              Boost On
+            {% else %}
+              Boost Off
+            {% endif %}
+          icon: >
+            {% if is_state('input_boolean.boost_michel', 'on') %}
+              mdi:lightning-bolt
+            {% else %}
+              mdi:lightning-bolt-outline
+            {% endif %}
+          attributes:
+            boost_active: "{{ is_state('input_boolean.boost_michel', 'on') }}"
+            rgb_color: >
+              {% if is_state('input_boolean.boost_michel', 'on') %}
+                [255, 165, 0]
+              {% else %}
+                [68, 115, 158]
+              {% endif %}
+        
+        # Sensor pour afficher la puissance avec couleur
+        - name: "Puissance Michel Display"
+          unique_id: puissance_michel_display
+          state: "{{ states('input_number.radiateur_michel_puissance') | int(0) }}"
+          unit_of_measurement: "%"
+          icon: mdi:flash
+          attributes:
+            rgb_color: >
+              {% set puissance = states('input_number.radiateur_michel_puissance') | int(0) %}
+              {% if puissance > 0 %}
+                [255, 165, 0]
+              {% else %}
+                [68, 115, 158]
+              {% endif %}
+        
+        # Sensor pour afficher la durée de boost formatée
+        - name: "Durée Boost Michel Display"
+          unique_id: duree_boost_michel_display
+          state: >
+            {% set minutes = states('input_number.radiateur_michel_boost_duree') | int(0) %}
+            {% if minutes >= 60 %}
+              {% set heures = (minutes / 60) | int %}
+              {% set reste_min = minutes % 60 %}
+              {% if reste_min > 0 %}
+                {{ heures }}h{{ reste_min }}
+              {% else %}
+                {{ heures }}h
+              {% endif %}
+            {% else %}
+              {{ minutes }} min
+            {% endif %}
+          icon: mdi:timer-outline
+          attributes:
+            minutes_brut: "{{ states('input_number.radiateur_michel_boost_duree') | int(0) }}"
+        
+        # Sensor pour afficher l'heure de fin de boost formatée en français
+        - name: "Fin Boost Michel Display"
+          unique_id: fin_boost_michel_display
+          state: >
+            {% set dt = states('input_datetime.boost_end_michel') %}
+            {% if dt not in ['unknown', 'unavailable', 'none', ''] %}
+              {% set mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 
+                            'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'] %}
+              {% set timestamp = as_timestamp(dt) %}
+              {% set jour = timestamp | timestamp_custom('%d', true) | int %}
+              {% set mois_num = timestamp | timestamp_custom('%m', true) | int %}
+              {% set annee = timestamp | timestamp_custom('%Y', true) %}
+              {% set heure = timestamp | timestamp_custom('%H:%M', true) %}
+              {{ jour }} {{ mois[mois_num - 1] }} {{ annee }} à {{ heure }}
+            {% else %}
+              -
+            {% endif %}
+          icon: mdi:clock-end
+          attributes:
+            heure_complete: "{{ states('input_datetime.boost_end_michel') }}"
+
+
+## pour Voitures
+    - sensor:
+        - name: "Boost Voitures Status"
+          unique_id: boost_voitures_status
+          state: >
+            {% if is_state('input_boolean.boost_voitures', 'on') %}
+              Boost On
+            {% else %}
+              Boost Off
+            {% endif %}
+          icon: >
+            {% if is_state('input_boolean.boost_voitures', 'on') %}
+              mdi:lightning-bolt
+            {% else %}
+              mdi:lightning-bolt-outline
+            {% endif %}
+          attributes:
+            boost_active: "{{ is_state('input_boolean.boost_voitures', 'on') }}"
+            rgb_color: >
+              {% if is_state('input_boolean.boost_voitures', 'on') %}
+                [255, 165, 0]
+              {% else %}
+                [68, 115, 158]
+              {% endif %}
+        
+        # Sensor pour afficher la puissance avec couleur
+        - name: "Puissance Voitures Display"
+          unique_id: puissance_voitures_display
+          state: "{{ states('input_number.radiateur_voitures_puissance') | int(0) }}"
+          unit_of_measurement: "%"
+          icon: mdi:flash
+          attributes:
+            rgb_color: >
+              {% set puissance = states('input_number.radiateur_voitures_puissance') | int(0) %}
+              {% if puissance > 0 %}
+                [255, 165, 0]
+              {% else %}
+                [68, 115, 158]
+              {% endif %}
+        
+        # Sensor pour afficher la durée de boost formatée
+        - name: "Durée Boost Voitures Display"
+          unique_id: duree_boost_voitures_display
+          state: >
+            {% set minutes = states('input_number.radiateur_voitures_boost_duree') | int(0) %}
+            {% if minutes >= 60 %}
+              {% set heures = (minutes / 60) | int %}
+              {% set reste_min = minutes % 60 %}
+              {% if reste_min > 0 %}
+                {{ heures }}h{{ reste_min }}
+              {% else %}
+                {{ heures }}h
+              {% endif %}
+            {% else %}
+              {{ minutes }} min
+            {% endif %}
+          icon: mdi:timer-outline
+          attributes:
+            minutes_brut: "{{ states('input_number.radiateur_voitures_boost_duree') | int(0) }}"
+        
+        # Sensor pour afficher l'heure de fin de boost formatée en français
+        - name: "Fin Boost Voitures Display"
+          unique_id: fin_boost_voitures_display
+          state: >
+            {% set dt = states('input_datetime.boost_end_voitures') %}
+            {% if dt not in ['unknown', 'unavailable', 'none', ''] %}
+              {% set mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 
+                            'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'] %}
+              {% set timestamp = as_timestamp(dt) %}
+              {% set jour = timestamp | timestamp_custom('%d', true) | int %}
+              {% set mois_num = timestamp | timestamp_custom('%m', true) | int %}
+              {% set annee = timestamp | timestamp_custom('%Y', true) %}
+              {% set heure = timestamp | timestamp_custom('%H:%M', true) %}
+              {{ jour }} {{ mois[mois_num - 1] }} {{ annee }} à {{ heure }}
+            {% else %}
+              -
+            {% endif %}
+          icon: mdi:clock-end
+          attributes:
+            heure_complete: "{{ states('input_datetime.boost_end_voitures') }}"
+
+
+## pour Couloir
+    - sensor:
+        - name: "Boost Couloir Status"
+          unique_id: boost_couloir_status
+          state: >
+            {% if is_state('input_boolean.boost_couloir', 'on') %}
+              Boost On
+            {% else %}
+              Boost Off
+            {% endif %}
+          icon: >
+            {% if is_state('input_boolean.boost_couloir', 'on') %}
+              mdi:lightning-bolt
+            {% else %}
+              mdi:lightning-bolt-outline
+            {% endif %}
+          attributes:
+            boost_active: "{{ is_state('input_boolean.boost_couloir', 'on') }}"
+            rgb_color: >
+              {% if is_state('input_boolean.boost_couloir', 'on') %}
+                [255, 165, 0]
+              {% else %}
+                [68, 115, 158]
+              {% endif %}
+        
+        # Sensor pour afficher la puissance avec couleur
+        - name: "Puissance Couloir Display"
+          unique_id: puissance_couloir_display
+          state: "{{ states('input_number.radiateur_couloir_puissance') | int(0) }}"
+          unit_of_measurement: "%"
+          icon: mdi:flash
+          attributes:
+            rgb_color: >
+              {% set puissance = states('input_number.radiateur_couloir_puissance') | int(0) %}
+              {% if puissance > 0 %}
+                [255, 165, 0]
+              {% else %}
+                [68, 115, 158]
+              {% endif %}
+        
+        # Sensor pour afficher la durée de boost formatée
+        - name: "Durée Boost Couloir Display"
+          unique_id: duree_boost_couloir_display
+          state: >
+            {% set minutes = states('input_number.radiateur_couloir_boost_duree') | int(0) %}
+            {% if minutes >= 60 %}
+              {% set heures = (minutes / 60) | int %}
+              {% set reste_min = minutes % 60 %}
+              {% if reste_min > 0 %}
+                {{ heures }}h{{ reste_min }}
+              {% else %}
+                {{ heures }}h
+              {% endif %}
+            {% else %}
+              {{ minutes }} min
+            {% endif %}
+          icon: mdi:timer-outline
+          attributes:
+            minutes_brut: "{{ states('input_number.radiateur_couloir_boost_duree') | int(0) }}"
+        
+        # Sensor pour afficher l'heure de fin de boost formatée en français
+        - name: "Fin Boost Couloir Display"
+          unique_id: fin_boost_couloir_display
+          state: >
+            {% set dt = states('input_datetime.boost_end_couloir') %}
+            {% if dt not in ['unknown', 'unavailable', 'none', ''] %}
+              {% set mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 
+                            'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'] %}
+              {% set timestamp = as_timestamp(dt) %}
+              {% set jour = timestamp | timestamp_custom('%d', true) | int %}
+              {% set mois_num = timestamp | timestamp_custom('%m', true) | int %}
+              {% set annee = timestamp | timestamp_custom('%Y', true) %}
+              {% set heure = timestamp | timestamp_custom('%H:%M', true) %}
+              {{ jour }} {{ mois[mois_num - 1] }} {{ annee }} à {{ heure }}
+            {% else %}
+              -
+            {% endif %}
+          icon: mdi:clock-end
+          attributes:
+            heure_complete: "{{ states('input_datetime.boost_end_couloir') }}"
+
+
+## pour Atelier
+    - sensor:
+        - name: "Boost Atelier Status"
+          unique_id: boost_atelier_status
+          state: >
+            {% if is_state('input_boolean.boost_atelier', 'on') %}
+              Boost On
+            {% else %}
+              Boost Off
+            {% endif %}
+          icon: >
+            {% if is_state('input_boolean.boost_atelier', 'on') %}
+              mdi:lightning-bolt
+            {% else %}
+              mdi:lightning-bolt-outline
+            {% endif %}
+          attributes:
+            boost_active: "{{ is_state('input_boolean.boost_atelier', 'on') }}"
+            rgb_color: >
+              {% if is_state('input_boolean.boost_atelier', 'on') %}
+                [255, 165, 0]
+              {% else %}
+                [68, 115, 158]
+              {% endif %}
+        
+        # Sensor pour afficher la puissance avec couleur
+        - name: "Puissance Atelier Display"
+          unique_id: puissance_atelier_display
+          state: "{{ states('input_number.radiateur_atelier_puissance') | int(0) }}"
+          unit_of_measurement: "%"
+          icon: mdi:flash
+          attributes:
+            rgb_color: >
+              {% set puissance = states('input_number.radiateur_atelier_puissance') | int(0) %}
+              {% if puissance > 0 %}
+                [255, 165, 0]
+              {% else %}
+                [68, 115, 158]
+              {% endif %}
+        
+        # Sensor pour afficher la durée de boost formatée
+        - name: "Durée Boost Atelier Display"
+          unique_id: duree_boost_atelier_display
+          state: >
+            {% set minutes = states('input_number.radiateur_atelier_boost_duree') | int(0) %}
+            {% if minutes >= 60 %}
+              {% set heures = (minutes / 60) | int %}
+              {% set reste_min = minutes % 60 %}
+              {% if reste_min > 0 %}
+                {{ heures }}h{{ reste_min }}
+              {% else %}
+                {{ heures }}h
+              {% endif %}
+            {% else %}
+              {{ minutes }} min
+            {% endif %}
+          icon: mdi:timer-outline
+          attributes:
+            minutes_brut: "{{ states('input_number.radiateur_atelier_boost_duree') | int(0) }}"
+        
+        # Sensor pour afficher l'heure de fin de boost formatée en français
+        - name: "Fin Boost Atelier Display"
+          unique_id: fin_boost_atelier_display
+          state: >
+            {% set dt = states('input_datetime.boost_end_atelier') %}
+            {% if dt not in ['unknown', 'unavailable', 'none', ''] %}
+              {% set mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 
+                            'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'] %}
+              {% set timestamp = as_timestamp(dt) %}
+              {% set jour = timestamp | timestamp_custom('%d', true) | int %}
+              {% set mois_num = timestamp | timestamp_custom('%m', true) | int %}
+              {% set annee = timestamp | timestamp_custom('%Y', true) %}
+              {% set heure = timestamp | timestamp_custom('%H:%M', true) %}
+              {{ jour }} {{ mois[mois_num - 1] }} {{ annee }} à {{ heure }}
+            {% else %}
+              -
+            {% endif %}
+          icon: mdi:clock-end
+          attributes:
+            heure_complete: "{{ states('input_datetime.boost_end_atelier') }}"
+
+
+## pour Garçonnière
+    - sensor:
+        - name: "Boost Garçonnière Status"
+          unique_id: boost_garconniere_status
+          state: >
+            {% if is_state('input_boolean.boost_garconniere', 'on') %}
+              Boost On
+            {% else %}
+              Boost Off
+            {% endif %}
+          icon: >
+            {% if is_state('input_boolean.boost_garconniere', 'on') %}
+              mdi:lightning-bolt
+            {% else %}
+              mdi:lightning-bolt-outline
+            {% endif %}
+          attributes:
+            boost_active: "{{ is_state('input_boolean.boost_garconniere', 'on') }}"
+            rgb_color: >
+              {% if is_state('input_boolean.boost_garconniere', 'on') %}
+                [255, 165, 0]
+              {% else %}
+                [68, 115, 158]
+              {% endif %}
+        
+        # Sensor pour afficher la puissance avec couleur
+        - name: "Puissance Garçonnière Display"
+          unique_id: puissance_garconniere_display
+          state: "{{ states('input_number.radiateur_garconniere_puissance') | int(0) }}"
+          unit_of_measurement: "%"
+          icon: mdi:flash
+          attributes:
+            rgb_color: >
+              {% set puissance = states('input_number.radiateur_garconniere_puissance') | int(0) %}
+              {% if puissance > 0 %}
+                [255, 165, 0]
+              {% else %}
+                [68, 115, 158]
+              {% endif %}
+        
+        # Sensor pour afficher la durée de boost formatée
+        - name: "Durée Boost Garçonnière Display"
+          unique_id: duree_boost_garconniere_display
+          state: >
+            {% set minutes = states('input_number.radiateur_garconniere_boost_duree') | int(0) %}
+            {% if minutes >= 60 %}
+              {% set heures = (minutes / 60) | int %}
+              {% set reste_min = minutes % 60 %}
+              {% if reste_min > 0 %}
+                {{ heures }}h{{ reste_min }}
+              {% else %}
+                {{ heures }}h
+              {% endif %}
+            {% else %}
+              {{ minutes }} min
+            {% endif %}
+          icon: mdi:timer-outline
+          attributes:
+            minutes_brut: "{{ states('input_number.radiateur_garconniere_boost_duree') | int(0) }}"
+        
+        # Sensor pour afficher l'heure de fin de boost formatée en français
+        - name: "Fin Boost Garçonnière Display"
+          unique_id: fin_boost_garconniere_display
+          state: >
+            {% set dt = states('input_datetime.boost_end_garconniere') %}
+            {% if dt not in ['unknown', 'unavailable', 'none', ''] %}
+              {% set mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 
+                            'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'] %}
+              {% set timestamp = as_timestamp(dt) %}
+              {% set jour = timestamp | timestamp_custom('%d', true) | int %}
+              {% set mois_num = timestamp | timestamp_custom('%m', true) | int %}
+              {% set annee = timestamp | timestamp_custom('%Y', true) %}
+              {% set heure = timestamp | timestamp_custom('%H:%M', true) %}
+              {{ jour }} {{ mois[mois_num - 1] }} {{ annee }} à {{ heure }}
+            {% else %}
+              -
+            {% endif %}
+          icon: mdi:clock-end
+          attributes:
+            heure_complete: "{{ states('input_datetime.boost_end_garconniere') }}"
+
+
+## pour Telmo
+    - sensor:
+        - name: "Boost Telmo Status"
+          unique_id: boost_telmo_status
+          state: >
+            {% if is_state('input_boolean.boost_telmo', 'on') %}
+              Boost On
+            {% else %}
+              Boost Off
+            {% endif %}
+          icon: >
+            {% if is_state('input_boolean.boost_telmo', 'on') %}
+              mdi:lightning-bolt
+            {% else %}
+              mdi:lightning-bolt-outline
+            {% endif %}
+          attributes:
+            boost_active: "{{ is_state('input_boolean.boost_telmo', 'on') }}"
+            rgb_color: >
+              {% if is_state('input_boolean.boost_telmo', 'on') %}
+                [255, 165, 0]
+              {% else %}
+                [68, 115, 158]
+              {% endif %}
+        
+        # Sensor pour afficher la puissance avec couleur
+        - name: "Puissance Telmo Display"
+          unique_id: puissance_telmo_display
+          state: "{{ states('input_number.radiateur_telmo_puissance') | int(0) }}"
+          unit_of_measurement: "%"
+          icon: mdi:flash
+          attributes:
+            rgb_color: >
+              {% set puissance = states('input_number.radiateur_telmo_puissance') | int(0) %}
+              {% if puissance > 0 %}
+                [255, 165, 0]
+              {% else %}
+                [68, 115, 158]
+              {% endif %}
+        
+        # Sensor pour afficher la durée de boost formatée
+        - name: "Durée Boost Telmo Display"
+          unique_id: duree_boost_telmo_display
+          state: >
+            {% set minutes = states('input_number.radiateur_telmo_boost_duree') | int(0) %}
+            {% if minutes >= 60 %}
+              {% set heures = (minutes / 60) | int %}
+              {% set reste_min = minutes % 60 %}
+              {% if reste_min > 0 %}
+                {{ heures }}h{{ reste_min }}
+              {% else %}
+                {{ heures }}h
+              {% endif %}
+            {% else %}
+              {{ minutes }} min
+            {% endif %}
+          icon: mdi:timer-outline
+          attributes:
+            minutes_brut: "{{ states('input_number.radiateur_telmo_boost_duree') | int(0) }}"
+        
+        # Sensor pour afficher l'heure de fin de boost formatée en français
+        - name: "Fin Boost Telmo Display"
+          unique_id: fin_boost_telmo_display
+          state: >
+            {% set dt = states('input_datetime.boost_end_telmo') %}
+            {% if dt not in ['unknown', 'unavailable', 'none', ''] %}
+              {% set mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 
+                            'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'] %}
+              {% set timestamp = as_timestamp(dt) %}
+              {% set jour = timestamp | timestamp_custom('%d', true) | int %}
+              {% set mois_num = timestamp | timestamp_custom('%m', true) | int %}
+              {% set annee = timestamp | timestamp_custom('%Y', true) %}
+              {% set heure = timestamp | timestamp_custom('%H:%M', true) %}
+              {{ jour }} {{ mois[mois_num - 1] }} {{ annee }} à {{ heure }}
+            {% else %}
+              -
+            {% endif %}
+          icon: mdi:clock-end
+          attributes:
+            heure_complete: "{{ states('input_datetime.boost_end_telmo') }}"
+
+
+## pour SdB Etg
+    - sensor:
+        - name: "Boost SdB Etg Status"
+          unique_id: boost_sdb_etg_status
+          state: >
+            {% if is_state('input_boolean.boost_sdb_etg', 'on') %}
+              Boost On
+            {% else %}
+              Boost Off
+            {% endif %}
+          icon: >
+            {% if is_state('input_boolean.boost_sdb_etg', 'on') %}
+              mdi:lightning-bolt
+            {% else %}
+              mdi:lightning-bolt-outline
+            {% endif %}
+          attributes:
+            boost_active: "{{ is_state('input_boolean.boost_sdb_etg', 'on') }}"
+            rgb_color: >
+              {% if is_state('input_boolean.boost_sdb_etg', 'on') %}
+                [255, 165, 0]
+              {% else %}
+                [68, 115, 158]
+              {% endif %}
+        
+        # Sensor pour afficher la puissance avec couleur
+        - name: "Puissance SdB Etg Display"
+          unique_id: puissance_sdb_etg_display
+          state: "{{ states('input_number.radiateur_sdb_etg_puissance') | int(0) }}"
+          unit_of_measurement: "%"
+          icon: mdi:flash
+          attributes:
+            rgb_color: >
+              {% set puissance = states('input_number.radiateur_sdb_etg_puissance') | int(0) %}
+              {% if puissance > 0 %}
+                [255, 165, 0]
+              {% else %}
+                [68, 115, 158]
+              {% endif %}
+        
+        # Sensor pour afficher la durée de boost formatée
+        - name: "Durée Boost SdB Etg Display"
+          unique_id: duree_boost_sdb_etg_display
+          state: >
+            {% set minutes = states('input_number.radiateur_sdb_etg_boost_duree') | int(0) %}
+            {% if minutes >= 60 %}
+              {% set heures = (minutes / 60) | int %}
+              {% set reste_min = minutes % 60 %}
+              {% if reste_min > 0 %}
+                {{ heures }}h{{ reste_min }}
+              {% else %}
+                {{ heures }}h
+              {% endif %}
+            {% else %}
+              {{ minutes }} min
+            {% endif %}
+          icon: mdi:timer-outline
+          attributes:
+            minutes_brut: "{{ states('input_number.radiateur_sdb_etg_boost_duree') | int(0) }}"
+        
+        # Sensor pour afficher l'heure de fin de boost formatée en français
+        - name: "Fin Boost SdB Etg Display"
+          unique_id: fin_boost_sdb_etg_display
+          state: >
+            {% set dt = states('input_datetime.boost_end_sdb_etg') %}
+            {% if dt not in ['unknown', 'unavailable', 'none', ''] %}
+              {% set mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 
+                            'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'] %}
+              {% set timestamp = as_timestamp(dt) %}
+              {% set jour = timestamp | timestamp_custom('%d', true) | int %}
+              {% set mois_num = timestamp | timestamp_custom('%m', true) | int %}
+              {% set annee = timestamp | timestamp_custom('%Y', true) %}
+              {% set heure = timestamp | timestamp_custom('%H:%M', true) %}
+              {{ jour }} {{ mois[mois_num - 1] }} {{ annee }} à {{ heure }}
+            {% else %}
+              -
+            {% endif %}
+          icon: mdi:clock-end
+          attributes:
+            heure_complete: "{{ states('input_datetime.boost_end_sdb_etg') }}"

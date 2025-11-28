@@ -1,0 +1,459 @@
+blueprint:
+  name: Chauffage by C. - Pilotage Semaine et WE/fériés
+  description: '
+
+    version Chauff : v1.03 - 2025-11-16
+
+    auteur : Ciscoo45
+
+
+    ___
+
+    ## Fork
+
+    de :
+
+    **Pilotage Chauffage** (version 12/2021)
+
+    par **Argonaute**
+
+    original et infos ici : [Gestion de bout-en-bout du chauffage sur HACF.fr](https://forum.hacf.fr/t/gestion-de-bout-en-bout-du-chauffage/4897)
+
+    ___
+
+    ## Description (infos Argonaute, adaptées au noms utilisés dans ce fork) :
+
+
+    **Gestion des différents modes de chauffage - Arret  Hors-gel  Manuel  Absence  Presence**
+
+
+    La sélection du mode doit activer ou désactiver les 3 automatisations : le thermostat
+    (notre premier blueprint Thermostat TPI), et les 2 automatisations créées par/avec
+    le Scheduler) : Presence et Absence.
+
+    La consigne est changée pour une valeur en dure si le mode n’est pas Presence
+    ou Abscence (planification Schedule), par exemple pour le mode manuel, le hors-gel,
+    l''arrêt.
+
+    Pour ce faire, une dernière automatisation, codée également dans un blueprint,
+    permet de prendre en charge cette sélection du mode par chaque radiateur : blueprint
+    Pilotage Chauffage. Elle prend en entrée le mode de chauffage désiré, la consigne
+    et les 3 automatisations à piloter : thermostat TPI, Presence (multiple si besoin)
+    et Absence (multiple possible aussi).
+
+
+    *NB : Auto-confort et Auto-eco sur Blueprint Argonaute = Presence et Absence sur
+    Blueprint Ciscoo45*
+
+
+    **Description du fonctionnement - compréhension de la gestion des modes**
+
+
+    Point important : comme déjà évoqué, si par exemple on passe du mode Presence
+    au Absence, le scheduler ajuste automatiquement la consigne en fonction de sa
+    planification et de l’heure qu’il est. Cela permet de se passer d’un deamon dynamique
+    comme shedy.
+
+
+    Le thermostat met la consigne à 0 si la fenêtre est ouverte (sans délai), et remet
+    la bonne valeur une fois fermée.
+
+
+    Voyons maintenant chacun des modes, et comment le changement de mode active ou
+    désactive les 3 automatisations Thermostat TPI, Presence, Absence :
+
+
+    . mode Presence :
+
+    - automatisation thermostat : ON
+
+    - automatisation Présence SEM : ON
+
+    - automatisation Présence WE : ON
+
+    - automatisation Absence QUO : OFF
+
+
+    . mode Absence :
+
+    - automatisation thermostat : ON
+
+    - automatisation Présence SEM : OFF
+
+    - automatisation Présence WE : OFF
+
+    - automatisation Absence QUO : ON
+
+
+    . mode Hors-gel :
+
+    - automatisation thermostat : ON
+
+    - automatisation Présence SEM : OFF
+
+    - automatisation Présence WE : OFF
+
+    - automatisation Absence QUO : OFF
+
+    - consigne : celle paramétrée dans le BluePrint Chauffage pour la position Hors-Gel
+    [NEW]
+
+
+    . mode Manuel :
+
+    - automatisation thermostat : ON
+
+    - automatisation Présence SEM : OFF
+
+    - automatisation Présence WE : OFF
+
+    - automatisation Absence QUO : OFF
+
+
+    . mode Arret :
+
+    - automatisation thermostat : OFF
+
+    - automatisation Présence SEM : OFF
+
+    - automatisation Présence WE : OFF
+
+    - automatisation Absence QUO : OFF
+
+    - consigne et puissance à 0
+
+
+    ___
+
+    ## Commentaires Ciscoo45
+
+    . **Attention** - paramétrage du blueprint : bien utiliser les noms d''entités
+    des switchs créés par le Scheduler pour les planifications (les renommer au préalable
+    avec le nom de la pièce dans le nom de l''entité)
+
+
+    . à propos de la **muti-programmation** :
+
+    [spécificité de la version modifiée par Ciscoo45 quand on utilise plusieurs programmations
+    par exemple sur le mode Présence]
+
+    Quand le mode *Presence* est actif et que les deux schedules *Présence SEM* et
+    *Présence WE* sont activées (en même temps), il n''y aura pas de conflit car chacune
+    ne programme que sa période dédiée (semaine, ou WE/fériés) grâce aux options de
+    Scheduler (onglet Heure, réglage Jours, voir ci-dessous) :
+
+    - **QUOTIDIEN** : planif active les 7 jours de la semaine (JOURS DE TRAVAIL +
+    WEEKEND)
+
+    - **JOURS DE TRAVAIL** : planif active uniquement les jours de travail, en prenant
+    ceux définis via le binary_sensor **Workday**, voir 4d. Par défaut lun-ven en
+    France
+
+    - **WEEKEND** : planif active uniquement les WE (via Workday : sam-dim par défaut),
+    les jours fériés, ainsi que les vacances déclarées manuellement via Workday (voir
+    4d)
+
+
+    . Programmation horaire (schedule) - Le thermostat **n''anticipe pas** car il
+    **n''apprend pas**
+
+    Contrairement à certains thermostats physiques autonomes (comme le Nest, etc.)
+    ou contrairement au thermostat Jeedom, le thermostat présent n''apprend pas. Il
+    ne peut donc pas anticiper une consigne à la hausse ou à la baisse.
+
+    Si vous désirez une augmentation de consigne d''1°C atteinte pour 7h, c''est à
+    vous de **plannifier cette augmentation 15min, 30min ou encore 45min avant l''heure
+    où la consigne doit être atteinte**, suivant les conditions moyennes pour cette
+    pièce (inertie, conditions extérieures comme écart de température, vent,  soleil,
+    exposition de la pièce à ces éléments..).
+
+    ___
+
+    ## Pré-requis - besoins hardware
+
+    Pour chaque pièce, vous aurez besoin d''implémenter en amont sur HA :
+
+    - switch on/off ou fil-pilote pour piloter le radiateur
+
+    - sonde de température intérieure
+
+    - sonde de température extérieure (sonde météo Internet possible mais attention
+    en cas d''indispo)
+
+    - capteur d''ouverture par fenêtre (peut être virtualisé si absent), à regrouper
+    si multiples
+
+
+    Plus d''infos sur les choix possibles et le codage des sondes virtuelles dans
+    le readme du projet.
+
+    ___
+
+    ## Pré-requis - dépendances externes (intégrations, cartes, services...) pour
+    ce projet Chauffage de bout en bout
+
+    Ce projet nécessite, hormis les lignes de code dispos dans le readme et les deux
+    blueprints :
+
+    - intégration : [Scheduler Custom Component](https://community.home-assistant.io/t/scheduler-card-custom-component/217458)
+    (via HACS)
+
+    - intégration : [Scheduler](https://community.home-assistant.io/t/scheduler-card-custom-component/217458)
+    (via Paramètres > Intégrations)
+
+    - custom card : [Scheduler-card](https://github.com/nielsfaber/scheduler-card#installation)
+
+    - intégration : [OpenWeatherMap](https://www.home-assistant.io/integrations/openweathermap)
+    (optionnel)
+
+    - intégration : [Workday](https://www.home-assistant.io/integrations/workday)
+
+    - custom card : [Button-card](https://github.com/custom-cards/button-card)
+
+    - custom card : [Hui-element-card](https://github.com/thomasloven/lovelace-hui-element)
+
+    - custom card : [Numberbox-card](https://github.com/htmltiger/numberbox-card)
+
+    - custom card : [Vertical-stack-in-card](https://github.com/ofekashery/vertical-stack-in-card)
+
+    - custom card : [ApexCharts-card](https://github.com/RomRider/apexcharts-card)
+
+    ___
+
+    ## Pré-requis - mise en place de ce blueprint Pilotage Chauffage :
+
+    Voir tuto/readme du projet, vous devez avoir déjà mis en place :
+
+    - Etape 1 : le hardware (sondes, switches/dongle RF) sur HA
+
+    - Etape 2 : la carte Lovelace Choix du mode de chauffage et état, dont création
+    des inputs
+
+    - Etape 3 : le Blueprint Thermostat TPI
+
+    - Etape 4 : la planification, à créer via Scheduler (notamment lister/connaitre
+    les noms des entités des planifications créées par Scheduler)
+
+    ___
+
+    ## Evolutions par Ciscoo45 Vs Argonaute
+
+
+    . **blueprint Pilotage Chauffage** :
+
+    - évolution des champs descriptifs pour aide au paramétrage
+
+    - fonctionnel : suppression du mode *Absence* d''Argonaute (les absences sont
+    gérées sur la planif éco, à savoir le mode *Absence* ici)
+
+    - renommage : modes *Auto - confort* et *Auto - eco* (Argonaute), en *Presence*
+    et *Absence* (C.). Ainsi on essaie de clarifier l''usage des modes, et on simplifie
+    en ayant un seul mode *Absence*
+
+    - renommage : mode *Stop* (Argonaute) renommé en mode *Arret* (mode utilisé l''été)
+
+    - renommage : les entités *fenetre* sont renommées en *ouverture* (peut convenir
+    ainsi pour une fenêtre, un velux, une porte…)
+
+    - renommage : les entités *chauffage* sont renommées en *radiateur*
+
+    - personnalisation : icône *mdi:target* pour la consigne
+
+    - **multiples programmations possibles pour le mode Presence** (ou Absence) d''une
+    pièce : par ex. un schedule semaine et un schedule WE & férié, avec le mode Absence
+    qui peut être aligné à 1 ou 2 degrés en-dessous
+
+    - gestion automatique de la **bascule en planif WE et jours fériés** (ajout possible
+    aussi de période de congés ou télétravail à la maison) : via l''utilisation de
+    l''intégration Workday et des programmations multiples
+
+
+    . **blueprint Thermostat TPI** :
+
+    - évolution des champs descriptifs pour aide au paramétrage, notamment des valeurs
+    de *coeff_c* et *coeff_t*
+
+    - **multiples radiateurs** possible pour une même pièce
+
+    - option : mode Climate, pour piloter des thermostats virtuels sur HA, plutôt
+    que des relais (ex. utilisation d''un dongle GCE RFplayer 1000 envoyant des ordres
+    vers un radiateur avec récepteur Delta Dore protocole X2D, ou tout autre service
+    Climate sur HA)
+
+    - option : mode Inversé, pour le déclenchement des relais qui nécessiteraient
+    la position Off pour déclencher la chauffe (ex. SonOff ZBmini + diode)
+
+    - température du mode Hors-gel ajustable (curseur dans le BluePrint)
+
+    - correction : bug pouvant apparaître sur les versions 2024 et avant, lors du
+    passage en position Arrêt, où le chauffage pouvait continuer à fonctionner dans
+    certains scénarios (délai ajouté avant de désactiver le Blueprint Thermostat TPI,
+    afin qu''il ait le temps de calculer la fin de chauffe)
+
+
+    . **autres parties du projet Gestion bout en bout du chauffage** :
+
+
+    Ajout de documentation pas-à-pas pour compléter celle déjà rendue disponible par
+    Argonaute et continuer autour des propositions disponibles sur le topic :
+
+    - en détail : carte Lovelace de choix des modes
+
+    - en détail : carte du Scheduler pour gérer les planifications
+
+    - en détail : bandeau de navigation d''une page à une autre du dashboard
+
+    - graph ApexChart sur 6h et 24h, avec temp ext
+
+    - et plus à venir on espère
+
+    ___
+
+    # Paramétrage du Blueprint '
+  source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Chauffage_by_C._-_Pilotage_Week-Vs-WE.yaml
+  domain: automation
+  input:
+    temperature_hg:
+      name: Température pour le mode Hors-gel
+      description: Défaut 8°C (ne se modifie uniquement qu'ici)
+      default: 8.0
+      selector:
+        number:
+          min: 2.0
+          max: 14.0
+          step: 0.5
+          mode: slider
+    entity_consigne:
+      name: Consigne
+      description: Entité Température de Consigne (input_number)
+      selector:
+        entity:
+          domain:
+          - input_number
+          multiple: false
+          reorder: false
+    entity_mode:
+      name: Sélection du Mode
+      description: Entité de Gestion du Mode de gestion du chauffage (input_select)
+      selector:
+        entity:
+          domain:
+          - input_select
+          multiple: false
+          reorder: false
+    entity_schedule_presence:
+      name: Schedule mode Présence
+      description: Entité(s) générée(s) par le Scheduler pour la planification du
+        mode Presence (switch)
+      selector:
+        entity:
+          domain:
+          - switch
+          multiple: true
+          reorder: false
+    entity_schedule_absence:
+      name: Schedule mode Absence
+      description: Entité(s) générée(s) par le Scheduler pour la planification du
+        mode Absence (switch)
+      selector:
+        entity:
+          domain:
+          - switch
+          multiple: true
+          reorder: false
+    entity_thermostat_tpi:
+      name: Thermostat
+      description: Entité de gestion du Thermostat TPI (automation)
+      selector:
+        entity:
+          domain:
+          - automation
+          multiple: false
+          reorder: false
+variables:
+  temperature_hg: !input temperature_hg
+trigger:
+- platform: state
+  entity_id: !input entity_mode
+condition: []
+action:
+- choose:
+  - conditions:
+    - condition: state
+      entity_id: !input entity_mode
+      state: Arret
+    sequence:
+    - service: input_number.set_value
+      data:
+        value: 0
+      target:
+        entity_id: !input entity_consigne
+    - service: switch.turn_off
+      target:
+        entity_id: !input entity_schedule_absence
+    - service: switch.turn_off
+      target:
+        entity_id: !input entity_schedule_presence
+    - delay:
+        seconds: 1
+    - service: automation.turn_off
+      target:
+        entity_id: !input entity_thermostat_tpi
+  - conditions:
+    - condition: state
+      entity_id: !input entity_mode
+      state: Hors-gel
+    sequence:
+    - service: automation.turn_on
+      target:
+        entity_id: !input entity_thermostat_tpi
+    - service: input_number.set_value
+      data:
+        value: '{{temperature_hg}}'
+      target:
+        entity_id: !input entity_consigne
+    - service: switch.turn_off
+      target:
+        entity_id: !input entity_schedule_absence
+    - service: switch.turn_off
+      target:
+        entity_id: !input entity_schedule_presence
+  - conditions:
+    - condition: state
+      entity_id: !input entity_mode
+      state: Presence
+    sequence:
+    - service: automation.turn_on
+      target:
+        entity_id: !input entity_thermostat_tpi
+    - service: switch.turn_on
+      target:
+        entity_id: !input entity_schedule_presence
+    - service: switch.turn_off
+      target:
+        entity_id: !input entity_schedule_absence
+  - conditions:
+    - condition: state
+      entity_id: !input entity_mode
+      state: Absence
+    sequence:
+    - service: automation.turn_on
+      target:
+        entity_id: !input entity_thermostat_tpi
+    - service: switch.turn_off
+      target:
+        entity_id: !input entity_schedule_presence
+    - service: switch.turn_on
+      target:
+        entity_id: !input entity_schedule_absence
+  default:
+  - service: switch.turn_off
+    target:
+      entity_id: !input entity_schedule_absence
+  - service: switch.turn_off
+    target:
+      entity_id: !input entity_schedule_presence
+  - service: automation.turn_on
+    target:
+      entity_id: !input entity_thermostat_tpi
+mode: single

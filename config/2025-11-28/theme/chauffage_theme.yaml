@@ -1,0 +1,7 @@
+
+### Définition des Helpers THEME pour le Blueprint Chauffage by C. : 
+
+my_theme:
+  state-switch-radiateur_salon-active-color: "#ef0024"
+  state-cover-garage_door-open-color: "#ff0000"
+  state-media_player-inactive-color: "#795548"

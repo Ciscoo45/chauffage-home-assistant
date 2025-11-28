@@ -1,0 +1,89 @@
+# yaml-language-server: $schema=null
+
+### Sensors RTE Tempo via API gratuite api-couleur-tempo.fr sans compte
+
+
+# Couleur aujourd'hui
+- platform: rest
+  name: "Tempo Aujourdhui"
+  unique_id: tempo_aujourdhui
+  resource: "https://www.api-couleur-tempo.fr/api/jourTempo/today"
+  method: GET
+  value_template: "{{ value_json.libCouleur if value_json.libCouleur is defined else 'Inconnu' }}"
+  scan_interval: 1800
+  force_update: true
+  json_attributes:
+    - dateJour
+    - codeJour
+    - periode
+    - libCouleur
+
+# Couleur demain
+- platform: rest
+  name: "Tempo Demain"
+  unique_id: tempo_demain
+  resource: "https://www.api-couleur-tempo.fr/api/jourTempo/tomorrow"
+  method: GET
+  value_template: "{{ value_json.libCouleur if value_json.libCouleur is defined else 'Non communiqué' }}"
+  scan_interval: 3600
+  force_update: true
+  json_attributes:
+    - dateJour
+    - codeJour
+    - periode
+    - libCouleur
+
+# Tarif temps réel (HP/HC + tarif)
+- platform: rest
+  name: "Tempo Temps Reel"
+  unique_id: tempo_temps_reel
+  resource: "https://www.api-couleur-tempo.fr/api/now"
+  method: GET
+  value_template: "{{ value_json.libTarif if value_json.libTarif is defined else 'Inconnu' }}"
+  scan_interval: 1800
+  force_update: true
+  json_attributes:
+    - codeCouleur
+    - codeHoraire
+    - tarifKwh
+    - libTarif
+
+# Statistiques (jours restants/consommés)
+- platform: rest
+  name: "Tempo Stats"
+  unique_id: tempo_stats
+  resource: "https://www.api-couleur-tempo.fr/api/stats"
+  method: GET
+  value_template: "{{ value_json.periode if value_json.periode is defined else 'unknown' }}"
+  scan_interval: 7200
+  force_update: true
+  json_attributes:
+    - periode
+    - bissextile
+    - dernierJourInclus
+    - joursBleusConsommes
+    - joursBlancsConsommes
+    - joursRougesConsommes
+    - joursBleusRestants
+    - joursBlancsRestants
+    - joursRougesRestants
+
+# Tarifs officiels TTC
+- platform: rest
+  name: "Tempo Tarifs"
+  unique_id: tempo_tarifs
+  resource: "https://www.api-couleur-tempo.fr/api/tarifs"
+  method: GET
+  value_template: "{{ value_json.dateDebut if value_json.dateDebut is defined else 'unknown' }}"
+  scan_interval: 86400
+  force_update: true
+  json_attributes:
+    - bleuHC
+    - bleuHP
+    - blancHC
+    - blancHP
+    - rougeHC
+    - rougeHP
+    - dateDebut
+    - tarifForce
+    - dataGouvId

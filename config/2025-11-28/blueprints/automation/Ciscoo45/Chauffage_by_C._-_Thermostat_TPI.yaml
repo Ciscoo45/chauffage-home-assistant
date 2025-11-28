@@ -1,0 +1,492 @@
+blueprint:
+  name: Chauffage by C. - Thermostat TPI
+  description: '
+
+    version TPI : v.1.03 - 2025-11-16
+
+    auteur : Ciscoo45
+
+
+    ___
+
+    ## Fork
+
+    de :
+
+    **Thermostat TPI (Time Propertional & Integral)** (12/2021)
+
+    par **Argonaute**
+
+    original et infos ici : [Gestion de bout-en-bout du chauffage sur HACF.fr](https://forum.hacf.fr/t/gestion-de-bout-en-bout-du-chauffage/4897)
+
+    ___
+
+    ## Description Argonaute
+
+    L’objectif du thermostat est de calculer un coefficient de puissance de chauffe
+    valant de 0 à 100 en fonction d’une consigne donnée,
+
+    de la température intérieure et de la température extérieure. Nous l’appellerons
+    juste « puissance » pour simplifier.
+
+
+    - Puissance = 100% : le convecteur chauffe en permanence
+
+    - Puissance = 50% : le convecteur chauffe la moitié du temps
+
+    - Puissance = 0% : le convecteur ne chauffe plus
+
+
+    La puissance doit être de 100% quand la température de la pièce est loin de la
+    consigne, puis baisser doucement jusqu’à atteindre la consigne.
+
+    Ensuite le radiateur doit rester légèrement tiède pour compenser les pertes thermiques,
+    ce en fonction de la température extérieure.
+
+
+    Le calcul de la puissance est assuré par la formule :
+
+
+    `Puissance = coeff_c * (T consigne - T intérieure) + coeff_t * (T consigne - T
+    extérieure)`
+
+
+    avec un min à 0% et un max à 100%
+
+
+    - coeff_c dépend de la puissance du chauffage et de la surface
+
+    - coeff_t dépend de l’isolation de la pièce et des pertes thermiques
+
+
+    Pour une installation standard aux normes on a coeff_c = 0,6 et coeff_t = 0,01
+
+
+    Exemple : Tint = 19°C Text = 10°C et consigne à 20°C alors puissance = 70%
+
+
+    Le fait de considérer la température extérieure est donc indispensable pour compenser
+    les pertes de chaleur et garder une température
+
+    très constante, ce qui n’est pas assuré par le thermostat standard de HA.
+
+
+    Ensuite il faut transformer la puissance calculée en une séquence de ON-OFF de
+    notre chauffage.
+
+
+    L’implémentation proposée ici est pour des convecteurs avec un fil pilote (Qubino).
+
+    Mais une adaptation est possible pour d’autres types de chauffage.
+
+
+    Pour nos convecteurs, la puissance nécessaire est recalculée toutes les 10 min,
+    ce qui donne le temps de marche sur la période.
+
+    Avec une puissance calculée de 70%, le convecteur sera alors sur ON 7 min puis
+    sur OFF 3min.
+
+
+    La périodicité dépend de l’inertie : 30 min à 1 heure pour une chaudière, 10 min
+    pour un convecteur on/off (fil pilote).
+
+    Pour un poêle à granule, la puissance devrait être recalculée toutes les 30 min
+    par exemple.
+
+
+    Le thermostat prend en charge la fenêtre et il coupe le radiateur quand cette
+    dernière est ouverte.
+
+    ___
+
+    ## Commentaires Ciscoo45
+
+    Thermostat principalement proportionnel, prenant en compte la température extérieure,
+    accompagné de deux coefficients, fixés dans la config et permettant d''adapter
+    la chauffe :
+
+    - à la taile du chauffage pour la pièce
+
+    - à l''isolation et l''inertie de la pièce
+
+
+    Pas d''apprentissage mais une formule simple, efficace, approuvée :
+
+
+    ` Puissance = coeff_c * (Tconsigne - Tintérieure) + coeff_t * (Tconsigne - Textérieure)`
+
+
+    avec :
+
+    . **coeff_c** dépend de la puissance du chauffage par rapport à la surface
+
+    . **coeff_t** dépend de l’isolation de la pièce et des pertes thermiques
+
+    pour une installation standard aux normes, on a coeff_c = **0,6** et coeff_t =
+    **0,01**
+
+
+    Exemple : avec Tint = 19°C, Text = 10°C et une consigne à 20°C, alors Puissance
+    = 70%
+
+    ___
+
+    ## Pré-requis - besoins hardware
+
+    Pour chaque pièce, vous aurez besoin d''implémenter en amont sur HA :
+
+    - switch on/off (mode Relais) pour piloter le radiateur, via fil pilote idéalement
+
+    - sinon un GCE RFplayer 1000 pour piloter en RF un radiateur avec récepteur Delta
+    Dore protocole X2D, ou tout autre matériel permettant d''obtenir une entité Climate
+    sous HA (mode Climate)
+
+    - sonde de température intérieure
+
+    - sonde de température extérieure (sonde météo Internet possible mais attention
+    en cas d''indisponibilité)
+
+    - capteur d''ouverture par fenêtre (peut être virtualisé si absent), à regrouper
+    si multiples
+
+
+    Plus d''infos sur les choix possibles et le codage des sondes virtuelles dans
+    le readme du projet.
+
+    ___
+
+    ## Pré-requis - dépendances externes (intégrations, cartes, services...) pour
+    ce projet Chauffage de bout en bout
+
+    Ce projet nécessite, hormis les lignes de code dispos dans le readme et les deux
+    blueprints :
+
+    - intégration : [Scheduler Custom Component] (https://community.home-assistant.io/t/scheduler-card-custom-component/217458)
+    (via HACS)
+
+    - intégration : [Scheduler] (https://community.home-assistant.io/t/scheduler-card-custom-component/217458)
+    (via Paramètres > Intégrations)
+
+    - custom card : [Scheduler-card] (https://github.com/nielsfaber/scheduler-card#installation)
+
+    - intégration : [OpenWeatherMap] (https://www.home-assistant.io/integrations/openweathermap)
+    (optionnel)
+
+    - intégration : [Workday] (https://www.home-assistant.io/integrations/workday)
+
+    - custom card : [Button-card] (https://github.com/custom-cards/button-card)
+
+    - custom card : [Hui-element-card] (https://github.com/thomasloven/lovelace-hui-element)
+
+    - custom card : [Numberbox-card] (https://github.com/htmltiger/numberbox-card)
+
+    - custom card : [Vertical-stack-in-card] (https://github.com/ofekashery/vertical-stack-in-card)
+
+    - custom card : [ApexCharts-card] (https://github.com/RomRider/apexcharts-card)
+
+    ___
+
+    ## Pré-requis - mise en place de ce blueprint Thermostat TPI :
+
+    Voir tuto/readme du projet, vous devez avoir déjà mis en place :
+
+    - Etape 1 : le hardware (sondes, switches/dongle RF) sur HA
+
+    - Etape 2 : la carte Lovelace Choix du mode de chauffage et état, dont création
+    des inputs
+
+    ___
+
+    ## Evolutions par Ciscoo45 Vs Argonaute
+
+    . **blueprint Pilotage Chauffage** :
+
+    - évolution des champs descriptifs pour aide au paramétrage
+
+    - fonctionnel : suppression du mode *Absence* d''Argonaute (les absences sont
+    gérées sur la planif éco, à savoir le mode *Absence* ici)
+
+    - renommage : modes *Auto - confort* et *Auto - eco* (Argonaute), en *Presence*
+    et *Absence* (C.). Ainsi on essaie de clarifier l''usage des modes, et on simplifie
+    en ayant un seul mode *Absence*
+
+    - renommage : mode *Stop* (Argonaute) renommé en mode *Arret* (mode utilisé l''été)
+
+    - renommage : les entités *fenetre* sont renommées en *ouverture* (peut convenir
+    ainsi pour une fenêtre, un velux, une porte…)
+
+    - renommage : les entités *chauffage* sont renommées en *radiateur*
+
+    - personnalisation : icône *mdi:target* pour la consigne
+
+    - **multiples programmations possibles pour le mode Presence** (ou Absence) d''une
+    pièce : par ex. un schedule semaine et un schedule WE & férié, avec le mode Absence
+    qui peut être aligné à 1 ou 2 degrés en-dessous
+
+    - gestion automatique de la **bascule en planif WE et jours fériés** (ajout possible
+    aussi de période de congés ou télétravail à la maison) : via l''utilisation de
+    l''intégration Workday et des programmations multiples
+
+
+    . **blueprint Thermostat TPI** :
+
+    - évolution des champs descriptifs pour aide au paramétrage, notamment des valeurs
+    de *coeff_c* et *coeff_t*
+
+    - **multiples radiateurs** possible pour une même pièce
+
+    - option : mode Climate, pour piloter des thermostats virtuels sur HA, plutôt
+    que des relais (ex. utilisation d''un dongle GCE RFplayer 1000 envoyant des ordres
+    vers un radiateur avec récepteur Delta Dore protocole X2D, ou tout autre service
+    Climate sur HA)
+
+    - option : mode Inversé, pour le déclenchement des relais qui nécessiteraient
+    la position Off pour déclencher la chauffe (ex. SonOff ZBmini + diode)
+
+    - température du mode Hors-gel ajustable (curseur dans le BluePrint)
+
+    - correction : bug pouvant apparaître sur les versions 2024 et avant, lors du
+    passage en position Arrêt, où le chauffage pouvait continuer à fonctionner dans
+    certains scénarios (délai ajouté avant de désactiver le Blueprint Thermostat TPI,
+    afin qu''il ait le temps de calculer la fin de chauffe)
+
+
+    . **autres parties du projet Gestion bout en bout du chauffage** :
+
+
+    Ajout de documentation pas-à-pas pour compléter celle déjà rendue disponible par
+    Argonaute et continuer autour des propositions disponibles sur le topic :
+
+    - en détail : carte Lovelace de choix des modes
+
+    - en détail : carte du Scheduler pour gérer les planifications
+
+    - en détail : bandeau de navigation d''une page à une autre du dashboard
+
+    - graph ApexChart sur 6h et 24h, avec temp ext
+
+    - et plus à venir on espère
+
+    ___
+
+    # Paramétrage du Blueprint '
+  source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Chauffage_by_C._-_Thermostat_TPI.yaml
+  domain: automation
+  input:
+    coeff_c:
+      name: Coefficient C - Vitesse de chauffe, overshoot et oscillations
+      description: 'Coefficient multiplicateur de la différence entre la consigne
+        et la température intérieure pour le calcul de la puissance
+
+        > valeur par défaut conseillée : **`0,6`** (bâti aux normes)
+
+
+        **Explications** dispos :
+
+        - le coeff_c représente **la puissance du chauffage Vs la surface de la pièce**
+
+        - plus il est haut, moins le chauffage est puissant pour la pièce
+
+
+        **En pratique** (est équivalent à P sur thermostat PID) :
+
+        - à **augmenter** si la chauffe n''est pas assez rapide pour cette pièce,
+        que la puissance de chauffe se réduit un peu vite vers l''atteinte de la consigne,
+        empêchant de l''obtenir rapidement
+
+        - à **baisser** si cela monte trop vite et qu''on dépasse (trop) la consigne
+        quand on l''atteint (overshoot) :
+
+        . par exemple si chauffage à forte inertie
+
+        . ou par exemple si coeff_c est réglé beaucoup trop haut
+
+        - à **baisser** aussi si on obtient des oscillations à température stable'
+      selector:
+        number:
+          min: 0.0
+          max: 1.0
+          step: 0.01
+          mode: slider
+    coeff_t:
+      name: Coefficient T - Stabilisation trop haute ou trop basse
+      description: 'Coefficient multiplicateur de la différence entre la consigne
+        et la température extérieure pour le calcul de la puissance
+
+        > valeur par défaut conseillée : **`0,01`** (bâti aux normes)
+
+
+        **Explications** dispos :
+
+        - le coeff_t représente **l''isolation de la pièce et son inertie**
+
+        - plus il est haut, moins bien la pièce est isolée, et/ou son inertie est
+        faible
+
+
+        **En pratique** (comportement proche de I sur thermostat PID) :
+
+        - à **augmenter** si on est en-dessous de la consigne quand le chaufffage
+        est stable
+
+        - à **baisser** si la consigne est dépassée quand le chaufffage est stable'
+      selector:
+        number:
+          min: 0.0
+          max: 0.1
+          step: 0.001
+          mode: slider
+    entity_consigne:
+      name: Consigne
+      description: Température de Consigne (input_number)
+      selector:
+        entity:
+          domain:
+          - input_number
+          multiple: false
+          reorder: false
+    entity_temp_ext:
+      name: Température extérieure
+      description: Sonde de mesure de la Température Extérieure (sensor)
+      selector:
+        entity:
+          domain:
+          - sensor
+          device_class:
+          - temperature
+          multiple: false
+          reorder: false
+    entity_temp_int:
+      name: Température intérieure
+      description: Sonde de mesure de la Température Intérieure (sensor)
+      selector:
+        entity:
+          domain:
+          - sensor
+          device_class:
+          - temperature
+          multiple: false
+          reorder: false
+    entity_fenetre:
+      name: Fenêtre(s)
+      description: (groupe de) Capteur(s) d'ouverture de fenêtre(s) (binary_sensor)
+      selector:
+        entity:
+          domain:
+          - binary_sensor
+          device_class:
+          - opening
+          multiple: false
+          reorder: false
+    entity_puissance:
+      name: Puissance
+      description: Puissance de chauffe calculée (input_number)
+      selector:
+        entity:
+          domain:
+          - input_number
+          multiple: false
+          reorder: false
+    entity_chauffage:
+      name: Chauffage
+      description: 'Interrupteur marche / arrêt effectif du chauffage (switch si relais,
+
+        ou climate si thermostat HA comme en RF via X2D par ex.)'
+      selector:
+        entity:
+          multiple: true
+          reorder: false
+    entity_mode_climate:
+      name: '[option] mode Climate'
+      description: 'Si activé, le BluePrint pilotera une entité Climate de HA (heat/stop),
+
+        comme c''est le cas en RF via X2D,
+
+        et non plus un relais (on/off) placé sur le radiateur'
+      default: false
+      selector:
+        boolean: {}
+    entity_mode_inverse:
+      name: '[option] mode Inversé'
+      description: 'Si activé, le chauffage sera allumé lorsque le switch est Off,
+
+        et éteint lorsque le switch est sur On.
+
+        L''activer permet la compatibilité avec les relais type SonOff ZBmini.'
+      default: false
+      selector:
+        boolean: {}
+variables:
+  coeff_c: !input coeff_c
+  coeff_t: !input coeff_t
+  entity_temp_int: !input entity_temp_int
+  entity_temp_ext: !input entity_temp_ext
+  entity_fenetre: !input entity_fenetre
+  entity_mode_climate: !input entity_mode_climate
+  entity_mode_inverse: !input entity_mode_inverse
+  service_on: "{%- if entity_mode_climate -%}\n  climate.set_preset_mode\n{%- else
+    -%}\n  {%- if entity_mode_inverse -%}\n    switch.turn_off\n  {%- else -%}\n    switch.turn_on\n
+    \ {%- endif -%}\n{%- endif -%}\n"
+  service_off: "{%- if entity_mode_climate -%}\n  climate.set_preset_mode\n{%- else
+    -%}\n  {%- if entity_mode_inverse -%}\n    switch.turn_on\n  {%- else -%}\n    switch.turn_off\n
+    \ {%- endif -%}\n{%- endif -%}\n"
+  service_on_data: "{%- if entity_mode_climate -%}\n  {%- if entity_mode_inverse -%}\n
+    \   {\"preset_mode\": \"Stop\"}\n  {%- else -%}\n    {\"preset_mode\": \"Comfort\"}
+    \      \n  {%- endif -%}\n{%- else -%}\n  {}\n{%- endif -%}\n"
+  service_off_data: "{%- if entity_mode_climate -%}\n  {%- if entity_mode_inverse
+    -%}\n    {\"preset_mode\": \"Comfort\"}\n  {%- else -%}\n    {\"preset_mode\":
+    \"Stop\"}\n  {%- endif -%}\n{%- else -%}\n  {}\n{%- endif -%}\n"
+trigger:
+- platform: time_pattern
+  minutes: /10
+- platform: state
+  entity_id: !input entity_consigne
+- platform: state
+  entity_id: !input entity_fenetre
+action:
+- alias: récupération des données
+  variables:
+    entity_consigne: !input entity_consigne
+    consigne: '{{states(entity_consigne)}}'
+    temp_ext: '{{ states(entity_temp_ext) }}'
+    temp_int: '{{ states(entity_temp_int) }}'
+    fenetre: '{{states(entity_fenetre)}}'
+    puissance: '{%set val = coeff_c * (consigne - temp_int) + coeff_t * (consigne
+      - temp_ext) %}  {% if val > 1 and fenetre == ''off'' %} {% set val = 100 %}  {%
+      elif val < 0 or fenetre == ''on'' %} {% set val = 0 %}  {% else %} {% set val
+      = ( (val * 100) | round(0)) %} {% endif %} {{val}}'
+    temps_chauffe: '{{ puissance * 6 }}'
+- alias: Met à jour l'indicateur de puissance
+  service: input_number.set_value
+  target:
+    entity_id: !input entity_puissance
+  data:
+    value: '{{puissance}}'
+- choose:
+  - conditions:
+    - condition: template
+      value_template: '{{ puissance == 0 }}'
+    sequence:
+    - service: '{{ service_off }}'
+      target:
+        entity_id: !input entity_chauffage
+      data: '{{ service_off_data }}'
+  - conditions:
+    - condition: template
+      value_template: '{{ puissance > 99 }}'
+    sequence:
+    - service: '{{ service_on }}'
+      target:
+        entity_id: !input entity_chauffage
+      data: '{{ service_on_data }}'
+  default:
+  - service: '{{ service_on }}'
+    target:
+      entity_id: !input entity_chauffage
+    data: '{{ service_on_data }}'
+  - delay: '{{ temps_chauffe }}'
+  - service: '{{ service_off }}'
+    target:
+      entity_id: !input entity_chauffage
+    data: '{{ service_off_data }}'
+mode: restart
