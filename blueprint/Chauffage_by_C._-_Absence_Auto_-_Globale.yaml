@@ -867,7 +867,7 @@ action:
                 - { name: "cuisine", mode: !input mode_cuisine, mode_avant: !input mode_avant_cuisine, utilisateur: !input utilisateur_cuisine, si_principal: !input si_principal_cuisine, local_actif: !input local_actif_cuisine }
                 - { name: "salon", mode: !input mode_salon, mode_avant: !input mode_avant_salon, utilisateur: ! input utilisateur_salon, si_principal: !input si_principal_salon, local_actif: ! input local_actif_salon }
                 - { name: "sdb", mode: !input mode_sdb, mode_avant: ! input mode_avant_sdb, utilisateur: !input utilisateur_sdb, si_principal: ! input si_principal_sdb, local_actif: !input local_actif_sdb }
-                - { name: "michel", mode: !input mode_michel, mode_avant: !input mode_avant_michel, utilisateur: !input utilisateur_michel, si_principal: !input si_principal_michel, local_actif: !input local_actif_michel }
+                - { name: "michel", mode: !input mode_michel, mode_avant: !input mode_avant_michel, utilisateur: ! input utilisateur_michel, si_principal: !input si_principal_michel, local_actif: !input local_actif_michel }
                 - { name: "voitures", mode: !input mode_voitures, mode_avant: !input mode_avant_voitures, utilisateur: ! input utilisateur_voitures, si_principal: !input si_principal_voitures, local_actif: !input local_actif_voitures }
                 - { name: "couloir", mode: !input mode_couloir, mode_avant: !input mode_avant_couloir, utilisateur: !input utilisateur_couloir, si_principal: !input si_principal_couloir, local_actif: !input local_actif_couloir }
                 - { name: "atelier", mode: !input mode_atelier, mode_avant: !input mode_avant_atelier, utilisateur: !input utilisateur_atelier, si_principal: !input si_principal_atelier, local_actif: !input local_actif_atelier }
@@ -890,8 +890,36 @@ action:
                       entity_id: "{{ repeat.item.utilisateur }}"
                       state: 'François'
                 
+                # Restaurer le mode
                 - service: input_select.select_option
                   target:
-                    entity_id: "{{ repeat.item.mode }}"
+                    entity_id: "{{ repeat.item. mode }}"
                   data:
-                    option: "{{ states(repeat
+                    option: "{{ states(repeat.item.mode_avant) }}"
+                
+                # Si c'était Absence, cycle Arrêt puis Absence
+                - if:
+                    - condition: state
+                      entity_id: "{{ repeat.item.mode_avant }}"
+                      state: 'Absence'
+                  then:
+                    - service: input_select.select_option
+                      target:
+                        entity_id: "{{ repeat.item. mode }}"
+                      data:
+                        option: 'Arrêt'
+                    - delay:
+                        seconds: 1
+                    - service: input_select.select_option
+                      target:
+                        entity_id: "{{ repeat.item. mode }}"
+                      data:
+                        option: 'Absence'
+                
+                - service: logbook.log
+                  data:
+                    name: "Absence Auto {{ repeat.item.name }}"
+                    message: "François de retour → Restauration {{ states(repeat.item.mode_avant) }}"
+
+mode: queued
+max: 10
