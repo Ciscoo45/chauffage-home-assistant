@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C.  - Absence Auto - par Pièces
   description: "
 
-    version Absence : v1.00 - 2025-01-21
+    version Absence : v1.01 - 2025-01-21
     
     auteur : Ciscoo45
     
@@ -393,7 +393,7 @@ action:
       value: "{{ consigne_absence_calc }}"
 
   # Mise à jour de la consigne finale
-  - service: input_number. set_value
+  - service: input_number.set_value
     target:
       entity_id: !input consigne_finale
     data:
@@ -411,7 +411,7 @@ action:
         {% if boost_on %}[Boost actif]{% endif %}
         {% if tous_absents %}[Tous absents]{% endif %}
         {% if si_principal and principal_absent %}[{{ principal }} absent]{% endif %})
-      entity_id: !input consigne_finale
 
 mode: queued
 max: 5
+
