@@ -1,5 +1,5 @@
 blueprint:
-  name: Chauffage by C.  - Absence Auto
+  name: Chauffage by C.  - Absence Auto - par Pièces
   description: "
 
     version Absence : v1. 00 - 2025-01-21
@@ -130,16 +130,16 @@ blueprint:
     
     2.  **Absence Auto actif** → `radiateur_xxx_consigne_absence` (consigne Tempo ou base -2°C)
     
-    3. **Tempo actif** → `radiateur_xxx_consigne_tempo` (consigne base avec réduction HP)
+    3.  **Tempo actif** → `radiateur_xxx_consigne_tempo` (consigne base avec réduction HP)
     
-    4. **Normal** → `radiateur_xxx_consigne` (consigne programmée par Scheduler)
+    4.  **Normal** → `radiateur_xxx_consigne` (consigne programmée par Scheduler)
     
     
     ___
     
     ## Paramétrage du Blueprint
     "
-  source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/main/blueprint/Chauffage_by_C._-_Absence_Auto.yaml
+  source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/main/blueprint/Chauffage_by_C._-_Absence_Auto_-_Pièces.yaml
   domain: automation
 
   input:
