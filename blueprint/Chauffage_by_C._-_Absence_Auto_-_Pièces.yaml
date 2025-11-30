@@ -1,8 +1,8 @@
 blueprint:
-  name: Chauffage by C.  - Absence Auto - par Pièces
+  name: Chauffage by C.  - Absence Auto - Par Pièce
   description: "
 
-    version Absence : v1.02 - 2025-01-21
+    version Absence : v1.30 - 2025-11-30
     
     auteur : Ciscoo45
     
@@ -11,18 +11,18 @@ blueprint:
     
     ## Description
     
-    Blueprint **optionnel** pour gérer automatiquement le mode Absence et réduire la consigne de chauffage quand les utilisateurs sont absents. 
+    Blueprint **optionnel** pour gérer automatiquement le mode Absence et réduire la consigne de chauffage quand les utilisateurs sont absents.  
     
     
     **Fonctionnement** :
     
-    - Calcule en temps réel une **consigne absence** à partir de la consigne Tempo (si existe) ou de la consigne de base
+    - Calcule en temps réel une **consigne finale** selon le contexte :
     
-    - Applique une réduction paramétrable (défaut -2°C) quand :
-    
-      • **Tous les utilisateurs** sont absents (si mode global actif)
+      • **Mode Présence → Absence** : Pas de réduction (Scheduler gère la consigne Absence)
       
-      • **L'utilisateur principal de la pièce** est absent (si mode local actif)
+      • **Mode Absence ou Manuel** : Réduction de -2°C supplémentaire
+      
+      • **Mode Hors-gel ou Arrêt** : Aucune action
     
     - N'applique **aucune réduction** si :
     
@@ -32,12 +32,29 @@ blueprint:
       
       • le **boost** est actif (confort prioritaire)
     
-    - Stocke le mode et la consigne avant départ pour restauration au retour
+    
+    **Configuration universelle** :
+    
+    - Support de **1 à 5 utilisateurs** (1 obligatoire + 4 optionnels)
+    
+    - Aucun nom d'utilisateur codé en dur
+    
+    - Configuration centralisée dans `packages/absence_auto_config.yaml`
     
     
-    **Important** : Ce blueprint est **totalement indépendant** des autres blueprints du module de chauffage.
+    ___
     
-    Vous pouvez l'utiliser ou non selon vos besoins.
+    ## Modes de chauffage supportés
+    
+    - **Présence** : Mode confort avec température normale
+    
+    - **Absence** : Mode économie avec température réduite
+    
+    - **Manuel** : Mode manuel avec température fixée par l'utilisateur
+    
+    - **Hors-gel** : Protection antigel (pas d'action Absence Auto)
+    
+    - **Arrêt** : Chauffage éteint (pas d'action Absence Auto)
     
     
     ___
@@ -46,7 +63,7 @@ blueprint:
     
     Vous devez disposer de :
     
-    - Un group contenant tous les utilisateurs (ex: `group.mell_utilisateurs`)
+    - Un group contenant tous les utilisateurs configuré dans `packages/absence_auto_config.yaml`
     
     - Des entités `person. xxx` pour chaque utilisateur
     
@@ -88,7 +105,7 @@ blueprint:
     
     **input_select** :
     
-    - `radiateur_sdb_utilisateur_principal` : choix de l'utilisateur (Aucun, Michel, François)
+    - `radiateur_sdb_utilisateur_principal` : choix de l'utilisateur (utilise la liste dynamique)
     
     - `radiateur_sdb_mode` : mode de chauffage (existant)
     
@@ -126,13 +143,13 @@ blueprint:
     
     ## Ordre de priorité des consignes
     
-    1.  **Boost actif** → `radiateur_xxx_boost_consigne` (ignore tout le reste)
+    1.   **Boost actif** → `radiateur_xxx_boost_consigne` (ignore tout le reste)
     
-    2.  **Absence Auto actif** → `radiateur_xxx_consigne_absence` (consigne Tempo ou base -2°C)
+    2.   **Absence Auto actif** → `radiateur_xxx_consigne_absence` (consigne Tempo ou base avec réduction selon mode)
     
     3.  **Tempo actif** → `radiateur_xxx_consigne_tempo` (consigne base avec réduction HP)
     
-    4.  **Normal** → `radiateur_xxx_consigne` (consigne programmée par Scheduler)
+    4. **Normal** → `radiateur_xxx_consigne` (consigne programmée par Scheduler)
     
     
     ___
@@ -153,20 +170,47 @@ blueprint:
     binary_sensor_tous_absents:
       name: 👥 Sensor Tous Absents
       description: "Binary sensor indiquant si tous les utilisateurs sont absents"
+      default: binary_sensor.chauffage_tous_utilisateurs_absents
       selector:
         entity:
           domain: binary_sensor
 
-    binary_sensor_michel_absent:
-      name: 👤 Sensor Michel Absent
-      description: "Binary sensor indiquant si Michel est absent"
+    binary_sensor_utilisateur_1_absent:
+      name: 👤 Utilisateur 1 Absent (obligatoire)
+      description: "Binary sensor pour le premier utilisateur (obligatoire)"
+      default: binary_sensor.chauffage_utilisateur1_absent
       selector:
         entity:
           domain: binary_sensor
 
-    binary_sensor_francois_absent:
-      name: 👤 Sensor François Absent
-      description: "Binary sensor indiquant si François est absent"
+    binary_sensor_utilisateur_2_absent:
+      name: 👤 Utilisateur 2 Absent (optionnel)
+      description: "Binary sensor pour le deuxième utilisateur (laisser par défaut si non utilisé)"
+      default: binary_sensor.chauffage_utilisateur2_absent
+      selector:
+        entity:
+          domain: binary_sensor
+
+    binary_sensor_utilisateur_3_absent:
+      name: 👤 Utilisateur 3 Absent (optionnel)
+      description: "Binary sensor pour le troisième utilisateur (laisser par défaut si non utilisé)"
+      default: binary_sensor.chauffage_utilisateur3_absent
+      selector:
+        entity:
+          domain: binary_sensor
+
+    binary_sensor_utilisateur_4_absent:
+      name: 👤 Utilisateur 4 Absent (optionnel)
+      description: "Binary sensor pour le quatrième utilisateur (laisser par défaut si non utilisé)"
+      default: binary_sensor.chauffage_utilisateur4_absent
+      selector:
+        entity:
+          domain: binary_sensor
+
+    binary_sensor_utilisateur_5_absent:
+      name: 👤 Utilisateur 5 Absent (optionnel)
+      description: "Binary sensor pour le cinquième utilisateur (laisser par défaut si non utilisé)"
+      default: binary_sensor.chauffage_utilisateur5_absent
       selector:
         entity:
           domain: binary_sensor
@@ -211,7 +255,8 @@ blueprint:
     # === REDUCTION ===
     reduction_degrees:
       name: ➖ Réduction en absence
-      description: "Nombre de degrés à retirer en mode Absence"
+      description: "Nombre de degrés à retirer en mode Absence ou Manuel (pas appliqué si passage Présence → Absence)"
+      default: input_number.chauffage_absence_auto_reduction_degrees
       selector:
         entity:
           domain: input_number
@@ -220,6 +265,7 @@ blueprint:
     switch_global:
       name: 🌐 Switch global Absence Auto
       description: "Désactive toutes les corrections Absence (toutes pièces) si OFF"
+      default: input_boolean.chauffage_absence_auto_global_actif
       selector:
         entity:
           domain: input_boolean
@@ -240,7 +286,7 @@ blueprint:
 
     utilisateur_principal:
       name: 👤 Utilisateur principal de la pièce
-      description: "Choix de l'utilisateur principal (Aucun, Michel, François)"
+      description: "Choix de l'utilisateur principal (utilise la liste définie dans absence_auto_config.yaml)"
       selector:
         entity:
           domain: input_select
@@ -248,14 +294,14 @@ blueprint:
     # === MODE ===
     mode_actuel:
       name: 🎚️ Mode actuel
-      description: "Mode de chauffage actuel (Présence, Absence, Nuit, Manuel)"
+      description: "Mode de chauffage actuel (Présence, Absence, Manuel, Hors-gel, Arrêt)"
       selector:
         entity:
           domain: input_select
 
     mode_avant_absence:
       name: 💾 Mode avant absence
-      description: "Stockage du mode avant départ (pour restauration)"
+      description: "Stockage du mode avant départ (pour restauration ET calcul réduction)"
       selector:
         entity:
           domain: input_select
@@ -270,7 +316,7 @@ blueprint:
 
 # ========= VARIABLES =========
 variables:
-  piece_name: ! input piece_name
+  piece_name: !input piece_name
   consigne_base: !input consigne_base
   consigne_tempo_input: !input consigne_tempo
   consigne_absence: !input consigne_absence
@@ -279,19 +325,27 @@ variables:
   reduction_degrees: !input reduction_degrees
   switch_global: !input switch_global
   switch_local: !input switch_local
-  switch_si_principal_absent: ! input switch_si_principal_absent
-  utilisateur_principal: ! input utilisateur_principal
+  switch_si_principal_absent: !input switch_si_principal_absent
+  utilisateur_principal: !input utilisateur_principal
   mode_actuel: !input mode_actuel
   mode_avant_absence: !input mode_avant_absence
   binary_sensor_tous_absents: !input binary_sensor_tous_absents
-  binary_sensor_michel_absent: !input binary_sensor_michel_absent
-  binary_sensor_francois_absent: !input binary_sensor_francois_absent
+  binary_sensor_utilisateur_1_absent: !input binary_sensor_utilisateur_1_absent
+  binary_sensor_utilisateur_2_absent: !input binary_sensor_utilisateur_2_absent
+  binary_sensor_utilisateur_3_absent: !input binary_sensor_utilisateur_3_absent
+  binary_sensor_utilisateur_4_absent: !input binary_sensor_utilisateur_4_absent
+  binary_sensor_utilisateur_5_absent: !input binary_sensor_utilisateur_5_absent
   boost_actif_input: !input boost_actif
+
+  # Liste des utilisateurs (récupérée dynamiquement depuis la config)
+  liste_utilisateurs: >-
+    {{ state_attr('input_select.chauffage_absence_auto_liste_utilisateurs', 'options')[1:] if states('input_select.chauffage_absence_auto_liste_utilisateurs') not in ['unknown', 'unavailable'] else ['Utilisateur1', 'Utilisateur2', 'Utilisateur3', 'Utilisateur4', 'Utilisateur5'] }}
 
   # Valeurs actuelles
   consigne_source: >-
-    {% if consigne_tempo_input != '' and states(consigne_tempo_input) not in ['unknown', 'unavailable'] %}
-      {{ states(consigne_tempo_input) | float(19) }}
+    {% set tempo_input = consigne_tempo_input %}
+    {% if tempo_input not in ['', 'none', None] and states(tempo_input) not in ['unknown', 'unavailable', ''] %}
+      {{ states(tempo_input) | float(19) }}
     {% else %}
       {{ states(consigne_base) | float(19) }}
     {% endif %}
@@ -299,8 +353,9 @@ variables:
   global_actif: "{{ is_state(switch_global, 'on') }}"
   local_actif: "{{ is_state(switch_local, 'on') }}"
   boost_on: >-
-    {% if boost_actif_input != '' %}
-      {{ is_state(boost_actif_input, 'on') }}
+    {% set boost_input = boost_actif_input %}
+    {% if boost_input not in ['', 'none', None] %}
+      {{ is_state(boost_input, 'on') }}
     {% else %}
       false
     {% endif %}
@@ -308,22 +363,35 @@ variables:
   tous_absents: "{{ is_state(binary_sensor_tous_absents, 'on') }}"
   principal: "{{ states(utilisateur_principal) }}"
   principal_absent: >-
-    {% if principal == 'Michel' %}
-      {{ is_state(binary_sensor_michel_absent, 'on') }}
-    {% elif principal == 'François' %}
-      {{ is_state(binary_sensor_francois_absent, 'on') }}
-    {% else %}
-      false
-    {% endif %}
+    {% set entities = states('input_text.chauffage_absence_auto_utilisateurs_entities').split(',') %}
+    {% set noms = liste_utilisateurs %}
+    {% set result = false %}
+    {% for i in range(noms|length) %}
+      {% if principal == noms[i] and i < entities|length and entities[i] not in ['', 'unknown', 'unavailable'] %}
+        {% set result = is_state(entities[i], 'not_home') %}
+      {% endif %}
+    {% endfor %}
+    {{ result }}
   si_principal: "{{ is_state(switch_si_principal_absent, 'on') }}"
+
+  # Mode actuel et avant absence
+  mode_actuel_valeur: "{{ states(mode_actuel) }}"
+  mode_avant_valeur: "{{ states(mode_avant_absence) }}"
 
   # Calcul de la réduction
   reduction: >-
+    {% set mode_actif = mode_actuel_valeur in ['Présence', 'Absence', 'Manuel'] %}
+    {% set transition_presence_absence = (mode_avant_valeur == 'Présence' and mode_actuel_valeur == 'Absence') %}
+    
     {% if not global_actif %}
       0
     {% elif not local_actif %}
       0
+    {% elif not mode_actif %}
+      0
     {% elif boost_on %}
+      0
+    {% elif transition_presence_absence %}
       0
     {% elif tous_absents %}
       {{ states(reduction_degrees) | float(2) }}
@@ -362,12 +430,21 @@ trigger:
   - platform: state
     entity_id: !input utilisateur_principal
 
+  # Recalcul quand le mode change
+  - platform: state
+    entity_id:
+      - !input mode_actuel
+      - !input mode_avant_absence
+
   # Recalcul quand la détection de présence change
   - platform: state
     entity_id:
       - !input binary_sensor_tous_absents
-      - !input binary_sensor_michel_absent
-      - !input binary_sensor_francois_absent
+      - !input binary_sensor_utilisateur_1_absent
+      - !input binary_sensor_utilisateur_2_absent
+      - !input binary_sensor_utilisateur_3_absent
+      - !input binary_sensor_utilisateur_4_absent
+      - !input binary_sensor_utilisateur_5_absent
 
   # Recalcul quand le boost change (si fourni)
   - platform: state
@@ -404,14 +481,16 @@ action:
     data:
       name: "Absence Auto {{ piece_name }}"
       message: >-
+        Mode: {{ mode_actuel_valeur }} (avant: {{ mode_avant_valeur }})
         Consigne: {{ consigne_source }}°C → {{ consigne_finale_calc }}°C
         (réduction: -{{ reduction }}°C
         {% if not global_actif %}[Global OFF]{% endif %}
         {% if not local_actif %}[Local OFF]{% endif %}
+        {% if mode_actuel_valeur not in ['Présence', 'Absence', 'Manuel'] %}[Mode inactif: {{ mode_actuel_valeur }}]{% endif %}
         {% if boost_on %}[Boost actif]{% endif %}
+        {% if mode_avant_valeur == 'Présence' and mode_actuel_valeur == 'Absence' %}[Transition P→A, Scheduler gère]{% endif %}
         {% if tous_absents %}[Tous absents]{% endif %}
         {% if si_principal and principal_absent %}[{{ principal }} absent]{% endif %})
 
 mode: queued
 max: 5
-
