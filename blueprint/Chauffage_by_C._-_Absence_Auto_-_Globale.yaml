@@ -1,0 +1,897 @@
+blueprint:
+  name: Chauffage by C.  - Absence Auto - Globale
+  description: "
+
+    version Absence Globale : v1.00 - 2025-01-21
+    
+    auteur : Ciscoo45
+    
+    
+    ___
+    
+    ## Description
+    
+    Blueprint **compagnon** de la Gestion Absence Auto qui gère les **transitions** entre présence et absence.
+    
+    
+    **Fonctionnement** :
+    
+    - Détecte quand **tous les utilisateurs partent** ou **reviennent**
+    
+    - Détecte quand un **utilisateur principal** part ou revient (par pièce)
+    
+    - Sauvegarde le mode et la consigne avant départ
+    
+    - Restaure le mode et la consigne au retour :
+    
+      • **Présence** → repasser en Présence
+      
+      • **Manuel** → repasser en Manuel + restaurer consigne
+      
+      • **Absence** → forcer cycle Arrêt (1s) puis Absence (resync Scheduler)
+    
+    
+    **Important** : Ce blueprint doit être créé **une seule fois** (pas par pièce).
+    
+    Il gère toutes les pièces en même temps. 
+    
+    
+    ___
+    
+    ## Pré-requis
+    
+    - Group `group. mell_utilisateurs` contenant tous les utilisateurs
+    
+    - Binary sensors de présence (créés automatiquement par template. yaml)
+    
+    - Tous les helpers Absence Auto créés pour chaque pièce
+    
+    
+    ___
+    
+    ## Paramétrage du Blueprint
+    "
+  source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/main/blueprint/Chauffage_by_C._-_Absence_Auto_-_Globale.yaml
+  domain: automation
+
+  input:
+    # === DETECTION PRESENCE ===
+    binary_sensor_tous_absents:
+      name: 👥 Sensor Tous Absents
+      description: "Binary sensor indiquant si tous les utilisateurs sont absents"
+      selector:
+        entity:
+          domain: binary_sensor
+
+    binary_sensor_michel_absent:
+      name: 👤 Sensor Michel Absent
+      description: "Binary sensor indiquant si Michel est absent"
+      selector:
+        entity:
+          domain: binary_sensor
+
+    binary_sensor_francois_absent:
+      name: 👤 Sensor François Absent
+      description: "Binary sensor indiquant si François est absent"
+      selector:
+        entity:
+          domain: binary_sensor
+
+    # === ACTIVATION ===
+    switch_global:
+      name: 🌐 Switch global Absence Auto
+      description: "Active/désactive la gestion automatique de l'absence"
+      selector:
+        entity:
+          domain: input_boolean
+
+    # === LISTE DES PIECES (13 pièces) ===
+    # Pour chaque pièce : mode, mode_avant, consigne_avant, utilisateur_principal, si_principal_absent, local_actif
+
+    # Chambre ss-sol
+    mode_chambre_sssol:
+      name: 🏠 Chambre ss-sol - Mode
+      selector:
+        entity:
+          domain: input_select
+    mode_avant_chambre_sssol:
+      name: 💾 Chambre ss-sol - Mode Avant
+      selector:
+        entity:
+          domain: input_select
+    consigne_avant_chambre_sssol:
+      name: 💾 Chambre ss-sol - Consigne Avant
+      selector:
+        entity:
+          domain: input_number
+    utilisateur_chambre_sssol:
+      name: 👤 Chambre ss-sol - Utilisateur Principal
+      selector:
+        entity:
+          domain: input_select
+    si_principal_chambre_sssol:
+      name: 👤 Chambre ss-sol - Si Principal Absent
+      selector:
+        entity:
+          domain: input_boolean
+    local_actif_chambre_sssol:
+      name: 🏠 Chambre ss-sol - Local Actif
+      selector:
+        entity:
+          domain: input_boolean
+
+    # Bureau
+    mode_bureau:
+      name: 🏠 Bureau - Mode
+      selector:
+        entity:
+          domain: input_select
+    mode_avant_bureau:
+      name: 💾 Bureau - Mode Avant
+      selector:
+        entity:
+          domain: input_select
+    consigne_avant_bureau:
+      name: 💾 Bureau - Consigne Avant
+      selector:
+        entity:
+          domain: input_number
+    utilisateur_bureau:
+      name: 👤 Bureau - Utilisateur Principal
+      selector:
+        entity:
+          domain: input_select
+    si_principal_bureau:
+      name: 👤 Bureau - Si Principal Absent
+      selector:
+        entity:
+          domain: input_boolean
+    local_actif_bureau:
+      name: 🏠 Bureau - Local Actif
+      selector:
+        entity:
+          domain: input_boolean
+
+    # Cuisine
+    mode_cuisine:
+      name: 🏠 Cuisine - Mode
+      selector:
+        entity:
+          domain: input_select
+    mode_avant_cuisine:
+      name: 💾 Cuisine - Mode Avant
+      selector:
+        entity:
+          domain: input_select
+    consigne_avant_cuisine:
+      name: 💾 Cuisine - Consigne Avant
+      selector:
+        entity:
+          domain: input_number
+    utilisateur_cuisine:
+      name: 👤 Cuisine - Utilisateur Principal
+      selector:
+        entity:
+          domain: input_select
+    si_principal_cuisine:
+      name: 👤 Cuisine - Si Principal Absent
+      selector:
+        entity:
+          domain: input_boolean
+    local_actif_cuisine:
+      name: 🏠 Cuisine - Local Actif
+      selector:
+        entity:
+          domain: input_boolean
+
+    # Salon
+    mode_salon:
+      name: 🏠 Salon - Mode
+      selector:
+        entity:
+          domain: input_select
+    mode_avant_salon:
+      name: 💾 Salon - Mode Avant
+      selector:
+        entity:
+          domain: input_select
+    consigne_avant_salon:
+      name: 💾 Salon - Consigne Avant
+      selector:
+        entity:
+          domain: input_number
+    utilisateur_salon:
+      name: 👤 Salon - Utilisateur Principal
+      selector:
+        entity:
+          domain: input_select
+    si_principal_salon:
+      name: 👤 Salon - Si Principal Absent
+      selector:
+        entity:
+          domain: input_boolean
+    local_actif_salon:
+      name: 🏠 Salon - Local Actif
+      selector:
+        entity:
+          domain: input_boolean
+
+    # SdB
+    mode_sdb:
+      name: 🏠 SdB - Mode
+      selector:
+        entity:
+          domain: input_select
+    mode_avant_sdb:
+      name: 💾 SdB - Mode Avant
+      selector:
+        entity:
+          domain: input_select
+    consigne_avant_sdb:
+      name: 💾 SdB - Consigne Avant
+      selector:
+        entity:
+          domain: input_number
+    utilisateur_sdb:
+      name: 👤 SdB - Utilisateur Principal
+      selector:
+        entity:
+          domain: input_select
+    si_principal_sdb:
+      name: 👤 SdB - Si Principal Absent
+      selector:
+        entity:
+          domain: input_boolean
+    local_actif_sdb:
+      name: 🏠 SdB - Local Actif
+      selector:
+        entity:
+          domain: input_boolean
+
+    # Michel
+    mode_michel:
+      name: 🏠 Michel - Mode
+      selector:
+        entity:
+          domain: input_select
+    mode_avant_michel:
+      name: 💾 Michel - Mode Avant
+      selector:
+        entity:
+          domain: input_select
+    consigne_avant_michel:
+      name: 💾 Michel - Consigne Avant
+      selector:
+        entity:
+          domain: input_number
+    utilisateur_michel:
+      name: 👤 Michel - Utilisateur Principal
+      selector:
+        entity:
+          domain: input_select
+    si_principal_michel:
+      name: 👤 Michel - Si Principal Absent
+      selector:
+        entity:
+          domain: input_boolean
+    local_actif_michel:
+      name: 🏠 Michel - Local Actif
+      selector:
+        entity:
+          domain: input_boolean
+
+    # Voitures
+    mode_voitures:
+      name: 🏠 Voitures - Mode
+      selector:
+        entity:
+          domain: input_select
+    mode_avant_voitures:
+      name: 💾 Voitures - Mode Avant
+      selector:
+        entity:
+          domain: input_select
+    consigne_avant_voitures:
+      name: 💾 Voitures - Consigne Avant
+      selector:
+        entity:
+          domain: input_number
+    utilisateur_voitures:
+      name: 👤 Voitures - Utilisateur Principal
+      selector:
+        entity:
+          domain: input_select
+    si_principal_voitures:
+      name: 👤 Voitures - Si Principal Absent
+      selector:
+        entity:
+          domain: input_boolean
+    local_actif_voitures:
+      name: 🏠 Voitures - Local Actif
+      selector:
+        entity:
+          domain: input_boolean
+
+    # Couloir
+    mode_couloir:
+      name: 🏠 Couloir - Mode
+      selector:
+        entity:
+          domain: input_select
+    mode_avant_couloir:
+      name: 💾 Couloir - Mode Avant
+      selector:
+        entity:
+          domain: input_select
+    consigne_avant_couloir:
+      name: 💾 Couloir - Consigne Avant
+      selector:
+        entity:
+          domain: input_number
+    utilisateur_couloir:
+      name: 👤 Couloir - Utilisateur Principal
+      selector:
+        entity:
+          domain: input_select
+    si_principal_couloir:
+      name: 👤 Couloir - Si Principal Absent
+      selector:
+        entity:
+          domain: input_boolean
+    local_actif_couloir:
+      name: 🏠 Couloir - Local Actif
+      selector:
+        entity:
+          domain: input_boolean
+
+    # Atelier
+    mode_atelier:
+      name: 🏠 Atelier - Mode
+      selector:
+        entity:
+          domain: input_select
+    mode_avant_atelier:
+      name: 💾 Atelier - Mode Avant
+      selector:
+        entity:
+          domain: input_select
+    consigne_avant_atelier:
+      name: 💾 Atelier - Consigne Avant
+      selector:
+        entity:
+          domain: input_number
+    utilisateur_atelier:
+      name: 👤 Atelier - Utilisateur Principal
+      selector:
+        entity:
+          domain: input_select
+    si_principal_atelier:
+      name: 👤 Atelier - Si Principal Absent
+      selector:
+        entity:
+          domain: input_boolean
+    local_actif_atelier:
+      name: 🏠 Atelier - Local Actif
+      selector:
+        entity:
+          domain: input_boolean
+
+    # Garçonnière
+    mode_garconniere:
+      name: 🏠 Garçonnière - Mode
+      selector:
+        entity:
+          domain: input_select
+    mode_avant_garconniere:
+      name: 💾 Garçonnière - Mode Avant
+      selector:
+        entity:
+          domain: input_select
+    consigne_avant_garconniere:
+      name: 💾 Garçonnière - Consigne Avant
+      selector:
+        entity:
+          domain: input_number
+    utilisateur_garconniere:
+      name: 👤 Garçonnière - Utilisateur Principal
+      selector:
+        entity:
+          domain: input_select
+    si_principal_garconniere:
+      name: 👤 Garçonnière - Si Principal Absent
+      selector:
+        entity:
+          domain: input_boolean
+    local_actif_garconniere:
+      name: 🏠 Garçonnière - Local Actif
+      selector:
+        entity:
+          domain: input_boolean
+
+    # Telmo
+    mode_telmo:
+      name: 🏠 Telmo - Mode
+      selector:
+        entity:
+          domain: input_select
+    mode_avant_telmo:
+      name: 💾 Telmo - Mode Avant
+      selector:
+        entity:
+          domain: input_select
+    consigne_avant_telmo:
+      name: 💾 Telmo - Consigne Avant
+      selector:
+        entity:
+          domain: input_number
+    utilisateur_telmo:
+      name: 👤 Telmo - Utilisateur Principal
+      selector:
+        entity:
+          domain: input_select
+    si_principal_telmo:
+      name: 👤 Telmo - Si Principal Absent
+      selector:
+        entity:
+          domain: input_boolean
+    local_actif_telmo:
+      name: 🏠 Telmo - Local Actif
+      selector:
+        entity:
+          domain: input_boolean
+
+    # SdB Etg
+    mode_sdb_etg:
+      name: 🏠 SdB Etg - Mode
+      selector:
+        entity:
+          domain: input_select
+    mode_avant_sdb_etg:
+      name: 💾 SdB Etg - Mode Avant
+      selector:
+        entity:
+          domain: input_select
+    consigne_avant_sdb_etg:
+      name: 💾 SdB Etg - Consigne Avant
+      selector:
+        entity:
+          domain: input_number
+    utilisateur_sdb_etg:
+      name: 👤 SdB Etg - Utilisateur Principal
+      selector:
+        entity:
+          domain: input_select
+    si_principal_sdb_etg:
+      name: 👤 SdB Etg - Si Principal Absent
+      selector:
+        entity:
+          domain: input_boolean
+    local_actif_sdb_etg:
+      name: 🏠 SdB Etg - Local Actif
+      selector:
+        entity:
+          domain: input_boolean
+
+# ========= VARIABLES =========
+variables:
+  switch_global: !input switch_global
+  binary_sensor_tous_absents: !input binary_sensor_tous_absents
+  binary_sensor_michel_absent: !input binary_sensor_michel_absent
+  binary_sensor_francois_absent: ! input binary_sensor_francois_absent
+
+# ========= DÉCLENCHEURS =========
+trigger:
+  # Tous les utilisateurs partent
+  - platform: state
+    entity_id: !input binary_sensor_tous_absents
+    from: 'off'
+    to: 'on'
+    id: tous_partent
+
+  # Tous les utilisateurs reviennent
+  - platform: state
+    entity_id: !input binary_sensor_tous_absents
+    from: 'on'
+    to: 'off'
+    id: tous_reviennent
+
+  # Michel part
+  - platform: state
+    entity_id: !input binary_sensor_michel_absent
+    from: 'off'
+    to: 'on'
+    id: michel_part
+
+  # Michel revient
+  - platform: state
+    entity_id: !input binary_sensor_michel_absent
+    from: 'on'
+    to: 'off'
+    id: michel_revient
+
+  # François part
+  - platform: state
+    entity_id: !input binary_sensor_francois_absent
+    from: 'off'
+    to: 'on'
+    id: francois_part
+
+  # François revient
+  - platform: state
+    entity_id: !input binary_sensor_francois_absent
+    from: 'on'
+    to: 'off'
+    id: francois_revient
+
+condition:
+  - condition: state
+    entity_id: !input switch_global
+    state: 'on'
+
+# ========= ACTIONS =========
+action:
+  - choose:
+      # === TOUS PARTENT ===
+      - conditions:
+          - condition: trigger
+            id: tous_partent
+        sequence:
+          - service: logbook.log
+            data:
+              name: "Absence Auto Globale"
+              message: "🏃 Tous les utilisateurs sont partis - activation mode Absence pour toutes les pièces actives"
+
+          # Pour chaque pièce : sauvegarder mode/consigne, puis passer en Absence si mode était Présence
+          # (Le blueprint par pièce va automatiquement appliquer la réduction -2°C)
+          
+          # Liste des pièces (répéter ce pattern pour chaque pièce)
+          - variables:
+              pieces:
+                - { name: "chambre_sssol", mode: ! input mode_chambre_sssol, mode_avant: !input mode_avant_chambre_sssol, consigne_avant: !input consigne_avant_chambre_sssol, local_actif: !input local_actif_chambre_sssol }
+                - { name: "bureau", mode: !input mode_bureau, mode_avant: !input mode_avant_bureau, consigne_avant: !input consigne_avant_bureau, local_actif: ! input local_actif_bureau }
+                - { name: "cuisine", mode: !input mode_cuisine, mode_avant: !input mode_avant_cuisine, consigne_avant: !input consigne_avant_cuisine, local_actif: !input local_actif_cuisine }
+                - { name: "salon", mode: !input mode_salon, mode_avant: !input mode_avant_salon, consigne_avant: !input consigne_avant_salon, local_actif: !input local_actif_salon }
+                - { name: "sdb", mode: !input mode_sdb, mode_avant: !input mode_avant_sdb, consigne_avant: ! input consigne_avant_sdb, local_actif: !input local_actif_sdb }
+                - { name: "michel", mode: !input mode_michel, mode_avant: !input mode_avant_michel, consigne_avant: !input consigne_avant_michel, local_actif: !input local_actif_michel }
+                - { name: "voitures", mode: !input mode_voitures, mode_avant: !input mode_avant_voitures, consigne_avant: !input consigne_avant_voitures, local_actif: !input local_actif_voitures }
+                - { name: "couloir", mode: !input mode_couloir, mode_avant: !input mode_avant_couloir, consigne_avant: !input consigne_avant_couloir, local_actif: !input local_actif_couloir }
+                - { name: "atelier", mode: !input mode_atelier, mode_avant: !input mode_avant_atelier, consigne_avant: ! input consigne_avant_atelier, local_actif: !input local_actif_atelier }
+                - { name: "garconniere", mode: !input mode_garconniere, mode_avant: !input mode_avant_garconniere, consigne_avant: !input consigne_avant_garconniere, local_actif: !input local_actif_garconniere }
+                - { name: "telmo", mode: ! input mode_telmo, mode_avant: !input mode_avant_telmo, consigne_avant: !input consigne_avant_telmo, local_actif: ! input local_actif_telmo }
+                - { name: "sdb_etg", mode: !input mode_sdb_etg, mode_avant: !input mode_avant_sdb_etg, consigne_avant: ! input consigne_avant_sdb_etg, local_actif: !input local_actif_sdb_etg }
+
+          - repeat:
+              for_each: "{{ pieces }}"
+              sequence:
+                - condition: state
+                  entity_id: "{{ repeat.item. local_actif }}"
+                  state: 'on'
+                
+                # Sauvegarder le mode actuel
+                - service: input_select.select_option
+                  target:
+                    entity_id: "{{ repeat.item.mode_avant }}"
+                  data:
+                    option: "{{ states(repeat.item.mode) }}"
+                
+                # Si mode était Présence, passer en Absence
+                - if:
+                    - condition: state
+                      entity_id: "{{ repeat.item. mode }}"
+                      state: 'Présence'
+                  then:
+                    - service: input_select.select_option
+                      target:
+                        entity_id: "{{ repeat.item.mode }}"
+                      data:
+                        option: 'Absence'
+                    
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item.name }}"
+                        message: "Mode Présence → Absence"
+
+      # === TOUS REVIENNENT ===
+      - conditions:
+          - condition: trigger
+            id: tous_reviennent
+        sequence:
+          - service: logbook.log
+            data:
+              name: "Absence Auto Globale"
+              message: "🏠 Utilisateurs de retour - restauration des modes pour toutes les pièces"
+
+          - variables:
+              pieces:
+                - { name: "chambre_sssol", mode: !input mode_chambre_sssol, mode_avant: !input mode_avant_chambre_sssol, consigne_avant: !input consigne_avant_chambre_sssol, local_actif: !input local_actif_chambre_sssol }
+                - { name: "bureau", mode: !input mode_bureau, mode_avant: !input mode_avant_bureau, consigne_avant: !input consigne_avant_bureau, local_actif: ! input local_actif_bureau }
+                - { name: "cuisine", mode: !input mode_cuisine, mode_avant: !input mode_avant_cuisine, consigne_avant: !input consigne_avant_cuisine, local_actif: !input local_actif_cuisine }
+                - { name: "salon", mode: !input mode_salon, mode_avant: !input mode_avant_salon, consigne_avant: !input consigne_avant_salon, local_actif: !input local_actif_salon }
+                - { name: "sdb", mode: !input mode_sdb, mode_avant: !input mode_avant_sdb, consigne_avant: ! input consigne_avant_sdb, local_actif: !input local_actif_sdb }
+                - { name: "michel", mode: !input mode_michel, mode_avant: !input mode_avant_michel, consigne_avant: !input consigne_avant_michel, local_actif: !input local_actif_michel }
+                - { name: "voitures", mode: !input mode_voitures, mode_avant: !input mode_avant_voitures, consigne_avant: !input consigne_avant_voitures, local_actif: !input local_actif_voitures }
+                - { name: "couloir", mode: !input mode_couloir, mode_avant: !input mode_avant_couloir, consigne_avant: !input consigne_avant_couloir, local_actif: !input local_actif_couloir }
+                - { name: "atelier", mode: !input mode_atelier, mode_avant: !input mode_avant_atelier, consigne_avant: ! input consigne_avant_atelier, local_actif: !input local_actif_atelier }
+                - { name: "garconniere", mode: !input mode_garconniere, mode_avant: !input mode_avant_garconniere, consigne_avant: !input consigne_avant_garconniere, local_actif: !input local_actif_garconniere }
+                - { name: "telmo", mode: ! input mode_telmo, mode_avant: !input mode_avant_telmo, consigne_avant: !input consigne_avant_telmo, local_actif: ! input local_actif_telmo }
+                - { name: "sdb_etg", mode: !input mode_sdb_etg, mode_avant: !input mode_avant_sdb_etg, consigne_avant: ! input consigne_avant_sdb_etg, local_actif: !input local_actif_sdb_etg }
+
+          - repeat:
+              for_each: "{{ pieces }}"
+              sequence:
+                - condition: state
+                  entity_id: "{{ repeat.item.local_actif }}"
+                  state: 'on'
+                
+                # Restaurer le mode précédent
+                - service: input_select.select_option
+                  target:
+                    entity_id: "{{ repeat.item. mode }}"
+                  data:
+                    option: "{{ states(repeat.item.mode_avant) }}"
+                
+                # Si c'était Absence, faire cycle Arrêt puis Absence pour resync
+                - if:
+                    - condition: state
+                      entity_id: "{{ repeat.item.mode_avant }}"
+                      state: 'Absence'
+                  then:
+                    - service: input_select.select_option
+                      target:
+                        entity_id: "{{ repeat.item.mode }}"
+                      data:
+                        option: 'Arrêt'
+                    - delay:
+                        seconds: 1
+                    - service: input_select.select_option
+                      target:
+                        entity_id: "{{ repeat.item.mode }}"
+                      data:
+                        option: 'Absence'
+                
+                - service: logbook.log
+                  data:
+                    name: "Absence Auto {{ repeat.item.name }}"
+                    message: "Restauration mode {{ states(repeat.item.mode_avant) }}"
+
+      # === MICHEL PART (gérer uniquement ses pièces) ===
+      - conditions:
+          - condition: trigger
+            id: michel_part
+        sequence:
+          - service: logbook.log
+            data:
+              name: "Absence Auto Globale"
+              message: "🏃 Michel est parti - traitement des pièces où il est utilisateur principal"
+
+          - variables:
+              pieces:
+                - { name: "chambre_sssol", mode: !input mode_chambre_sssol, mode_avant: !input mode_avant_chambre_sssol, utilisateur: !input utilisateur_chambre_sssol, si_principal: !input si_principal_chambre_sssol, local_actif: !input local_actif_chambre_sssol }
+                - { name: "bureau", mode: !input mode_bureau, mode_avant: !input mode_avant_bureau, utilisateur: !input utilisateur_bureau, si_principal: !input si_principal_bureau, local_actif: !input local_actif_bureau }
+                - { name: "cuisine", mode: ! input mode_cuisine, mode_avant: !input mode_avant_cuisine, utilisateur: !input utilisateur_cuisine, si_principal: ! input si_principal_cuisine, local_actif: !input local_actif_cuisine }
+                - { name: "salon", mode: !input mode_salon, mode_avant: !input mode_avant_salon, utilisateur: !input utilisateur_salon, si_principal: !input si_principal_salon, local_actif: !input local_actif_salon }
+                - { name: "sdb", mode: !input mode_sdb, mode_avant: !input mode_avant_sdb, utilisateur: !input utilisateur_sdb, si_principal: !input si_principal_sdb, local_actif: !input local_actif_sdb }
+                - { name: "michel", mode: !input mode_michel, mode_avant: !input mode_avant_michel, utilisateur: !input utilisateur_michel, si_principal: !input si_principal_michel, local_actif: !input local_actif_michel }
+                - { name: "voitures", mode: !input mode_voitures, mode_avant: !input mode_avant_voitures, utilisateur: !input utilisateur_voitures, si_principal: !input si_principal_voitures, local_actif: !input local_actif_voitures }
+                - { name: "couloir", mode: !input mode_couloir, mode_avant: !input mode_avant_couloir, utilisateur: ! input utilisateur_couloir, si_principal: !input si_principal_couloir, local_actif: !input local_actif_couloir }
+                - { name: "atelier", mode: ! input mode_atelier, mode_avant: !input mode_avant_atelier, utilisateur: !input utilisateur_atelier, si_principal: !input si_principal_atelier, local_actif: !input local_actif_atelier }
+                - { name: "garconniere", mode: ! input mode_garconniere, mode_avant: !input mode_avant_garconniere, utilisateur: !input utilisateur_garconniere, si_principal: !input si_principal_garconniere, local_actif: !input local_actif_garconniere }
+                - { name: "telmo", mode: !input mode_telmo, mode_avant: !input mode_avant_telmo, utilisateur: !input utilisateur_telmo, si_principal: !input si_principal_telmo, local_actif: !input local_actif_telmo }
+                - { name: "sdb_etg", mode: !input mode_sdb_etg, mode_avant: !input mode_avant_sdb_etg, utilisateur: !input utilisateur_sdb_etg, si_principal: !input si_principal_sdb_etg, local_actif: !input local_actif_sdb_etg }
+
+          - repeat:
+              for_each: "{{ pieces }}"
+              sequence:
+                - condition: and
+                  conditions:
+                    - condition: state
+                      entity_id: "{{ repeat.item.local_actif }}"
+                      state: 'on'
+                    - condition: state
+                      entity_id: "{{ repeat. item.si_principal }}"
+                      state: 'on'
+                    - condition: state
+                      entity_id: "{{ repeat.item.utilisateur }}"
+                      state: 'Michel'
+                
+                # Sauvegarder et passer en Absence si mode était Présence
+                - service: input_select.select_option
+                  target:
+                    entity_id: "{{ repeat.item.mode_avant }}"
+                  data:
+                    option: "{{ states(repeat.item. mode) }}"
+                
+                - if:
+                    - condition: state
+                      entity_id: "{{ repeat.item.mode }}"
+                      state: 'Présence'
+                  then:
+                    - service: input_select.select_option
+                      target:
+                        entity_id: "{{ repeat.item. mode }}"
+                      data:
+                        option: 'Absence'
+                    
+                    - service: logbook. log
+                      data:
+                        name: "Absence Auto {{ repeat.item.name }}"
+                        message: "Michel absent → Mode Présence → Absence"
+
+      # === MICHEL REVIENT ===
+      - conditions:
+          - condition: trigger
+            id: michel_revient
+        sequence:
+          - service: logbook.log
+            data:
+              name: "Absence Auto Globale"
+              message: "🏠 Michel est de retour - restauration de ses pièces"
+
+          - variables:
+              pieces:
+                - { name: "chambre_sssol", mode: !input mode_chambre_sssol, mode_avant: !input mode_avant_chambre_sssol, utilisateur: !input utilisateur_chambre_sssol, si_principal: !input si_principal_chambre_sssol, local_actif: !input local_actif_chambre_sssol }
+                - { name: "bureau", mode: !input mode_bureau, mode_avant: !input mode_avant_bureau, utilisateur: !input utilisateur_bureau, si_principal: !input si_principal_bureau, local_actif: !input local_actif_bureau }
+                - { name: "cuisine", mode: !input mode_cuisine, mode_avant: !input mode_avant_cuisine, utilisateur: !input utilisateur_cuisine, si_principal: !input si_principal_cuisine, local_actif: !input local_actif_cuisine }
+                - { name: "salon", mode: !input mode_salon, mode_avant: ! input mode_avant_salon, utilisateur: !input utilisateur_salon, si_principal: !input si_principal_salon, local_actif: !input local_actif_salon }
+                - { name: "sdb", mode: ! input mode_sdb, mode_avant: !input mode_avant_sdb, utilisateur: !input utilisateur_sdb, si_principal: !input si_principal_sdb, local_actif: !input local_actif_sdb }
+                - { name: "michel", mode: !input mode_michel, mode_avant: !input mode_avant_michel, utilisateur: !input utilisateur_michel, si_principal: !input si_principal_michel, local_actif: !input local_actif_michel }
+                - { name: "voitures", mode: !input mode_voitures, mode_avant: !input mode_avant_voitures, utilisateur: ! input utilisateur_voitures, si_principal: !input si_principal_voitures, local_actif: !input local_actif_voitures }
+                - { name: "couloir", mode: !input mode_couloir, mode_avant: !input mode_avant_couloir, utilisateur: !input utilisateur_couloir, si_principal: !input si_principal_couloir, local_actif: !input local_actif_couloir }
+                - { name: "atelier", mode: !input mode_atelier, mode_avant: !input mode_avant_atelier, utilisateur: !input utilisateur_atelier, si_principal: !input si_principal_atelier, local_actif: !input local_actif_atelier }
+                - { name: "garconniere", mode: !input mode_garconniere, mode_avant: !input mode_avant_garconniere, utilisateur: !input utilisateur_garconniere, si_principal: ! input si_principal_garconniere, local_actif: !input local_actif_garconniere }
+                - { name: "telmo", mode: !input mode_telmo, mode_avant: !input mode_avant_telmo, utilisateur: !input utilisateur_telmo, si_principal: !input si_principal_telmo, local_actif: !input local_actif_telmo }
+                - { name: "sdb_etg", mode: ! input mode_sdb_etg, mode_avant: !input mode_avant_sdb_etg, utilisateur: !input utilisateur_sdb_etg, si_principal: !input si_principal_sdb_etg, local_actif: !input local_actif_sdb_etg }
+
+          - repeat:
+              for_each: "{{ pieces }}"
+              sequence:
+                - condition: and
+                  conditions:
+                    - condition: state
+                      entity_id: "{{ repeat.item.local_actif }}"
+                      state: 'on'
+                    - condition: state
+                      entity_id: "{{ repeat.item.si_principal }}"
+                      state: 'on'
+                    - condition: state
+                      entity_id: "{{ repeat.item.utilisateur }}"
+                      state: 'Michel'
+                
+                # Restaurer le mode
+                - service: input_select. select_option
+                  target:
+                    entity_id: "{{ repeat.item.mode }}"
+                  data:
+                    option: "{{ states(repeat.item.mode_avant) }}"
+                
+                # Si c'était Absence, cycle Arrêt puis Absence
+                - if:
+                    - condition: state
+                      entity_id: "{{ repeat.item. mode_avant }}"
+                      state: 'Absence'
+                  then:
+                    - service: input_select.select_option
+                      target:
+                        entity_id: "{{ repeat.item.mode }}"
+                      data:
+                        option: 'Arrêt'
+                    - delay:
+                        seconds: 1
+                    - service: input_select.select_option
+                      target:
+                        entity_id: "{{ repeat.item.mode }}"
+                      data:
+                        option: 'Absence'
+                
+                - service: logbook.log
+                  data:
+                    name: "Absence Auto {{ repeat.item.name }}"
+                    message: "Michel de retour → Restauration {{ states(repeat.item.mode_avant) }}"
+
+      # === FRANÇOIS PART ===
+      - conditions:
+          - condition: trigger
+            id: francois_part
+        sequence:
+          - service: logbook.log
+            data:
+              name: "Absence Auto Globale"
+              message: "🏃 François est parti - traitement des pièces où il est utilisateur principal"
+
+          - variables:
+              pieces:
+                - { name: "chambre_sssol", mode: ! input mode_chambre_sssol, mode_avant: !input mode_avant_chambre_sssol, utilisateur: !input utilisateur_chambre_sssol, si_principal: !input si_principal_chambre_sssol, local_actif: !input local_actif_chambre_sssol }
+                - { name: "bureau", mode: !input mode_bureau, mode_avant: !input mode_avant_bureau, utilisateur: !input utilisateur_bureau, si_principal: !input si_principal_bureau, local_actif: !input local_actif_bureau }
+                - { name: "cuisine", mode: !input mode_cuisine, mode_avant: !input mode_avant_cuisine, utilisateur: ! input utilisateur_cuisine, si_principal: !input si_principal_cuisine, local_actif: ! input local_actif_cuisine }
+                - { name: "salon", mode: !input mode_salon, mode_avant: !input mode_avant_salon, utilisateur: !input utilisateur_salon, si_principal: !input si_principal_salon, local_actif: !input local_actif_salon }
+                - { name: "sdb", mode: !input mode_sdb, mode_avant: !input mode_avant_sdb, utilisateur: !input utilisateur_sdb, si_principal: !input si_principal_sdb, local_actif: !input local_actif_sdb }
+                - { name: "michel", mode: !input mode_michel, mode_avant: !input mode_avant_michel, utilisateur: !input utilisateur_michel, si_principal: !input si_principal_michel, local_actif: !input local_actif_michel }
+                - { name: "voitures", mode: !input mode_voitures, mode_avant: !input mode_avant_voitures, utilisateur: ! input utilisateur_voitures, si_principal: !input si_principal_voitures, local_actif: !input local_actif_voitures }
+                - { name: "couloir", mode: !input mode_couloir, mode_avant: !input mode_avant_couloir, utilisateur: !input utilisateur_couloir, si_principal: !input si_principal_couloir, local_actif: !input local_actif_couloir }
+                - { name: "atelier", mode: !input mode_atelier, mode_avant: !input mode_avant_atelier, utilisateur: !input utilisateur_atelier, si_principal: !input si_principal_atelier, local_actif: !input local_actif_atelier }
+                - { name: "garconniere", mode: !input mode_garconniere, mode_avant: !input mode_avant_garconniere, utilisateur: !input utilisateur_garconniere, si_principal: ! input si_principal_garconniere, local_actif: !input local_actif_garconniere }
+                - { name: "telmo", mode: !input mode_telmo, mode_avant: !input mode_avant_telmo, utilisateur: !input utilisateur_telmo, si_principal: !input si_principal_telmo, local_actif: !input local_actif_telmo }
+                - { name: "sdb_etg", mode: ! input mode_sdb_etg, mode_avant: !input mode_avant_sdb_etg, utilisateur: !input utilisateur_sdb_etg, si_principal: !input si_principal_sdb_etg, local_actif: !input local_actif_sdb_etg }
+
+          - repeat:
+              for_each: "{{ pieces }}"
+              sequence:
+                - condition: and
+                  conditions:
+                    - condition: state
+                      entity_id: "{{ repeat.item.local_actif }}"
+                      state: 'on'
+                    - condition: state
+                      entity_id: "{{ repeat.item.si_principal }}"
+                      state: 'on'
+                    - condition: state
+                      entity_id: "{{ repeat.item.utilisateur }}"
+                      state: 'François'
+                
+                - service: input_select.select_option
+                  target:
+                    entity_id: "{{ repeat.item.mode_avant }}"
+                  data:
+                    option: "{{ states(repeat. item.mode) }}"
+                
+                - if:
+                    - condition: state
+                      entity_id: "{{ repeat.item.mode }}"
+                      state: 'Présence'
+                  then:
+                    - service: input_select.select_option
+                      target:
+                        entity_id: "{{ repeat.item.mode }}"
+                      data:
+                        option: 'Absence'
+                    
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item.name }}"
+                        message: "François absent → Mode Présence → Absence"
+
+      # === FRANÇOIS REVIENT ===
+      - conditions:
+          - condition: trigger
+            id: francois_revient
+        sequence:
+          - service: logbook.log
+            data:
+              name: "Absence Auto Globale"
+              message: "🏠 François est de retour - restauration de ses pièces"
+
+          - variables:
+              pieces:
+                - { name: "chambre_sssol", mode: !input mode_chambre_sssol, mode_avant: !input mode_avant_chambre_sssol, utilisateur: !input utilisateur_chambre_sssol, si_principal: !input si_principal_chambre_sssol, local_actif: ! input local_actif_chambre_sssol }
+                - { name: "bureau", mode: !input mode_bureau, mode_avant: !input mode_avant_bureau, utilisateur: !input utilisateur_bureau, si_principal: !input si_principal_bureau, local_actif: !input local_actif_bureau }
+                - { name: "cuisine", mode: !input mode_cuisine, mode_avant: !input mode_avant_cuisine, utilisateur: !input utilisateur_cuisine, si_principal: !input si_principal_cuisine, local_actif: !input local_actif_cuisine }
+                - { name: "salon", mode: !input mode_salon, mode_avant: !input mode_avant_salon, utilisateur: ! input utilisateur_salon, si_principal: !input si_principal_salon, local_actif: ! input local_actif_salon }
+                - { name: "sdb", mode: !input mode_sdb, mode_avant: ! input mode_avant_sdb, utilisateur: !input utilisateur_sdb, si_principal: ! input si_principal_sdb, local_actif: !input local_actif_sdb }
+                - { name: "michel", mode: !input mode_michel, mode_avant: !input mode_avant_michel, utilisateur: !input utilisateur_michel, si_principal: !input si_principal_michel, local_actif: !input local_actif_michel }
+                - { name: "voitures", mode: !input mode_voitures, mode_avant: !input mode_avant_voitures, utilisateur: ! input utilisateur_voitures, si_principal: !input si_principal_voitures, local_actif: !input local_actif_voitures }
+                - { name: "couloir", mode: !input mode_couloir, mode_avant: !input mode_avant_couloir, utilisateur: !input utilisateur_couloir, si_principal: !input si_principal_couloir, local_actif: !input local_actif_couloir }
+                - { name: "atelier", mode: !input mode_atelier, mode_avant: !input mode_avant_atelier, utilisateur: !input utilisateur_atelier, si_principal: !input si_principal_atelier, local_actif: !input local_actif_atelier }
+                - { name: "garconniere", mode: !input mode_garconniere, mode_avant: !input mode_avant_garconniere, utilisateur: !input utilisateur_garconniere, si_principal: ! input si_principal_garconniere, local_actif: !input local_actif_garconniere }
+                - { name: "telmo", mode: !input mode_telmo, mode_avant: !input mode_avant_telmo, utilisateur: !input utilisateur_telmo, si_principal: !input si_principal_telmo, local_actif: !input local_actif_telmo }
+                - { name: "sdb_etg", mode: ! input mode_sdb_etg, mode_avant: !input mode_avant_sdb_etg, utilisateur: !input utilisateur_sdb_etg, si_principal: !input si_principal_sdb_etg, local_actif: !input local_actif_sdb_etg }
+
+          - repeat:
+              for_each: "{{ pieces }}"
+              sequence:
+                - condition: and
+                  conditions:
+                    - condition: state
+                      entity_id: "{{ repeat.item.local_actif }}"
+                      state: 'on'
+                    - condition: state
+                      entity_id: "{{ repeat.item.si_principal }}"
+                      state: 'on'
+                    - condition: state
+                      entity_id: "{{ repeat.item.utilisateur }}"
+                      state: 'François'
+                
+                - service: input_select.select_option
+                  target:
+                    entity_id: "{{ repeat.item.mode }}"
+                  data:
+                    option: "{{ states(repeat
