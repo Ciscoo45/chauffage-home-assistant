@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C.  - Absence Auto - par Pièces
   description: "
 
-    version Absence : v1.01 - 2025-01-21
+    version Absence : v1.02 - 2025-01-21
     
     auteur : Ciscoo45
     
@@ -388,7 +388,7 @@ action:
   # Mise à jour de la consigne absence
   - service: input_number.set_value
     target:
-      entity_id: ! input consigne_absence
+      entity_id: !input consigne_absence
     data:
       value: "{{ consigne_absence_calc }}"
 
