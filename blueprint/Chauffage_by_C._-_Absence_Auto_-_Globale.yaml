@@ -1,8 +1,8 @@
 blueprint:
-  name: Chauffage by C.  - Absence Auto - Globale
+  name: Chauffage by C. - Absence Auto - Globale
   description: "
 
-    version Absence Globale : v1.31 - 2025-11-30
+    version Absence Globale : v1.40 - 2025-11-30
     
     auteur : Ciscoo45
     
@@ -11,7 +11,7 @@ blueprint:
     
     ## Description
     
-    Blueprint **compagnon** de la Gestion Absence Auto qui gère les **transitions** entre présence et absence.  
+    Blueprint **compagnon** de la Gestion Absence Auto qui gère les **transitions** entre présence et absence. 
     
     
     **Fonctionnement** :
@@ -24,16 +24,16 @@ blueprint:
     
     - Restaure le mode et la consigne au retour :
     
-      • **Présence** → repasser en Présence
+      • **Présence** → repasser en Présence (Scheduler gère la consigne)
       
-      • **Manuel** → repasser en Manuel
+      • **Manuel** → repasser en Manuel + **restaurer la consigne sauvegardée**
       
       • **Absence** → forcer cycle Arrêt (1s) puis Absence (resync Scheduler)
     
     - **Ne touche PAS** aux modes Hors-gel ou Arrêt
     
     
-    **Important** : Ce blueprint doit être créé **une seule fois** (pas par pièce).  
+    **Important** : Ce blueprint doit être créé **une seule fois** (pas par pièce). 
     
     Il gère toutes les pièces en même temps (1 obligatoire + 19 optionnelles).
     
@@ -48,18 +48,20 @@ blueprint:
     
     - Support de **1 à 20 pièces** (1 obligatoire + 19 optionnelles)
     
-    - Utilise la liste des utilisateurs définie dans `packages/chauffage_absence_auto_config_package.yaml`
+    - Utilise la liste des utilisateurs définie dans `package/chauffage_absence_auto_config_package.yaml`
     
     - Fonctionne avec n'importe quel groupe de présence
+    
+    - **Restaure la consigne** en mode Manuel uniquement
     
     
     ___
     
     ## Pré-requis
     
-    - Group `group.xxx_utilisateurs` contenant tous les utilisateurs
+    - Group `group.xxxx_utilisateurs` contenant tous les utilisateurs
     
-    - Binary sensors de présence (créés automatiquement par `template.yaml`)
+    - Binary sensors de présence (créés automatiquement par `template\chauffage_absence_auto_template.yaml`)
     
     - Tous les helpers Absence Auto créés pour chaque pièce
     
@@ -136,42 +138,42 @@ blueprint:
       description: "Nom de la première pièce (obligatoire, ex: SdB)"
       selector:
         text:
-
     piece_1_mode:
       name: 🏠 Pièce 1 - Mode
       description: "Mode de chauffage actuel"
       selector:
         entity:
           domain: input_select
-
     piece_1_mode_avant:
       name: 💾 Pièce 1 - Mode Avant
       description: "Sauvegarde du mode avant absence"
       selector:
         entity:
           domain: input_select
-
+    piece_1_consigne:
+      name: 🌡️ Pièce 1 - Consigne
+      description: "Consigne actuelle (ex: input_number.radiateur_sdb_consigne_finale)"
+      selector:
+        entity:
+          domain: input_number
     piece_1_consigne_avant:
       name: 💾 Pièce 1 - Consigne Avant
       description: "Sauvegarde de la consigne avant absence"
       selector:
         entity:
           domain: input_number
-
     piece_1_utilisateur:
       name: 👤 Pièce 1 - Utilisateur Principal
       description: "Utilisateur principal de la pièce"
       selector:
         entity:
           domain: input_select
-
     piece_1_si_principal:
       name: 👤 Pièce 1 - Si Principal Absent
       description: "Activer réduction si utilisateur principal absent"
       selector:
         entity:
           domain: input_boolean
-
     piece_1_local_actif:
       name: 🏠 Pièce 1 - Local Actif
       description: "Gestion Absence Auto active pour cette pièce"
@@ -199,6 +201,12 @@ blueprint:
       selector:
         entity:
           domain: input_select
+    piece_2_consigne:
+      name: 🌡️ Pièce 2 - Consigne
+      default: ""
+      selector:
+        entity:
+          domain: input_number
     piece_2_consigne_avant:
       name: 💾 Pièce 2 - Consigne Avant
       default: ""
@@ -242,6 +250,12 @@ blueprint:
       selector:
         entity:
           domain: input_select
+    piece_3_consigne:
+      name: 🌡️ Pièce 3 - Consigne
+      default: ""
+      selector:
+        entity:
+          domain: input_number
     piece_3_consigne_avant:
       name: 💾 Pièce 3 - Consigne Avant
       default: ""
@@ -285,6 +299,12 @@ blueprint:
       selector:
         entity:
           domain: input_select
+    piece_4_consigne:
+      name: 🌡️ Pièce 4 - Consigne
+      default: ""
+      selector:
+        entity:
+          domain: input_number
     piece_4_consigne_avant:
       name: 💾 Pièce 4 - Consigne Avant
       default: ""
@@ -328,6 +348,12 @@ blueprint:
       selector:
         entity:
           domain: input_select
+    piece_5_consigne:
+      name: 🌡️ Pièce 5 - Consigne
+      default: ""
+      selector:
+        entity:
+          domain: input_number
     piece_5_consigne_avant:
       name: 💾 Pièce 5 - Consigne Avant
       default: ""
@@ -371,6 +397,12 @@ blueprint:
       selector:
         entity:
           domain: input_select
+    piece_6_consigne:
+      name: 🌡️ Pièce 6 - Consigne
+      default: ""
+      selector:
+        entity:
+          domain: input_number
     piece_6_consigne_avant:
       name: 💾 Pièce 6 - Consigne Avant
       default: ""
@@ -414,6 +446,12 @@ blueprint:
       selector:
         entity:
           domain: input_select
+    piece_7_consigne:
+      name: 🌡️ Pièce 7 - Consigne
+      default: ""
+      selector:
+        entity:
+          domain: input_number
     piece_7_consigne_avant:
       name: 💾 Pièce 7 - Consigne Avant
       default: ""
@@ -457,6 +495,12 @@ blueprint:
       selector:
         entity:
           domain: input_select
+    piece_8_consigne:
+      name: 🌡️ Pièce 8 - Consigne
+      default: ""
+      selector:
+        entity:
+          domain: input_number
     piece_8_consigne_avant:
       name: 💾 Pièce 8 - Consigne Avant
       default: ""
@@ -500,6 +544,12 @@ blueprint:
       selector:
         entity:
           domain: input_select
+    piece_9_consigne:
+      name: 🌡️ Pièce 9 - Consigne
+      default: ""
+      selector:
+        entity:
+          domain: input_number
     piece_9_consigne_avant:
       name: 💾 Pièce 9 - Consigne Avant
       default: ""
@@ -543,6 +593,12 @@ blueprint:
       selector:
         entity:
           domain: input_select
+    piece_10_consigne:
+      name: 🌡️ Pièce 10 - Consigne
+      default: ""
+      selector:
+        entity:
+          domain: input_number
     piece_10_consigne_avant:
       name: 💾 Pièce 10 - Consigne Avant
       default: ""
@@ -586,6 +642,12 @@ blueprint:
       selector:
         entity:
           domain: input_select
+    piece_11_consigne:
+      name: 🌡️ Pièce 11 - Consigne
+      default: ""
+      selector:
+        entity:
+          domain: input_number
     piece_11_consigne_avant:
       name: 💾 Pièce 11 - Consigne Avant
       default: ""
@@ -629,6 +691,12 @@ blueprint:
       selector:
         entity:
           domain: input_select
+    piece_12_consigne:
+      name: 🌡️ Pièce 12 - Consigne
+      default: ""
+      selector:
+        entity:
+          domain: input_number
     piece_12_consigne_avant:
       name: 💾 Pièce 12 - Consigne Avant
       default: ""
@@ -672,6 +740,12 @@ blueprint:
       selector:
         entity:
           domain: input_select
+    piece_13_consigne:
+      name: 🌡️ Pièce 13 - Consigne
+      default: ""
+      selector:
+        entity:
+          domain: input_number
     piece_13_consigne_avant:
       name: 💾 Pièce 13 - Consigne Avant
       default: ""
@@ -715,6 +789,12 @@ blueprint:
       selector:
         entity:
           domain: input_select
+    piece_14_consigne:
+      name: 🌡️ Pièce 14 - Consigne
+      default: ""
+      selector:
+        entity:
+          domain: input_number
     piece_14_consigne_avant:
       name: 💾 Pièce 14 - Consigne Avant
       default: ""
@@ -758,6 +838,12 @@ blueprint:
       selector:
         entity:
           domain: input_select
+    piece_15_consigne:
+      name: 🌡️ Pièce 15 - Consigne
+      default: ""
+      selector:
+        entity:
+          domain: input_number
     piece_15_consigne_avant:
       name: 💾 Pièce 15 - Consigne Avant
       default: ""
@@ -801,6 +887,12 @@ blueprint:
       selector:
         entity:
           domain: input_select
+    piece_16_consigne:
+      name: 🌡️ Pièce 16 - Consigne
+      default: ""
+      selector:
+        entity:
+          domain: input_number
     piece_16_consigne_avant:
       name: 💾 Pièce 16 - Consigne Avant
       default: ""
@@ -844,6 +936,12 @@ blueprint:
       selector:
         entity:
           domain: input_select
+    piece_17_consigne:
+      name: 🌡️ Pièce 17 - Consigne
+      default: ""
+      selector:
+        entity:
+          domain: input_number
     piece_17_consigne_avant:
       name: 💾 Pièce 17 - Consigne Avant
       default: ""
@@ -887,6 +985,12 @@ blueprint:
       selector:
         entity:
           domain: input_select
+    piece_18_consigne:
+      name: 🌡️ Pièce 18 - Consigne
+      default: ""
+      selector:
+        entity:
+          domain: input_number
     piece_18_consigne_avant:
       name: 💾 Pièce 18 - Consigne Avant
       default: ""
@@ -930,6 +1034,12 @@ blueprint:
       selector:
         entity:
           domain: input_select
+    piece_19_consigne:
+      name: 🌡️ Pièce 19 - Consigne
+      default: ""
+      selector:
+        entity:
+          domain: input_number
     piece_19_consigne_avant:
       name: 💾 Pièce 19 - Consigne Avant
       default: ""
@@ -973,6 +1083,12 @@ blueprint:
       selector:
         entity:
           domain: input_select
+    piece_20_consigne:
+      name: 🌡️ Pièce 20 - Consigne
+      default: ""
+      selector:
+        entity:
+          domain: input_number
     piece_20_consigne_avant:
       name: 💾 Pièce 20 - Consigne Avant
       default: ""
@@ -1011,6 +1127,7 @@ variables:
   piece_1_nom: !input piece_1_nom
   piece_1_mode: !input piece_1_mode
   piece_1_mode_avant: !input piece_1_mode_avant
+  piece_1_consigne: !input piece_1_consigne
   piece_1_consigne_avant: !input piece_1_consigne_avant
   piece_1_utilisateur: !input piece_1_utilisateur
   piece_1_si_principal: !input piece_1_si_principal
@@ -1020,6 +1137,7 @@ variables:
   piece_2_nom: !input piece_2_nom
   piece_2_mode: !input piece_2_mode
   piece_2_mode_avant: !input piece_2_mode_avant
+  piece_2_consigne: !input piece_2_consigne
   piece_2_consigne_avant: !input piece_2_consigne_avant
   piece_2_utilisateur: !input piece_2_utilisateur
   piece_2_si_principal: !input piece_2_si_principal
@@ -1028,6 +1146,7 @@ variables:
   piece_3_nom: !input piece_3_nom
   piece_3_mode: !input piece_3_mode
   piece_3_mode_avant: !input piece_3_mode_avant
+  piece_3_consigne: !input piece_3_consigne
   piece_3_consigne_avant: !input piece_3_consigne_avant
   piece_3_utilisateur: !input piece_3_utilisateur
   piece_3_si_principal: !input piece_3_si_principal
@@ -1036,6 +1155,7 @@ variables:
   piece_4_nom: !input piece_4_nom
   piece_4_mode: !input piece_4_mode
   piece_4_mode_avant: !input piece_4_mode_avant
+  piece_4_consigne: !input piece_4_consigne
   piece_4_consigne_avant: !input piece_4_consigne_avant
   piece_4_utilisateur: !input piece_4_utilisateur
   piece_4_si_principal: !input piece_4_si_principal
@@ -1044,6 +1164,7 @@ variables:
   piece_5_nom: !input piece_5_nom
   piece_5_mode: !input piece_5_mode
   piece_5_mode_avant: !input piece_5_mode_avant
+  piece_5_consigne: !input piece_5_consigne
   piece_5_consigne_avant: !input piece_5_consigne_avant
   piece_5_utilisateur: !input piece_5_utilisateur
   piece_5_si_principal: !input piece_5_si_principal
@@ -1052,6 +1173,7 @@ variables:
   piece_6_nom: !input piece_6_nom
   piece_6_mode: !input piece_6_mode
   piece_6_mode_avant: !input piece_6_mode_avant
+  piece_6_consigne: !input piece_6_consigne
   piece_6_consigne_avant: !input piece_6_consigne_avant
   piece_6_utilisateur: !input piece_6_utilisateur
   piece_6_si_principal: !input piece_6_si_principal
@@ -1060,6 +1182,7 @@ variables:
   piece_7_nom: !input piece_7_nom
   piece_7_mode: !input piece_7_mode
   piece_7_mode_avant: !input piece_7_mode_avant
+  piece_7_consigne: !input piece_7_consigne
   piece_7_consigne_avant: !input piece_7_consigne_avant
   piece_7_utilisateur: !input piece_7_utilisateur
   piece_7_si_principal: !input piece_7_si_principal
@@ -1068,6 +1191,7 @@ variables:
   piece_8_nom: !input piece_8_nom
   piece_8_mode: !input piece_8_mode
   piece_8_mode_avant: !input piece_8_mode_avant
+  piece_8_consigne: !input piece_8_consigne
   piece_8_consigne_avant: !input piece_8_consigne_avant
   piece_8_utilisateur: !input piece_8_utilisateur
   piece_8_si_principal: !input piece_8_si_principal
@@ -1076,6 +1200,7 @@ variables:
   piece_9_nom: !input piece_9_nom
   piece_9_mode: !input piece_9_mode
   piece_9_mode_avant: !input piece_9_mode_avant
+  piece_9_consigne: !input piece_9_consigne
   piece_9_consigne_avant: !input piece_9_consigne_avant
   piece_9_utilisateur: !input piece_9_utilisateur
   piece_9_si_principal: !input piece_9_si_principal
@@ -1084,6 +1209,7 @@ variables:
   piece_10_nom: !input piece_10_nom
   piece_10_mode: !input piece_10_mode
   piece_10_mode_avant: !input piece_10_mode_avant
+  piece_10_consigne: !input piece_10_consigne
   piece_10_consigne_avant: !input piece_10_consigne_avant
   piece_10_utilisateur: !input piece_10_utilisateur
   piece_10_si_principal: !input piece_10_si_principal
@@ -1092,6 +1218,7 @@ variables:
   piece_11_nom: !input piece_11_nom
   piece_11_mode: !input piece_11_mode
   piece_11_mode_avant: !input piece_11_mode_avant
+  piece_11_consigne: !input piece_11_consigne
   piece_11_consigne_avant: !input piece_11_consigne_avant
   piece_11_utilisateur: !input piece_11_utilisateur
   piece_11_si_principal: !input piece_11_si_principal
@@ -1100,6 +1227,7 @@ variables:
   piece_12_nom: !input piece_12_nom
   piece_12_mode: !input piece_12_mode
   piece_12_mode_avant: !input piece_12_mode_avant
+  piece_12_consigne: !input piece_12_consigne
   piece_12_consigne_avant: !input piece_12_consigne_avant
   piece_12_utilisateur: !input piece_12_utilisateur
   piece_12_si_principal: !input piece_12_si_principal
@@ -1108,6 +1236,7 @@ variables:
   piece_13_nom: !input piece_13_nom
   piece_13_mode: !input piece_13_mode
   piece_13_mode_avant: !input piece_13_mode_avant
+  piece_13_consigne: !input piece_13_consigne
   piece_13_consigne_avant: !input piece_13_consigne_avant
   piece_13_utilisateur: !input piece_13_utilisateur
   piece_13_si_principal: !input piece_13_si_principal
@@ -1116,6 +1245,7 @@ variables:
   piece_14_nom: !input piece_14_nom
   piece_14_mode: !input piece_14_mode
   piece_14_mode_avant: !input piece_14_mode_avant
+  piece_14_consigne: !input piece_14_consigne
   piece_14_consigne_avant: !input piece_14_consigne_avant
   piece_14_utilisateur: !input piece_14_utilisateur
   piece_14_si_principal: !input piece_14_si_principal
@@ -1124,6 +1254,7 @@ variables:
   piece_15_nom: !input piece_15_nom
   piece_15_mode: !input piece_15_mode
   piece_15_mode_avant: !input piece_15_mode_avant
+  piece_15_consigne: !input piece_15_consigne
   piece_15_consigne_avant: !input piece_15_consigne_avant
   piece_15_utilisateur: !input piece_15_utilisateur
   piece_15_si_principal: !input piece_15_si_principal
@@ -1132,6 +1263,7 @@ variables:
   piece_16_nom: !input piece_16_nom
   piece_16_mode: !input piece_16_mode
   piece_16_mode_avant: !input piece_16_mode_avant
+  piece_16_consigne: !input piece_16_consigne
   piece_16_consigne_avant: !input piece_16_consigne_avant
   piece_16_utilisateur: !input piece_16_utilisateur
   piece_16_si_principal: !input piece_16_si_principal
@@ -1140,6 +1272,7 @@ variables:
   piece_17_nom: !input piece_17_nom
   piece_17_mode: !input piece_17_mode
   piece_17_mode_avant: !input piece_17_mode_avant
+  piece_17_consigne: !input piece_17_consigne
   piece_17_consigne_avant: !input piece_17_consigne_avant
   piece_17_utilisateur: !input piece_17_utilisateur
   piece_17_si_principal: !input piece_17_si_principal
@@ -1148,6 +1281,7 @@ variables:
   piece_18_nom: !input piece_18_nom
   piece_18_mode: !input piece_18_mode
   piece_18_mode_avant: !input piece_18_mode_avant
+  piece_18_consigne: !input piece_18_consigne
   piece_18_consigne_avant: !input piece_18_consigne_avant
   piece_18_utilisateur: !input piece_18_utilisateur
   piece_18_si_principal: !input piece_18_si_principal
@@ -1156,6 +1290,7 @@ variables:
   piece_19_nom: !input piece_19_nom
   piece_19_mode: !input piece_19_mode
   piece_19_mode_avant: !input piece_19_mode_avant
+  piece_19_consigne: !input piece_19_consigne
   piece_19_consigne_avant: !input piece_19_consigne_avant
   piece_19_utilisateur: !input piece_19_utilisateur
   piece_19_si_principal: !input piece_19_si_principal
@@ -1164,6 +1299,7 @@ variables:
   piece_20_nom: !input piece_20_nom
   piece_20_mode: !input piece_20_mode
   piece_20_mode_avant: !input piece_20_mode_avant
+  piece_20_consigne: !input piece_20_consigne
   piece_20_consigne_avant: !input piece_20_consigne_avant
   piece_20_utilisateur: !input piece_20_utilisateur
   piece_20_si_principal: !input piece_20_si_principal
@@ -1184,6 +1320,7 @@ variables:
         'nom': piece_1_nom,
         'mode': piece_1_mode,
         'mode_avant': piece_1_mode_avant,
+        'consigne': piece_1_consigne,
         'consigne_avant': piece_1_consigne_avant,
         'utilisateur': piece_1_utilisateur,
         'si_principal': piece_1_si_principal,
@@ -1195,6 +1332,7 @@ variables:
         'nom': piece_2_nom,
         'mode': piece_2_mode,
         'mode_avant': piece_2_mode_avant,
+        'consigne': piece_2_consigne,
         'consigne_avant': piece_2_consigne_avant,
         'utilisateur': piece_2_utilisateur,
         'si_principal': piece_2_si_principal,
@@ -1206,6 +1344,7 @@ variables:
         'nom': piece_3_nom,
         'mode': piece_3_mode,
         'mode_avant': piece_3_mode_avant,
+        'consigne': piece_3_consigne,
         'consigne_avant': piece_3_consigne_avant,
         'utilisateur': piece_3_utilisateur,
         'si_principal': piece_3_si_principal,
@@ -1217,6 +1356,7 @@ variables:
         'nom': piece_4_nom,
         'mode': piece_4_mode,
         'mode_avant': piece_4_mode_avant,
+        'consigne': piece_4_consigne,
         'consigne_avant': piece_4_consigne_avant,
         'utilisateur': piece_4_utilisateur,
         'si_principal': piece_4_si_principal,
@@ -1228,6 +1368,7 @@ variables:
         'nom': piece_5_nom,
         'mode': piece_5_mode,
         'mode_avant': piece_5_mode_avant,
+        'consigne': piece_5_consigne,
         'consigne_avant': piece_5_consigne_avant,
         'utilisateur': piece_5_utilisateur,
         'si_principal': piece_5_si_principal,
@@ -1239,6 +1380,7 @@ variables:
         'nom': piece_6_nom,
         'mode': piece_6_mode,
         'mode_avant': piece_6_mode_avant,
+        'consigne': piece_6_consigne,
         'consigne_avant': piece_6_consigne_avant,
         'utilisateur': piece_6_utilisateur,
         'si_principal': piece_6_si_principal,
@@ -1250,6 +1392,7 @@ variables:
         'nom': piece_7_nom,
         'mode': piece_7_mode,
         'mode_avant': piece_7_mode_avant,
+        'consigne': piece_7_consigne,
         'consigne_avant': piece_7_consigne_avant,
         'utilisateur': piece_7_utilisateur,
         'si_principal': piece_7_si_principal,
@@ -1261,6 +1404,7 @@ variables:
         'nom': piece_8_nom,
         'mode': piece_8_mode,
         'mode_avant': piece_8_mode_avant,
+        'consigne': piece_8_consigne,
         'consigne_avant': piece_8_consigne_avant,
         'utilisateur': piece_8_utilisateur,
         'si_principal': piece_8_si_principal,
@@ -1272,6 +1416,7 @@ variables:
         'nom': piece_9_nom,
         'mode': piece_9_mode,
         'mode_avant': piece_9_mode_avant,
+        'consigne': piece_9_consigne,
         'consigne_avant': piece_9_consigne_avant,
         'utilisateur': piece_9_utilisateur,
         'si_principal': piece_9_si_principal,
@@ -1283,6 +1428,7 @@ variables:
         'nom': piece_10_nom,
         'mode': piece_10_mode,
         'mode_avant': piece_10_mode_avant,
+        'consigne': piece_10_consigne,
         'consigne_avant': piece_10_consigne_avant,
         'utilisateur': piece_10_utilisateur,
         'si_principal': piece_10_si_principal,
@@ -1294,6 +1440,7 @@ variables:
         'nom': piece_11_nom,
         'mode': piece_11_mode,
         'mode_avant': piece_11_mode_avant,
+        'consigne': piece_11_consigne,
         'consigne_avant': piece_11_consigne_avant,
         'utilisateur': piece_11_utilisateur,
         'si_principal': piece_11_si_principal,
@@ -1305,6 +1452,7 @@ variables:
         'nom': piece_12_nom,
         'mode': piece_12_mode,
         'mode_avant': piece_12_mode_avant,
+        'consigne': piece_12_consigne,
         'consigne_avant': piece_12_consigne_avant,
         'utilisateur': piece_12_utilisateur,
         'si_principal': piece_12_si_principal,
@@ -1316,6 +1464,7 @@ variables:
         'nom': piece_13_nom,
         'mode': piece_13_mode,
         'mode_avant': piece_13_mode_avant,
+        'consigne': piece_13_consigne,
         'consigne_avant': piece_13_consigne_avant,
         'utilisateur': piece_13_utilisateur,
         'si_principal': piece_13_si_principal,
@@ -1327,6 +1476,7 @@ variables:
         'nom': piece_14_nom,
         'mode': piece_14_mode,
         'mode_avant': piece_14_mode_avant,
+        'consigne': piece_14_consigne,
         'consigne_avant': piece_14_consigne_avant,
         'utilisateur': piece_14_utilisateur,
         'si_principal': piece_14_si_principal,
@@ -1338,6 +1488,7 @@ variables:
         'nom': piece_15_nom,
         'mode': piece_15_mode,
         'mode_avant': piece_15_mode_avant,
+        'consigne': piece_15_consigne,
         'consigne_avant': piece_15_consigne_avant,
         'utilisateur': piece_15_utilisateur,
         'si_principal': piece_15_si_principal,
@@ -1349,6 +1500,7 @@ variables:
         'nom': piece_16_nom,
         'mode': piece_16_mode,
         'mode_avant': piece_16_mode_avant,
+        'consigne': piece_16_consigne,
         'consigne_avant': piece_16_consigne_avant,
         'utilisateur': piece_16_utilisateur,
         'si_principal': piece_16_si_principal,
@@ -1360,6 +1512,7 @@ variables:
         'nom': piece_17_nom,
         'mode': piece_17_mode,
         'mode_avant': piece_17_mode_avant,
+        'consigne': piece_17_consigne,
         'consigne_avant': piece_17_consigne_avant,
         'utilisateur': piece_17_utilisateur,
         'si_principal': piece_17_si_principal,
@@ -1371,6 +1524,7 @@ variables:
         'nom': piece_18_nom,
         'mode': piece_18_mode,
         'mode_avant': piece_18_mode_avant,
+        'consigne': piece_18_consigne,
         'consigne_avant': piece_18_consigne_avant,
         'utilisateur': piece_18_utilisateur,
         'si_principal': piece_18_si_principal,
@@ -1382,6 +1536,7 @@ variables:
         'nom': piece_19_nom,
         'mode': piece_19_mode,
         'mode_avant': piece_19_mode_avant,
+        'consigne': piece_19_consigne,
         'consigne_avant': piece_19_consigne_avant,
         'utilisateur': piece_19_utilisateur,
         'si_principal': piece_19_si_principal,
@@ -1393,6 +1548,7 @@ variables:
         'nom': piece_20_nom,
         'mode': piece_20_mode,
         'mode_avant': piece_20_mode_avant,
+        'consigne': piece_20_consigne,
         'consigne_avant': piece_20_consigne_avant,
         'utilisateur': piece_20_utilisateur,
         'si_principal': piece_20_si_principal,
@@ -1491,7 +1647,6 @@ condition:
   - condition: state
     entity_id: !input switch_global
     state: 'on'
-
 # ========= ACTIONS =========
 action:
   - choose:
@@ -1523,6 +1678,13 @@ action:
                   data:
                     option: "{{ states(repeat.item.mode) }}"
                 
+                # Sauvegarder la consigne actuelle
+                - service: input_number.set_value
+                  target:
+                    entity_id: "{{ repeat.item.consigne_avant }}"
+                  data:
+                    value: "{{ states(repeat.item.consigne) | float(19) }}"
+                
                 # Si mode était Présence, passer en Absence
                 - if:
                     - condition: template
@@ -1538,6 +1700,16 @@ action:
                       data:
                         name: "Absence Auto {{ repeat.item.nom }}"
                         message: "Mode Présence → Absence (Scheduler gère la consigne)"
+                
+                # Log pour mode Manuel ou Absence
+                - if:
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode) in ['Manuel', 'Absence'] }}"
+                  then:
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item.nom }}"
+                        message: "Mode {{ states(repeat.item.mode) }} - consigne {{ states(repeat.item.consigne) }}°C sauvegardée"
 
       # === TOUS REVIENNENT ===
       - conditions:
@@ -1554,6 +1726,22 @@ action:
               sequence:
                 - condition: template
                   value_template: "{{ repeat.item.local_actif not in ['', 'none', None] and is_state(repeat.item.local_actif, 'on') }}"
+                
+                # Si mode_avant était Manuel, restaurer la consigne AVANT de changer le mode
+                - if:
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode_avant) == 'Manuel' }}"
+                  then:
+                    - service: input_number.set_value
+                      target:
+                        entity_id: "{{ repeat.item.consigne }}"
+                      data:
+                        value: "{{ states(repeat.item.consigne_avant) | float(19) }}"
+                    
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item.nom }}"
+                        message: "Mode Manuel - consigne restaurée : {{ states(repeat.item.consigne_avant) }}°C"
                 
                 # Restaurer le mode précédent
                 - service: input_select.select_option
@@ -1579,11 +1767,21 @@ action:
                         entity_id: "{{ repeat.item.mode }}"
                       data:
                         option: 'Absence'
+                    
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item.nom }}"
+                        message: "Mode Absence - resync Scheduler"
                 
-                - service: logbook.log
-                  data:
-                    name: "Absence Auto {{ repeat.item.nom }}"
-                    message: "Restauration mode {{ states(repeat.item.mode_avant) }}"
+                # Log pour mode Présence
+                - if:
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode_avant) == 'Présence' }}"
+                  then:
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item.nom }}"
+                        message: "Mode Présence restauré"
 
       # === UTILISATEUR 1 PART ===
       - conditions:
@@ -1612,12 +1810,21 @@ action:
                     - condition: template
                       value_template: "{{ states(repeat.item.mode) in ['Présence', 'Absence', 'Manuel'] }}"
                 
+                # Sauvegarder le mode actuel
                 - service: input_select.select_option
                   target:
                     entity_id: "{{ repeat.item.mode_avant }}"
                   data:
                     option: "{{ states(repeat.item.mode) }}"
                 
+                # Sauvegarder la consigne actuelle
+                - service: input_number.set_value
+                  target:
+                    entity_id: "{{ repeat.item.consigne_avant }}"
+                  data:
+                    value: "{{ states(repeat.item.consigne) | float(19) }}"
+                
+                # Si mode était Présence, passer en Absence
                 - if:
                     - condition: template
                       value_template: "{{ states(repeat.item.mode) == 'Présence' }}"
@@ -1632,6 +1839,16 @@ action:
                       data:
                         name: "Absence Auto {{ repeat.item.nom }}"
                         message: "{{ nom_utilisateur }} absent → Mode Présence → Absence"
+                
+                # Log pour mode Manuel ou Absence
+                - if:
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode) in ['Manuel', 'Absence'] }}"
+                  then:
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item.nom }}"
+                        message: "{{ nom_utilisateur }} absent → Mode {{ states(repeat.item.mode) }} - consigne {{ states(repeat.item.consigne) }}°C sauvegardée"
 
       # === UTILISATEUR 1 REVIENT ===
       - conditions:
@@ -1658,12 +1875,30 @@ action:
                     - condition: template
                       value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
                 
+                # Si mode_avant était Manuel, restaurer la consigne AVANT de changer le mode
+                - if:
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode_avant) == 'Manuel' }}"
+                  then:
+                    - service: input_number.set_value
+                      target:
+                        entity_id: "{{ repeat.item.consigne }}"
+                      data:
+                        value: "{{ states(repeat.item.consigne_avant) | float(19) }}"
+                    
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item.nom }}"
+                        message: "{{ nom_utilisateur }} de retour → Mode Manuel - consigne restaurée : {{ states(repeat.item.consigne_avant) }}°C"
+                
+                # Restaurer le mode précédent
                 - service: input_select.select_option
                   target:
                     entity_id: "{{ repeat.item.mode }}"
                   data:
                     option: "{{ states(repeat.item.mode_avant) }}"
                 
+                # Si c'était Absence, faire cycle Arrêt puis Absence pour resync
                 - if:
                     - condition: template
                       value_template: "{{ states(repeat.item.mode_avant) == 'Absence' }}"
@@ -1680,11 +1915,21 @@ action:
                         entity_id: "{{ repeat.item.mode }}"
                       data:
                         option: 'Absence'
+                    
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item.nom }}"
+                        message: "{{ nom_utilisateur }} de retour → Mode Absence - resync Scheduler"
                 
-                - service: logbook.log
-                  data:
-                    name: "Absence Auto {{ repeat.item.nom }}"
-                    message: "{{ nom_utilisateur }} de retour → Restauration {{ states(repeat.item.mode_avant) }}"
+                # Log pour mode Présence
+                - if:
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode_avant) == 'Présence' }}"
+                  then:
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item.nom }}"
+                        message: "{{ nom_utilisateur }} de retour → Mode Présence restauré"
 
       # === UTILISATEUR 2 PART ===
       - conditions:
@@ -1719,6 +1964,12 @@ action:
                   data:
                     option: "{{ states(repeat.item.mode) }}"
                 
+                - service: input_number.set_value
+                  target:
+                    entity_id: "{{ repeat.item.consigne_avant }}"
+                  data:
+                    value: "{{ states(repeat.item.consigne) | float(19) }}"
+                
                 - if:
                     - condition: template
                       value_template: "{{ states(repeat.item.mode) == 'Présence' }}"
@@ -1733,6 +1984,15 @@ action:
                       data:
                         name: "Absence Auto {{ repeat.item.nom }}"
                         message: "{{ nom_utilisateur }} absent → Mode Présence → Absence"
+                
+                - if:
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode) in ['Manuel', 'Absence'] }}"
+                  then:
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item.nom }}"
+                        message: "{{ nom_utilisateur }} absent → Mode {{ states(repeat.item.mode) }} - consigne {{ states(repeat.item.consigne) }}°C sauvegardée"
 
       # === UTILISATEUR 2 REVIENT ===
       - conditions:
@@ -1759,6 +2019,21 @@ action:
                     - condition: template
                       value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
                 
+                - if:
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode_avant) == 'Manuel' }}"
+                  then:
+                    - service: input_number.set_value
+                      target:
+                        entity_id: "{{ repeat.item.consigne }}"
+                      data:
+                        value: "{{ states(repeat.item.consigne_avant) | float(19) }}"
+                    
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item.nom }}"
+                        message: "{{ nom_utilisateur }} de retour → Mode Manuel - consigne restaurée : {{ states(repeat.item.consigne_avant) }}°C"
+                
                 - service: input_select.select_option
                   target:
                     entity_id: "{{ repeat.item.mode }}"
@@ -1781,11 +2056,20 @@ action:
                         entity_id: "{{ repeat.item.mode }}"
                       data:
                         option: 'Absence'
+                    
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item.nom }}"
+                        message: "{{ nom_utilisateur }} de retour → Mode Absence - resync Scheduler"
                 
-                - service: logbook.log
-                  data:
-                    name: "Absence Auto {{ repeat.item.nom }}"
-                    message: "{{ nom_utilisateur }} de retour → Restauration {{ states(repeat.item.mode_avant) }}"
+                - if:
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode_avant) == 'Présence' }}"
+                  then:
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item.nom }}"
+                        message: "{{ nom_utilisateur }} de retour → Mode Présence restauré"
 
       # === UTILISATEUR 3 PART ===
       - conditions:
@@ -1820,6 +2104,12 @@ action:
                   data:
                     option: "{{ states(repeat.item.mode) }}"
                 
+                - service: input_number.set_value
+                  target:
+                    entity_id: "{{ repeat.item.consigne_avant }}"
+                  data:
+                    value: "{{ states(repeat.item.consigne) | float(19) }}"
+                
                 - if:
                     - condition: template
                       value_template: "{{ states(repeat.item.mode) == 'Présence' }}"
@@ -1834,6 +2124,15 @@ action:
                       data:
                         name: "Absence Auto {{ repeat.item.nom }}"
                         message: "{{ nom_utilisateur }} absent → Mode Présence → Absence"
+                
+                - if:
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode) in ['Manuel', 'Absence'] }}"
+                  then:
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item.nom }}"
+                        message: "{{ nom_utilisateur }} absent → Mode {{ states(repeat.item.mode) }} - consigne {{ states(repeat.item.consigne) }}°C sauvegardée"
 
       # === UTILISATEUR 3 REVIENT ===
       - conditions:
@@ -1860,6 +2159,21 @@ action:
                     - condition: template
                       value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
                 
+                - if:
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode_avant) == 'Manuel' }}"
+                  then:
+                    - service: input_number.set_value
+                      target:
+                        entity_id: "{{ repeat.item.consigne }}"
+                      data:
+                        value: "{{ states(repeat.item.consigne_avant) | float(19) }}"
+                    
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item.nom }}"
+                        message: "{{ nom_utilisateur }} de retour → Mode Manuel - consigne restaurée : {{ states(repeat.item.consigne_avant) }}°C"
+                
                 - service: input_select.select_option
                   target:
                     entity_id: "{{ repeat.item.mode }}"
@@ -1882,11 +2196,20 @@ action:
                         entity_id: "{{ repeat.item.mode }}"
                       data:
                         option: 'Absence'
+                    
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item.nom }}"
+                        message: "{{ nom_utilisateur }} de retour → Mode Absence - resync Scheduler"
                 
-                - service: logbook.log
-                  data:
-                    name: "Absence Auto {{ repeat.item.nom }}"
-                    message: "{{ nom_utilisateur }} de retour → Restauration {{ states(repeat.item.mode_avant) }}"
+                - if:
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode_avant) == 'Présence' }}"
+                  then:
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item.nom }}"
+                        message: "{{ nom_utilisateur }} de retour → Mode Présence restauré"
 
       # === UTILISATEUR 4 PART ===
       - conditions:
@@ -1921,6 +2244,12 @@ action:
                   data:
                     option: "{{ states(repeat.item.mode) }}"
                 
+                - service: input_number.set_value
+                  target:
+                    entity_id: "{{ repeat.item.consigne_avant }}"
+                  data:
+                    value: "{{ states(repeat.item.consigne) | float(19) }}"
+                
                 - if:
                     - condition: template
                       value_template: "{{ states(repeat.item.mode) == 'Présence' }}"
@@ -1935,6 +2264,15 @@ action:
                       data:
                         name: "Absence Auto {{ repeat.item.nom }}"
                         message: "{{ nom_utilisateur }} absent → Mode Présence → Absence"
+                
+                - if:
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode) in ['Manuel', 'Absence'] }}"
+                  then:
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item.nom }}"
+                        message: "{{ nom_utilisateur }} absent → Mode {{ states(repeat.item.mode) }} - consigne {{ states(repeat.item.consigne) }}°C sauvegardée"
 
       # === UTILISATEUR 4 REVIENT ===
       - conditions:
@@ -1961,6 +2299,21 @@ action:
                     - condition: template
                       value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
                 
+                - if:
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode_avant) == 'Manuel' }}"
+                  then:
+                    - service: input_number.set_value
+                      target:
+                        entity_id: "{{ repeat.item.consigne }}"
+                      data:
+                        value: "{{ states(repeat.item.consigne_avant) | float(19) }}"
+                    
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item.nom }}"
+                        message: "{{ nom_utilisateur }} de retour → Mode Manuel - consigne restaurée : {{ states(repeat.item.consigne_avant) }}°C"
+                
                 - service: input_select.select_option
                   target:
                     entity_id: "{{ repeat.item.mode }}"
@@ -1983,11 +2336,20 @@ action:
                         entity_id: "{{ repeat.item.mode }}"
                       data:
                         option: 'Absence'
+                    
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item.nom }}"
+                        message: "{{ nom_utilisateur }} de retour → Mode Absence - resync Scheduler"
                 
-                - service: logbook.log
-                  data:
-                    name: "Absence Auto {{ repeat.item.nom }}"
-                    message: "{{ nom_utilisateur }} de retour → Restauration {{ states(repeat.item.mode_avant) }}"
+                - if:
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode_avant) == 'Présence' }}"
+                  then:
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item.nom }}"
+                        message: "{{ nom_utilisateur }} de retour → Mode Présence restauré"
 
       # === UTILISATEUR 5 PART ===
       - conditions:
@@ -2022,6 +2384,12 @@ action:
                   data:
                     option: "{{ states(repeat.item.mode) }}"
                 
+                - service: input_number.set_value
+                  target:
+                    entity_id: "{{ repeat.item.consigne_avant }}"
+                  data:
+                    value: "{{ states(repeat.item.consigne) | float(19) }}"
+                
                 - if:
                     - condition: template
                       value_template: "{{ states(repeat.item.mode) == 'Présence' }}"
@@ -2036,6 +2404,15 @@ action:
                       data:
                         name: "Absence Auto {{ repeat.item.nom }}"
                         message: "{{ nom_utilisateur }} absent → Mode Présence → Absence"
+                
+                - if:
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode) in ['Manuel', 'Absence'] }}"
+                  then:
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item.nom }}"
+                        message: "{{ nom_utilisateur }} absent → Mode {{ states(repeat.item.mode) }} - consigne {{ states(repeat.item.consigne) }}°C sauvegardée"
 
       # === UTILISATEUR 5 REVIENT ===
       - conditions:
@@ -2062,6 +2439,21 @@ action:
                     - condition: template
                       value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
                 
+                - if:
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode_avant) == 'Manuel' }}"
+                  then:
+                    - service: input_number.set_value
+                      target:
+                        entity_id: "{{ repeat.item.consigne }}"
+                      data:
+                        value: "{{ states(repeat.item.consigne_avant) | float(19) }}"
+                    
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item.nom }}"
+                        message: "{{ nom_utilisateur }} de retour → Mode Manuel - consigne restaurée : {{ states(repeat.item.consigne_avant) }}°C"
+                
                 - service: input_select.select_option
                   target:
                     entity_id: "{{ repeat.item.mode }}"
@@ -2084,11 +2476,20 @@ action:
                         entity_id: "{{ repeat.item.mode }}"
                       data:
                         option: 'Absence'
+                    
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item.nom }}"
+                        message: "{{ nom_utilisateur }} de retour → Mode Absence - resync Scheduler"
                 
-                - service: logbook.log
-                  data:
-                    name: "Absence Auto {{ repeat.item.nom }}"
-                    message: "{{ nom_utilisateur }} de retour → Restauration {{ states(repeat.item.mode_avant) }}"
+                - if:
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode_avant) == 'Présence' }}"
+                  then:
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item.nom }}"
+                        message: "{{ nom_utilisateur }} de retour → Mode Présence restauré"
 
 mode: queued
 max: 10
