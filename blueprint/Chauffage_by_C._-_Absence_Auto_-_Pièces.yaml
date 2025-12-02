@@ -1,8 +1,8 @@
 blueprint:
-  name: Chauffage by C.  - Absence Auto - Par Pièce
+  name: Chauffage by C.   - Absence Auto - Par Pièce
   description: "
 
-    version Absence : v1.30 - 2025-11-30
+    version Absence : v1.31 - 2025-12-01
     
     auteur : Ciscoo45
     
@@ -11,7 +11,7 @@ blueprint:
     
     ## Description
     
-    Blueprint **optionnel** pour gérer automatiquement le mode Absence et réduire la consigne de chauffage quand les utilisateurs sont absents.  
+    Blueprint **optionnel** pour gérer automatiquement le mode Absence et réduire la consigne de chauffage quand les utilisateurs sont absents.   
     
     
     **Fonctionnement** :
@@ -39,7 +39,7 @@ blueprint:
     
     - Aucun nom d'utilisateur codé en dur
     
-    - Configuration centralisée dans `packages/absence_auto_config.yaml`
+    - Configuration centralisée dans `packages/chauffage_absence_auto_config_package.yaml`
     
     
     ___
@@ -65,7 +65,7 @@ blueprint:
     
     - Un group contenant tous les utilisateurs configuré dans `packages/absence_auto_config.yaml`
     
-    - Des entités `person. xxx` pour chaque utilisateur
+    - Des entités `person.xxxxxx` pour chaque utilisateur
     
     - Le blueprint `Gestion_Absence_Globale` (gestion des transitions présence/absence)
     
@@ -143,13 +143,13 @@ blueprint:
     
     ## Ordre de priorité des consignes
     
-    1.   **Boost actif** → `radiateur_xxx_boost_consigne` (ignore tout le reste)
+    1.    **Boost actif** → `radiateur_xxx_boost_consigne` (ignore tout le reste)
     
-    2.   **Absence Auto actif** → `radiateur_xxx_consigne_absence` (consigne Tempo ou base avec réduction selon mode)
+    2.    **Absence Auto actif** → `radiateur_xxx_consigne_absence` (consigne Tempo ou base avec réduction selon mode)
     
     3.  **Tempo actif** → `radiateur_xxx_consigne_tempo` (consigne base avec réduction HP)
     
-    4. **Normal** → `radiateur_xxx_consigne` (consigne programmée par Scheduler)
+    4.  **Normal** → `radiateur_xxx_consigne` (consigne programmée par Scheduler)
     
     
     ___
@@ -349,21 +349,15 @@ variables:
     {% else %}
       {{ states(consigne_base) | float(19) }}
     {% endif %}
-  
-  global_actif: "{{ is_state(switch_global, 'on') }}"
-  local_actif: "{{ is_state(switch_local, 'on') }}"
-  boost_on: >-
-    {% set boost_input = boost_actif_input %}
-    {% if boost_input not in ['', 'none', None] %}
-      {{ is_state(boost_input, 'on') }}
-    {% else %}
-      false
-    {% endif %}
-  
-  tous_absents: "{{ is_state(binary_sensor_tous_absents, 'on') }}"
+
+  # Mode actuel et avant absence
+  mode_actuel_valeur: "{{ states(mode_actuel) }}"
+  mode_avant_valeur: "{{ states(mode_avant_absence) }}"
+
+  # Principal utilisateur absent (calcul robuste)
   principal: "{{ states(utilisateur_principal) }}"
   principal_absent: >-
-    {% set entities = states('input_text.chauffage_absence_auto_utilisateurs_entities').split(',') %}
+    {% set entities = states('input_text.chauffage_absence_auto_utilisateurs_entities').split(',') if states('input_text.chauffage_absence_auto_utilisateurs_entities') not in ['unknown', 'unavailable'] else [] %}
     {% set noms = liste_utilisateurs %}
     {% set result = false %}
     {% for i in range(noms|length) %}
@@ -372,20 +366,16 @@ variables:
       {% endif %}
     {% endfor %}
     {{ result }}
-  si_principal: "{{ is_state(switch_si_principal_absent, 'on') }}"
 
-  # Mode actuel et avant absence
-  mode_actuel_valeur: "{{ states(mode_actuel) }}"
-  mode_avant_valeur: "{{ states(mode_avant_absence) }}"
-
-  # Calcul de la réduction
+  # Calcul de la réduction (CORRIGÉ : évaluation directe sans variables booléennes texte)
   reduction: >-
     {% set mode_actif = mode_actuel_valeur in ['Présence', 'Absence', 'Manuel'] %}
     {% set transition_presence_absence = (mode_avant_valeur == 'Présence' and mode_actuel_valeur == 'Absence') %}
+    {% set boost_on = boost_actif_input not in ['', 'none', None] and is_state(boost_actif_input, 'on') %}
     
-    {% if not global_actif %}
+    {% if not is_state(switch_global, 'on') %}
       0
-    {% elif not local_actif %}
+    {% elif not is_state(switch_local, 'on') %}
       0
     {% elif not mode_actif %}
       0
@@ -393,17 +383,17 @@ variables:
       0
     {% elif transition_presence_absence %}
       0
-    {% elif tous_absents %}
+    {% elif is_state(binary_sensor_tous_absents, 'on') %}
       {{ states(reduction_degrees) | float(2) }}
-    {% elif si_principal and principal_absent %}
+    {% elif is_state(switch_si_principal_absent, 'on') and (principal_absent | bool) %}
       {{ states(reduction_degrees) | float(2) }}
     {% else %}
       0
     {% endif %}
 
-  # Consignes finales (minimum 5°C)
-  consigne_absence_calc: "{{ [ consigne_source - reduction, 5 ] | max }}"
-  consigne_finale_calc: "{{ consigne_absence_calc }}"
+  # Consignes finales (minimum 5°C) - CORRIGÉ : cast float explicite
+  consigne_absence_calc: "{{ [ (consigne_source | float) - (reduction | float), 5 ] | max }}"
+  consigne_finale_calc: "{{ consigne_absence_calc | float }}"
 
 # ========= DÉCLENCHEURS =========
 trigger:
@@ -467,16 +457,16 @@ action:
     target:
       entity_id: !input consigne_absence
     data:
-      value: "{{ consigne_absence_calc }}"
+      value: "{{ consigne_absence_calc | float }}"
 
   # Mise à jour de la consigne finale
   - service: input_number.set_value
     target:
       entity_id: !input consigne_finale
     data:
-      value: "{{ consigne_finale_calc }}"
+      value: "{{ consigne_finale_calc | float }}"
 
-  # Log pour débogage
+  # Log pour débogage (CORRIGÉ : cast bool explicite)
   - service: logbook.log
     data:
       name: "Absence Auto {{ piece_name }}"
@@ -484,13 +474,13 @@ action:
         Mode: {{ mode_actuel_valeur }} (avant: {{ mode_avant_valeur }})
         Consigne: {{ consigne_source }}°C → {{ consigne_finale_calc }}°C
         (réduction: -{{ reduction }}°C
-        {% if not global_actif %}[Global OFF]{% endif %}
-        {% if not local_actif %}[Local OFF]{% endif %}
+        {% if not is_state(switch_global, 'on') %}[Global OFF]{% endif %}
+        {% if not is_state(switch_local, 'on') %}[Local OFF]{% endif %}
         {% if mode_actuel_valeur not in ['Présence', 'Absence', 'Manuel'] %}[Mode inactif: {{ mode_actuel_valeur }}]{% endif %}
-        {% if boost_on %}[Boost actif]{% endif %}
+        {% if boost_actif_input not in ['', 'none', None] and is_state(boost_actif_input, 'on') %}[Boost actif]{% endif %}
         {% if mode_avant_valeur == 'Présence' and mode_actuel_valeur == 'Absence' %}[Transition P→A, Scheduler gère]{% endif %}
-        {% if tous_absents %}[Tous absents]{% endif %}
-        {% if si_principal and principal_absent %}[{{ principal }} absent]{% endif %})
+        {% if is_state(binary_sensor_tous_absents, 'on') %}[Tous absents]{% endif %}
+        {% if is_state(switch_si_principal_absent, 'on') and (principal_absent | bool) %}[{{ principal }} absent]{% endif %})
 
 mode: queued
 max: 5
