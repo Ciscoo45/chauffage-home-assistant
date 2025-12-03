@@ -39,7 +39,7 @@ blueprint:
     
     - Aucun nom d'utilisateur codé en dur
     
-    - Configuration centralisée dans `packages/chauffage_absence_auto_config_package.yaml`
+    - Configuration centralisée dans `package/chauffage_absence_auto_config_package.yaml`
     
     
     ___
@@ -63,7 +63,7 @@ blueprint:
     
     Vous devez disposer de :
     
-    - Un group contenant tous les utilisateurs configuré dans `packages/absence_auto_config.yaml`
+    - Un group contenant tous les utilisateurs configuré dans `package/chauffage_absence_auto_config_package.yaml`
     
     - Des entités `person.xxxxxx` pour chaque utilisateur
     
@@ -73,6 +73,17 @@ blueprint:
     ___
     
     ## Helpers à créer
+    
+
+    **input_number (globaux - communs à toutes les pièces)** :
+
+    - `chauffage_absence_auto_reduction_degrees` : nombre de degrés de réduction (défaut: 2)
+     
+    - `dummy_tempo` (optionnel) : helper dummy si Tempo non utilisé (valeur fixe: 19)
+    
+    - `dummy_boost` (optionnel) : helper dummy si Boost non utilisé (toujours OFF)
+
+    
     
     Pour chaque pièce équipée, créer les helpers suivants (exemple pour SdB) :
     
@@ -143,9 +154,9 @@ blueprint:
     
     ## Ordre de priorité des consignes
     
-    1.    **Boost actif** → `radiateur_xxx_boost_consigne` (ignore tout le reste)
+    1.  **Boost actif** → `radiateur_xxx_boost_consigne` (ignore tout le reste)
     
-    2.    **Absence Auto actif** → `radiateur_xxx_consigne_absence` (consigne Tempo ou base avec réduction selon mode)
+    2.  **Absence Auto actif** → `radiateur_xxx_consigne_absence` (consigne Tempo ou base avec réduction selon mode)
     
     3.  **Tempo actif** → `radiateur_xxx_consigne_tempo` (consigne base avec réduction HP)
     
