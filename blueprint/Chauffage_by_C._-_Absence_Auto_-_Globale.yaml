@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Absence Auto - Globale
   description: "
 
-    version Absence Globale : v1.40 - 2025-11-30
+    version Absence Globale : v1.41 - 2025-12-03
     
     auteur : Ciscoo45
     
@@ -48,7 +48,7 @@ blueprint:
     
     - Support de **1 à 20 pièces** (1 obligatoire + 19 optionnelles)
     
-    - Utilise la liste des utilisateurs définie dans `package/chauffage_absence_auto_config_package.yaml`
+    - Utilise la liste des utilisateurs définie dans `package \ chauffage_absence_auto_config_package.yaml`
     
     - Fonctionne avec n'importe quel groupe de présence
     
@@ -61,7 +61,7 @@ blueprint:
     
     - Group `group.xxxx_utilisateurs` contenant tous les utilisateurs
     
-    - Binary sensors de présence (créés automatiquement par `template\chauffage_absence_auto_template.yaml`)
+    - Binary sensors de présence (créés automatiquement par `template \ chauffage_absence_auto_template.yaml`)
     
     - Tous les helpers Absence Auto créés pour chaque pièce
     
