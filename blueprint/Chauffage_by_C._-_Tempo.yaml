@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Gestion Tempo EDF
   description: "
 
-    version Tempo : v1.01 - 2025-01-21
+    version Tempo : v1.02 - 2025-12-04
     
     auteur : Ciscoo45
     
@@ -221,34 +221,30 @@ variables:
   tempo_global_on: "{{ is_state(switch_global, 'on') }}"
   tempo_local_on: "{{ is_state(switch_local, 'on') }}"
   boost_on: >-
-    {% if boost_actif_input != '' %}
-      {{ is_state(boost_actif_input, 'on') }}
-    {% else %}
-      false
-    {% endif %}
+    {{ boost_actif_input != '' and is_state(boost_actif_input, 'on') }}
 
   # Calcul de la réduction
   reduction: >-
     {% if not tempo_global_on %}
-      0
+      {{ 0. 0 }}
     {% elif not tempo_local_on %}
-      0
+      {{ 0.0 }}
     {% elif boost_on %}
-      0
+      {{ 0.0 }}
     {% elif 'Creuse' in periode %}
-      0
+      {{ 0.0 }}
     {% elif couleur == 'Bleu' %}
-      0
+      {{ 0.0 }}
     {% elif couleur == 'Blanc' %}
-      {{ states(reduction_blanc) | float(0) }}
+      {{ states(reduction_blanc) | float(0. 0) }}
     {% elif couleur == 'Rouge' %}
-      {{ states(reduction_rouge) | float(0) }}
+      {{ states(reduction_rouge) | float(0.0) }}
     {% else %}
-      0
+      {{ 0.0 }}
     {% endif %}
-
-  # Consigne finale (minimum 5°C)
+  
   consigne_finale: "{{ [ consigne_valeur - reduction, 5 ] | max }}"
+
 
 # ========= DÉCLENCHEURS =========
 trigger:
