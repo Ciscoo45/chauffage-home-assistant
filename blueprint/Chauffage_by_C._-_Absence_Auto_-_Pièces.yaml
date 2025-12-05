@@ -380,7 +380,7 @@ variables:
     {% set result = false %}
     {% for i in range(noms|length) %}
       {% if principal == noms[i] and i < entities|length and entities[i] not in ['', 'unknown', 'unavailable'] %}
-        {% if entities[i]. startswith('binary_sensor.') %}
+        {% if entities[i].startswith('binary_sensor.') %}
           {# Binary sensor presence_effective : ON = présent, OFF = absent #}
           {% set result = not is_state(entities[i], 'on') %}
         {% elif entities[i].startswith('person.') %}
