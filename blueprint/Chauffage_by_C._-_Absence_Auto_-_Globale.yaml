@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Absence Auto - Globale
   description: "
 
-    version Absence Globale : v1.41 - 2025-12-03
+    version Absence Globale : v1.42 - 2025-12-03
     
     auteur : Ciscoo45
     
@@ -11,7 +11,7 @@ blueprint:
     
     ## Description
     
-    Blueprint **compagnon** de la Gestion Absence Auto qui gère les **transitions** entre présence et absence. 
+    Blueprint **compagnon** de la Gestion Absence Auto qui gère les **transitions** entre Presence et Absence. 
     
     
     **Fonctionnement** :
@@ -24,13 +24,13 @@ blueprint:
     
     - Restaure le mode et la consigne au retour :
     
-      • **Présence** → repasser en Présence (Scheduler gère la consigne)
+      • **Absence si était en Presence avant le départ** → forcer cycle Arret (1s) puis Presence (resync Scheduler qui gère la consigne)
+
+      • **Absence si était déjà en Absence avant départ** → forcer cycle Arret (1s) puis Absence (resync Scheduler qui gère la consigne)
       
       • **Manuel** → repasser en Manuel + **restaurer la consigne sauvegardée**
-      
-      • **Absence** → forcer cycle Arrêt (1s) puis Absence (resync Scheduler)
     
-    - **Ne touche PAS** aux modes Hors-gel ou Arrêt
+    - **Ne touche PAS** aux modes Hors-gel ou Arret
     
     
     **Important** : Ce blueprint doit être créé **une seule fois** (pas par pièce). 
@@ -1667,9 +1667,9 @@ action:
                 - condition: template
                   value_template: "{{ repeat.item.local_actif not in ['', 'none', None] and is_state(repeat.item.local_actif, 'on') }}"
                 
-                # Vérifier que le mode est Présence, Absence ou Manuel
+                # Vérifier que le mode est Presence, Absence ou Manuel
                 - condition: template
-                  value_template: "{{ states(repeat.item.mode) in ['Présence', 'Absence', 'Manuel'] }}"
+                  value_template: "{{ states(repeat.item.mode) in ['Presence', 'Absence', 'Manuel'] }}"
                 
                 # Sauvegarder le mode actuel
                 - service: input_select.select_option
@@ -1685,10 +1685,10 @@ action:
                   data:
                     value: "{{ states(repeat.item.consigne) | float(19) }}"
                 
-                # Si mode était Présence, passer en Absence
+                # Si mode était Presence, passer en Absence
                 - if:
                     - condition: template
-                      value_template: "{{ states(repeat.item.mode) == 'Présence' }}"
+                      value_template: "{{ states(repeat.item.mode) == 'Presence' }}"
                   then:
                     - service: input_select.select_option
                       target:
@@ -1699,7 +1699,7 @@ action:
                     - service: logbook.log
                       data:
                         name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "Mode Présence → Absence (Scheduler gère la consigne)"
+                        message: "Mode Presence → Absence (Scheduler gère la consigne)"
                 
                 # Log pour mode Manuel ou Absence
                 - if:
@@ -1750,7 +1750,7 @@ action:
                   data:
                     option: "{{ states(repeat.item.mode_avant) }}"
                 
-                # Si c'était Absence, faire cycle Arrêt puis Absence pour resync
+                # Si c'était Absence, faire cycle Arret puis Absence pour resync
                 - if:
                     - condition: template
                       value_template: "{{ states(repeat.item.mode_avant) == 'Absence' }}"
@@ -1759,7 +1759,7 @@ action:
                       target:
                         entity_id: "{{ repeat.item.mode }}"
                       data:
-                        option: 'Arrêt'
+                        option: 'Arret'
                     - delay:
                         seconds: 1
                     - service: input_select.select_option
@@ -1773,15 +1773,15 @@ action:
                         name: "Absence Auto {{ repeat.item.nom }}"
                         message: "Mode Absence - resync Scheduler"
                 
-                # Log pour mode Présence
+                # Log pour mode Presence
                 - if:
                     - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) == 'Présence' }}"
+                      value_template: "{{ states(repeat.item.mode_avant) == 'Presence' }}"
                   then:
                     - service: logbook.log
                       data:
                         name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "Mode Présence restauré"
+                        message: "Mode Presence restauré"
 
       # === UTILISATEUR 1 PART ===
       - conditions:
@@ -1808,7 +1808,7 @@ action:
                     - condition: template
                       value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
                     - condition: template
-                      value_template: "{{ states(repeat.item.mode) in ['Présence', 'Absence', 'Manuel'] }}"
+                      value_template: "{{ states(repeat.item.mode) in ['Presence', 'Absence', 'Manuel'] }}"
                 
                 # Sauvegarder le mode actuel
                 - service: input_select.select_option
@@ -1824,10 +1824,10 @@ action:
                   data:
                     value: "{{ states(repeat.item.consigne) | float(19) }}"
                 
-                # Si mode était Présence, passer en Absence
+                # Si mode était Presence, passer en Absence
                 - if:
                     - condition: template
-                      value_template: "{{ states(repeat.item.mode) == 'Présence' }}"
+                      value_template: "{{ states(repeat.item.mode) == 'Presence' }}"
                   then:
                     - service: input_select.select_option
                       target:
@@ -1838,7 +1838,7 @@ action:
                     - service: logbook.log
                       data:
                         name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} absent → Mode Présence → Absence"
+                        message: "{{ nom_utilisateur }} absent → Mode Presence → Absence"
                 
                 # Log pour mode Manuel ou Absence
                 - if:
@@ -1898,7 +1898,7 @@ action:
                   data:
                     option: "{{ states(repeat.item.mode_avant) }}"
                 
-                # Si c'était Absence, faire cycle Arrêt puis Absence pour resync
+                # Si c'était Absence, faire cycle Arret puis Absence pour resync
                 - if:
                     - condition: template
                       value_template: "{{ states(repeat.item.mode_avant) == 'Absence' }}"
@@ -1907,7 +1907,7 @@ action:
                       target:
                         entity_id: "{{ repeat.item.mode }}"
                       data:
-                        option: 'Arrêt'
+                        option: 'Arret'
                     - delay:
                         seconds: 1
                     - service: input_select.select_option
@@ -1921,15 +1921,15 @@ action:
                         name: "Absence Auto {{ repeat.item.nom }}"
                         message: "{{ nom_utilisateur }} de retour → Mode Absence - resync Scheduler"
                 
-                # Log pour mode Présence
+                # Log pour mode Presence
                 - if:
                     - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) == 'Présence' }}"
+                      value_template: "{{ states(repeat.item.mode_avant) == 'Presence' }}"
                   then:
                     - service: logbook.log
                       data:
                         name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} de retour → Mode Présence restauré"
+                        message: "{{ nom_utilisateur }} de retour → Mode Presence restauré"
 
       # === UTILISATEUR 2 PART ===
       - conditions:
@@ -1956,7 +1956,7 @@ action:
                     - condition: template
                       value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
                     - condition: template
-                      value_template: "{{ states(repeat.item.mode) in ['Présence', 'Absence', 'Manuel'] }}"
+                      value_template: "{{ states(repeat.item.mode) in ['Presence', 'Absence', 'Manuel'] }}"
                 
                 - service: input_select.select_option
                   target:
@@ -1972,7 +1972,7 @@ action:
                 
                 - if:
                     - condition: template
-                      value_template: "{{ states(repeat.item.mode) == 'Présence' }}"
+                      value_template: "{{ states(repeat.item.mode) == 'Presence' }}"
                   then:
                     - service: input_select.select_option
                       target:
@@ -1983,7 +1983,7 @@ action:
                     - service: logbook.log
                       data:
                         name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} absent → Mode Présence → Absence"
+                        message: "{{ nom_utilisateur }} absent → Mode Presence → Absence"
                 
                 - if:
                     - condition: template
@@ -2048,7 +2048,7 @@ action:
                       target:
                         entity_id: "{{ repeat.item.mode }}"
                       data:
-                        option: 'Arrêt'
+                        option: 'Arret'
                     - delay:
                         seconds: 1
                     - service: input_select.select_option
@@ -2064,12 +2064,12 @@ action:
                 
                 - if:
                     - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) == 'Présence' }}"
+                      value_template: "{{ states(repeat.item.mode_avant) == 'Presence' }}"
                   then:
                     - service: logbook.log
                       data:
                         name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} de retour → Mode Présence restauré"
+                        message: "{{ nom_utilisateur }} de retour → Mode Presence restauré"
 
       # === UTILISATEUR 3 PART ===
       - conditions:
@@ -2096,7 +2096,7 @@ action:
                     - condition: template
                       value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
                     - condition: template
-                      value_template: "{{ states(repeat.item.mode) in ['Présence', 'Absence', 'Manuel'] }}"
+                      value_template: "{{ states(repeat.item.mode) in ['Presence', 'Absence', 'Manuel'] }}"
                 
                 - service: input_select.select_option
                   target:
@@ -2112,7 +2112,7 @@ action:
                 
                 - if:
                     - condition: template
-                      value_template: "{{ states(repeat.item.mode) == 'Présence' }}"
+                      value_template: "{{ states(repeat.item.mode) == 'Presence' }}"
                   then:
                     - service: input_select.select_option
                       target:
@@ -2123,7 +2123,7 @@ action:
                     - service: logbook.log
                       data:
                         name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} absent → Mode Présence → Absence"
+                        message: "{{ nom_utilisateur }} absent → Mode Presence → Absence"
                 
                 - if:
                     - condition: template
@@ -2188,7 +2188,7 @@ action:
                       target:
                         entity_id: "{{ repeat.item.mode }}"
                       data:
-                        option: 'Arrêt'
+                        option: 'Arret'
                     - delay:
                         seconds: 1
                     - service: input_select.select_option
@@ -2204,12 +2204,12 @@ action:
                 
                 - if:
                     - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) == 'Présence' }}"
+                      value_template: "{{ states(repeat.item.mode_avant) == 'Presence' }}"
                   then:
                     - service: logbook.log
                       data:
                         name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} de retour → Mode Présence restauré"
+                        message: "{{ nom_utilisateur }} de retour → Mode Presence restauré"
 
       # === UTILISATEUR 4 PART ===
       - conditions:
@@ -2236,7 +2236,7 @@ action:
                     - condition: template
                       value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
                     - condition: template
-                      value_template: "{{ states(repeat.item.mode) in ['Présence', 'Absence', 'Manuel'] }}"
+                      value_template: "{{ states(repeat.item.mode) in ['Presence', 'Absence', 'Manuel'] }}"
                 
                 - service: input_select.select_option
                   target:
@@ -2252,7 +2252,7 @@ action:
                 
                 - if:
                     - condition: template
-                      value_template: "{{ states(repeat.item.mode) == 'Présence' }}"
+                      value_template: "{{ states(repeat.item.mode) == 'Presence' }}"
                   then:
                     - service: input_select.select_option
                       target:
@@ -2263,7 +2263,7 @@ action:
                     - service: logbook.log
                       data:
                         name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} absent → Mode Présence → Absence"
+                        message: "{{ nom_utilisateur }} absent → Mode Presence → Absence"
                 
                 - if:
                     - condition: template
@@ -2328,7 +2328,7 @@ action:
                       target:
                         entity_id: "{{ repeat.item.mode }}"
                       data:
-                        option: 'Arrêt'
+                        option: 'Arret'
                     - delay:
                         seconds: 1
                     - service: input_select.select_option
@@ -2344,12 +2344,12 @@ action:
                 
                 - if:
                     - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) == 'Présence' }}"
+                      value_template: "{{ states(repeat.item.mode_avant) == 'Presence' }}"
                   then:
                     - service: logbook.log
                       data:
                         name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} de retour → Mode Présence restauré"
+                        message: "{{ nom_utilisateur }} de retour → Mode Presence restauré"
 
       # === UTILISATEUR 5 PART ===
       - conditions:
@@ -2376,7 +2376,7 @@ action:
                     - condition: template
                       value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
                     - condition: template
-                      value_template: "{{ states(repeat.item.mode) in ['Présence', 'Absence', 'Manuel'] }}"
+                      value_template: "{{ states(repeat.item.mode) in ['Presence', 'Absence', 'Manuel'] }}"
                 
                 - service: input_select.select_option
                   target:
@@ -2392,7 +2392,7 @@ action:
                 
                 - if:
                     - condition: template
-                      value_template: "{{ states(repeat.item.mode) == 'Présence' }}"
+                      value_template: "{{ states(repeat.item.mode) == 'Presence' }}"
                   then:
                     - service: input_select.select_option
                       target:
@@ -2403,7 +2403,7 @@ action:
                     - service: logbook.log
                       data:
                         name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} absent → Mode Présence → Absence"
+                        message: "{{ nom_utilisateur }} absent → Mode Presence → Absence"
                 
                 - if:
                     - condition: template
@@ -2468,7 +2468,7 @@ action:
                       target:
                         entity_id: "{{ repeat.item.mode }}"
                       data:
-                        option: 'Arrêt'
+                        option: 'Arret'
                     - delay:
                         seconds: 1
                     - service: input_select.select_option
@@ -2484,12 +2484,12 @@ action:
                 
                 - if:
                     - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) == 'Présence' }}"
+                      value_template: "{{ states(repeat.item.mode_avant) == 'Presence' }}"
                   then:
                     - service: logbook.log
                       data:
                         name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} de retour → Mode Présence restauré"
+                        message: "{{ nom_utilisateur }} de retour → Mode Presence restauré"
 
 mode: queued
 max: 10
