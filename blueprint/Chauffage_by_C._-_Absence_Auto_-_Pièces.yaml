@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C.   - Absence Auto - Par Pièce
   description: "
 
-    version Absence : v1.32 - 2025-12-05
+    version Absence : v1.33 - 2025-12-06
     
     auteur : Ciscoo45
     
@@ -18,11 +18,11 @@ blueprint:
     
     - Calcule en temps réel une **consigne finale** selon le contexte :
     
-      • **Mode Présence → Absence** : Pas de réduction (Scheduler gère la consigne Absence)
+      • **Mode Presence → Absence** : Pas de réduction (Scheduler gère la consigne Absence)
       
       • **Mode Absence ou Manuel** : Réduction de -2°C supplémentaire
       
-      • **Mode Hors-gel ou Arrêt** : Aucune action
+      • **Mode Hors-gel ou Arret** : Aucune action
     
     - N'applique **aucune réduction** si :
     
@@ -271,7 +271,7 @@ blueprint:
     # === REDUCTION ===
     reduction_degrees:
       name: ➖ Réduction en absence
-      description: "Nombre de degrés à retirer en mode Absence ou Manuel (pas appliqué si passage Présence → Absence)"
+      description: "Nombre de degrés à retirer en mode Absence ou Manuel (pas appliqué si passage Presence → Absence)"
       default: input_number.chauffage_absence_auto_reduction_degrees
       selector:
         entity:
@@ -393,8 +393,8 @@ variables:
 
   # Calcul de la réduction (CORRIGÉ : évaluation directe sans variables booléennes texte)
   reduction: >-
-    {% set mode_actif = mode_actuel_valeur in ['Présence', 'Absence', 'Manuel'] %}
-    {% set transition_presence_absence = (mode_avant_valeur == 'Présence' and mode_actuel_valeur == 'Absence') %}
+    {% set mode_actif = mode_actuel_valeur in ['Presence', 'Absence', 'Manuel'] %}
+    {% set transition_presence_absence = (mode_avant_valeur == 'Presence' and mode_actuel_valeur == 'Absence') %}
     {% set boost_on = boost_actif_input not in ['', 'none', None] and is_state(boost_actif_input, 'on') %}
     
     {% if not is_state(switch_global, 'on') %}
@@ -500,9 +500,9 @@ action:
         (réduction: -{{ reduction }}°C
         {% if not is_state(switch_global, 'on') %}[Global OFF]{% endif %}
         {% if not is_state(switch_local, 'on') %}[Local OFF]{% endif %}
-        {% if mode_actuel_valeur not in ['Présence', 'Absence', 'Manuel'] %}[Mode inactif: {{ mode_actuel_valeur }}]{% endif %}
+        {% if mode_actuel_valeur not in ['Presence', 'Absence', 'Manuel'] %}[Mode inactif: {{ mode_actuel_valeur }}]{% endif %}
         {% if boost_actif_input not in ['', 'none', None] and is_state(boost_actif_input, 'on') %}[Boost actif]{% endif %}
-        {% if mode_avant_valeur == 'Présence' and mode_actuel_valeur == 'Absence' %}[Transition P→A, Scheduler gère]{% endif %}
+        {% if mode_avant_valeur == 'Presence' and mode_actuel_valeur == 'Absence' %}[Transition P→A, Scheduler gère]{% endif %}
         {% if is_state(binary_sensor_tous_absents, 'on') %}[Tous absents]{% endif %}
         {% if is_state(switch_si_principal_absent, 'on') and (principal_absent | bool) %}[{{ principal }} absent]{% endif %})
 
