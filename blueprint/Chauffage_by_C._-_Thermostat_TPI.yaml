@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Thermostat TPI
   description: "
 
-    version TPI : v.1.03 - 2025-11-16
+    version TPI : v.1.10 - 2025-12-08
     
     auteur : Ciscoo45
     
@@ -83,7 +83,7 @@ blueprint:
     Pour un poêle à granule, la puissance devrait être recalculée toutes les 30 min par exemple.
     
 
-    Le thermostat prend en charge la fenêtre et il coupe le radiateur quand cette dernière est ouverte.
+    Le thermostat prend en charge les ouvertures (une fenêtre obligatoire, autres fenêtres ou portes optionnels) et il coupe le radiateur quand les ouvrants ne sont pas refermés.
     
     ___
         
@@ -125,9 +125,9 @@ blueprint:
     
     - sonde de température intérieure
     
-    - sonde de température extérieure (sonde météo Internet possible mais attention en cas d'indisponibilité)
+    - sonde de température extérieure (sonde météo Internet possible mais attention en cas d'indisponibilité - voir le readme pour un exemple de capteur Internet de température ressenti consolidé avec redondance locale)
     
-    - capteur d'ouverture par fenêtre (peut être virtualisé si absent), à regrouper si multiples
+    - capteur d'ouverture par fenêtre (peut être virtualisé si absent - optionnel : jusqu'à 4 ouvrants fenêtres ou portes)
     
     
     Plus d'infos sur les choix possibles et le codage des sondes virtuelles dans le readme du projet.
@@ -190,7 +190,7 @@ blueprint:
     
     - **multiples programmations possibles pour le mode Presence** (ou Absence) d'une pièce : par ex. un schedule semaine et un schedule WE & férié, avec le mode Absence qui peut être aligné à 1 ou 2 degrés en-dessous
     
-    - gestion automatique de la **bascule en planif WE et jours fériés** (ajout possible aussi de période de congés ou télétravail à la maison) : via l'utilisation de l'intégration Workday et des programmations multiples
+    - gestion automatique de la **bascule en planif WE et jours fériés** (ajout possible aussi de période de congés ou télétravail à la maison) : via l'utilisation de l'intégration Workday et des programmations multiples (groupe à créer pour le fonctionnement de la carte, voir readme)
     
     
     . **blueprint Thermostat TPI** :
@@ -206,6 +206,8 @@ blueprint:
     - température du mode Hors-gel ajustable (curseur dans le BluePrint)
 
     - correction : bug pouvant apparaître sur les versions 2024 et avant, lors du passage en position Arrêt, où le chauffage pouvait continuer à fonctionner dans certains scénarios (délai ajouté avant de désactiver le Blueprint Thermostat TPI, afin qu'il ait le temps de calculer la fin de chauffe)
+
+    - multiples ouvrants possible pour une pièce (fenêtres, portes...)
     
     
     . **autres parties du projet Gestion bout en bout du chauffage** :
@@ -221,7 +223,7 @@ blueprint:
     
     - graph ApexChart sur 6h et 24h, avec temp ext
     
-    - et plus à venir on espère
+    - et plus à venir
     
     ___
     
