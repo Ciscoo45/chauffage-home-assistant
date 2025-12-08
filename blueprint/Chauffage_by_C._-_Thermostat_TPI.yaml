@@ -294,7 +294,7 @@ blueprint:
           
     entity_consigne:
       name: Consigne
-      description: Température de Consigne - note : Consigne calculée si module Tempo optionnel utilisé, et Consgne Finale si module Absence Auto utilisé (input_number)
+      description: "Température de Consigne - note : Consigne calculée si module Tempo optionnel utilisé, et Consgne Finale si module Absence Auto utilisé (input_number)"
       selector:
         entity:
           domain: input_number
