@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Thermostat TPI
   description: "
 
-    version TPI : v.1.10 - 2025-12-08
+    version TPI : v.1.11 - 2025-12-08
     
     auteur : Ciscoo45
     
@@ -294,7 +294,7 @@ blueprint:
           
     entity_consigne:
       name: Consigne
-      description: "Température de Consigne - note : Consigne calculée si module Tempo optionnel utilisé, et Consgne Finale si module Absence Auto utilisé (input_number)"
+      description: "Température de Consigne - note : **Consigne calculée** si module Tempo optionnel utilisé, ou **Consigne Finale** si module Absence Auto utilisé. (input_number)"
       selector:
         entity:
           domain: input_number
