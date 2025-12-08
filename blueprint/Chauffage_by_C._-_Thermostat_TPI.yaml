@@ -294,7 +294,7 @@ blueprint:
           
     entity_consigne:
       name: Consigne
-      description: Température de Consigne (input_number)
+      description: Température de Consigne - note : Consigne calculée si module Tempo optionnel utilisé, et Consgne Finale si module Absence Auto utilisé (input_number)
       selector:
         entity:
           domain: input_number
@@ -309,20 +309,21 @@ blueprint:
           
     entity_temp_int:
       name: Température intérieure
-      description: Sonde de mesure de la Température Intérieure (sensor)
+      description: Sonde de mesure de la Température Intérieure de la pièce (sensor)
       selector:
         entity:
           domain: sensor
           device_class: temperature
-          
-    entity_fenetre:
-      name: Fenêtre(s)
-      description: (groupe de) Capteur(s) d'ouverture de fenêtre(s) (binary_sensor)
+
+    entity_fenetres:
+      name: Ouverture(s)
+      description: "Capteur(s) d'ouverture (fenêtre, porte, velux...)\n\nUn capteur obligatoire (virtuel possible). Plusieurs capteurs possible.\n\nLe chauffage sera coupé si au moins un des ces ouvrants reste ouvert pendant 1 minute. (binary_sensor)"
       selector:
         entity:
           domain: binary_sensor
           device_class: opening
-          
+          multiple: true
+                 
     entity_puissance:
       name: Puissance
       description: Puissance de chauffe calculée (input_number)
@@ -362,6 +363,8 @@ blueprint:
         boolean: {}
 
 
+
+
 # Récupération des paramètres
 variables:
 
@@ -369,9 +372,22 @@ variables:
   coeff_t: !input coeff_t
   entity_temp_int: !input entity_temp_int
   entity_temp_ext: !input entity_temp_ext
-  entity_fenetre: !input entity_fenetre
+  entity_fenetres: !input entity_fenetres
   entity_mode_climate: !input entity_mode_climate
   entity_mode_inverse: !input entity_mode_inverse
+
+  # Calcul : au moins une ouverture ouverte depuis > 1min ? 
+  fenetre_ouverte: >-
+    {% set ouverte_depuis_1min = namespace(valeur=false) %}
+    {% for capteur in entity_fenetres %}
+      {% if is_state(capteur, 'on') %}
+        {% set duree = now() - states[capteur].last_changed %}
+        {% if duree.total_seconds() >= 60 %}
+          {% set ouverte_depuis_1min.valeur = true %}
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+    {{ ouverte_depuis_1min.valeur }}
 
   # Choix du service à appeler
   service_on: >
@@ -396,7 +412,6 @@ variables:
       {%- endif -%}
     {%- endif -%}
 
-  # Données associées à l'appel de service
   service_on_data: >
     {%- if entity_mode_climate -%}
       {%- if entity_mode_inverse -%}
@@ -420,14 +435,32 @@ variables:
     {%- endif -%}
 
 
+
+
 # Evènements déclencheurs
 trigger:
+
+  # toutes les 10min
   - platform: time_pattern
     minutes: "/10"
+
+  # ou si la température de consigne change
   - platform: state
     entity_id: !input entity_consigne
+
+  # ou si une fenêtre/porte reste ouverte plus d'1min
   - platform: state
-    entity_id: !input entity_fenetre
+    entity_id: !input entity_fenetres
+    to: "on"
+    for:
+      minutes: 1
+
+  # ou si un ouvrant qui était resté ouvert est désormais refermé
+  - platform: state
+    entity_id: !input entity_fenetres
+    to: "off"
+
+
 
 
 # Actions déclenchées par le Blueprint
@@ -440,12 +473,16 @@ action:
       consigne: "{{states(entity_consigne)}}"
       temp_ext: '{{ states(entity_temp_ext) }}'
       temp_int: '{{ states(entity_temp_int) }}'
-      fenetre: '{{states(entity_fenetre)}}'     
       puissance: >-
-        {%set val = coeff_c * (consigne - temp_int) + coeff_t * (consigne -
-        temp_ext) %}  {% if val > 1 and fenetre == 'off' %} {% set val = 100 %}  {% elif val < 0 or
-        fenetre == 'on' %} {% set val = 0 %}  {% else %} {% set val = ( (val *
-        100) | round(0)) %} {% endif %} {{val}}
+        {% set val = coeff_c * (consigne | float - temp_int | float) + coeff_t * (consigne | float - temp_ext | float) %}
+        {% if val > 1 and not fenetre_ouverte %}
+          {% set val = 100 %}
+        {% elif val < 0 or fenetre_ouverte %}
+          {% set val = 0 %}
+        {% else %}
+          {% set val = ((val * 100) | round(0)) %}
+        {% endif %}
+        {{ val }}
       temps_chauffe: '{{ puissance * 6 }}'
 
   # Mise à jour de l'index de chauffe
@@ -492,4 +529,3 @@ action:
 
 
 mode: restart
- 
