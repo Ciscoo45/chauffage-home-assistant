@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Gestion Tempo EDF
   description: |
 
-    version Tempo : v1.04 - 2025-12-04
+    version Tempo : v1.05 - 2025-12-13
     
     auteur : Ciscoo45
     
@@ -218,8 +218,8 @@ variables:
   consigne_valeur: "{{ states(consigne_base) | float(19) }}"
   couleur: "{{ states(sensor_couleur) }}"
   periode: "{{ states(sensor_periode) }}"
-  tempo_global_on: "{{ is_state(switch_global, 'on') }}"
-  tempo_local_on: "{{ is_state(switch_local, 'on') }}"
+  tempo_global_on: "{{ is_state(switch_global, 'on') | bool }}"
+  tempo_local_on: "{{ is_state(switch_local, 'on') | bool }}"
   boost_on: >-
     {{ boost_actif_input != '' and is_state(boost_actif_input, 'on') }}
 
