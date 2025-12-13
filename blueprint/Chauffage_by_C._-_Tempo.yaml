@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Gestion Tempo EDF
   description: "
 
-    version Tempo : v1.02 - 2025-12-04
+    version Tempo : v1.03 - 2025-12-04
     
     auteur : Ciscoo45
     
@@ -226,7 +226,7 @@ variables:
   # Calcul de la réduction
   reduction: >-
     {% if not tempo_global_on %}
-      {{ 0. 0 }}
+      {{ 0.0 }}
     {% elif not tempo_local_on %}
       {{ 0.0 }}
     {% elif boost_on %}
@@ -236,7 +236,7 @@ variables:
     {% elif couleur == 'Bleu' %}
       {{ 0.0 }}
     {% elif couleur == 'Blanc' %}
-      {{ states(reduction_blanc) | float(0. 0) }}
+      {{ states(reduction_blanc) | float(0.0) }}
     {% elif couleur == 'Rouge' %}
       {{ states(reduction_rouge) | float(0.0) }}
     {% else %}
