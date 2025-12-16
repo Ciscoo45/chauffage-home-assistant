@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Thermostat TPI
   description: "
 
-    version TPI : v.1.11 - 2025-12-08
+    version TPI : v.1.12 - 2025-12-16
     
     auteur : Ciscoo45
     
@@ -330,6 +330,13 @@ blueprint:
       selector:
         entity:
           domain: input_number
+    
+    entity_etat_ouverture:
+      name: État ouverture (pour affichage carte)
+      description: "Input text qui sera mis à jour par le blueprint pour refléter l'état des ouvertures (input_text)"
+      selector:
+        entity:
+          domain: input_text
           
     entity_chauffage:
       name: Chauffage
@@ -466,6 +473,7 @@ trigger:
 # Actions déclenchées par le Blueprint
 action:
 
+
   # Récupération des données et calcul de la puissance de chauffe
   - alias: récupération des données
     variables:
@@ -484,6 +492,34 @@ action:
         {% endif %}
         {{ val }}
       temps_chauffe: '{{ puissance * 6 }}'
+
+
+  # Mise à jour de l'état des ouvertures pour affichage sur la carte Lovelace
+  - alias: Met à jour l'état des ouvertures
+    service: input_text.set_value
+    target:
+      entity_id: ! input entity_etat_ouverture
+    data:
+      value: >-
+        {% set ouverte = namespace(valeur=false) %}
+        {% set ouverte_1min = namespace(valeur=false) %}
+        {% for capteur in entity_fenetres %}
+          {% if is_state(capteur, 'on') %}
+            {% set ouverte.valeur = true %}
+            {% set duree = now() - states[capteur]. last_changed %}
+            {% if duree. total_seconds() >= 60 %}
+              {% set ouverte_1min.valeur = true %}
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+        {% if ouverte_1min.valeur %}
+          chauffage_coupe
+        {% elif ouverte.valeur %}
+          ouverture_detectee
+        {% else %}
+          fermee
+        {% endif %}
+
 
   # Mise à jour de l'index de chauffe
   - alias: Met à jour l'indicateur de puissance
