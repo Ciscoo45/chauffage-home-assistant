@@ -151,8 +151,8 @@ blueprint:
         entity:
           domain: input_select
     piece_1_consigne:
-      name: 🌡️ Pièce 1 - Consigne (pièce)
-      description: "Consigne actuelle (ex: input_number.radiateur_sdb_consigne_finale)"
+      name: 🌡️ Pièce 1 - Consigne finale (pièce)
+      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
       selector:
         entity:
           domain: input_number
