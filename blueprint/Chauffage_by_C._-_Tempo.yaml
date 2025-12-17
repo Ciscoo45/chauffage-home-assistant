@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Gestion Tempo EDF
   description: |
 
-    version Tempo : v1.05 - 2025-12-13
+    version Tempo : v1.06 - 2025-12-17
     
     auteur : Ciscoo45
     
@@ -133,10 +133,11 @@ blueprint:
       selector:
         text:
 
-    # === SENSORS TEMPO ===
+    # === GLOBAL - SENSORS TEMPO ===
     sensor_couleur:
       name: 🎨 Sensor Couleur Tempo
       description: "Sensor indiquant la couleur du jour actuel (Bleu / Blanc / Rouge)"
+      default: sensor.tempo_couleur_actuelle_texte
       selector:
         entity:
           domain: sensor
@@ -144,13 +145,14 @@ blueprint:
     sensor_periode:
       name: ⚡ Sensor Période tarifaire
       description: "Sensor indiquant la période actuelle (Heures Creuses / Heures Pleines)"
+      default: sensor.tempo_periode_actuelle
       selector:
         entity:
           domain: sensor
 
-    # === CONSIGNES ===
+    # === par PIECE - CONSIGNES ===
     consigne_base:
-      name: 🌡️ Consigne de base
+      name: 🌡️ Consigne de base de chauffe pour la pièce
       description: "Consigne définie par l'utilisateur (modifiée via UI/modes/schedules)"
       selector:
         entity:
@@ -163,7 +165,7 @@ blueprint:
         entity:
           domain: input_number
 
-    # === RÉDUCTIONS ===
+    # === par PIECE - RÉDUCTIONS ===
     reduction_blanc:
       name: ⚪ Réduction jours Blanc (HP)
       description: "Nombre de degrés à retirer en HP des jours blancs"
@@ -178,14 +180,16 @@ blueprint:
         entity:
           domain: input_number
 
-    # === ACTIVATION ===
+    # === GLOBAL - ACTIVATION ===
     switch_global:
       name: 🌐 Switch global Tempo
       description: "Désactive toutes les corrections Tempo (toutes pièces) si OFF"
+      default: input_boolean.tempo_global_actif
       selector:
         entity:
           domain: input_boolean
 
+    # === par PIECE - ACTIVATION ===
     switch_local:
       name: 🏠 Switch local Tempo
       description: "Désactive les corrections Tempo pour cette pièce si OFF"
