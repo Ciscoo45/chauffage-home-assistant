@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Gestion Tempo EDF
   description: |
 
-    version Tempo : v1.06 - 2025-12-17
+    version Tempo : v1.07 - 2025-12-17
     
     auteur : Ciscoo45
     
@@ -159,8 +159,8 @@ blueprint:
           domain: input_number
 
     consigne_calculee:
-      name: 🎯 Consigne calculée (sortie)
-      description: "Consigne corrigée selon Tempo (à utiliser dans Thermostat TPI et Pilotage)"
+      name: 🎯 Consigne calculée Tempo Eco (sortie)
+      description: "Consigne corrigée selon Tempo Eco (à utiliser aussi désormais dans Thermostat TPI et Pilotage)"
       selector:
         entity:
           domain: input_number
@@ -191,7 +191,7 @@ blueprint:
 
     # === par PIECE - ACTIVATION ===
     switch_local:
-      name: 🏠 Switch local Tempo
+      name: 🏠 Switch Gestion Tempo local
       description: "Désactive les corrections Tempo pour cette pièce si OFF"
       selector:
         entity:
