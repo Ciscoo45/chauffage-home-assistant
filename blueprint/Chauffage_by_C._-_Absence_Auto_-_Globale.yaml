@@ -73,7 +73,7 @@ blueprint:
   source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/main/blueprint/Chauffage_by_C._-_Absence_Auto_-_Globale.yaml
   domain: automation
 
-    input:
+  input:
     # === GLOBAL - DETECTION PRESENCE ===
     binary_sensor_tous_absents:
       name: 👥 Chauffage Tous Utilisateurs Absents
