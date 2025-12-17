@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C.   - Absence Auto - Par Pièce
   description: "
 
-    version Absence : v1.33 - 2025-12-06
+    version Absence : v1.34 - 2025-12-17
     
     auteur : Ciscoo45
     
@@ -182,7 +182,7 @@ blueprint:
       selector:
         text:
 
-    # === DETECTION PRESENCE ===
+    # === GLOBAL - DETECTION PRESENCE ===
     binary_sensor_tous_absents:
       name: 👥 Sensor Tous Absents
       description: "Binary sensor indiquant si tous les utilisateurs sont absents"
@@ -231,17 +231,17 @@ blueprint:
         entity:
           domain: binary_sensor
 
-    # === CONSIGNES ===
+    # === par PIECE - CONSIGNES ===
     consigne_base:
-      name: 🌡️ Consigne de base
+      name: 🌡️ Consigne de base de chauffe pour la pièce
       description: "Consigne définie par l'utilisateur (modifiée via UI/modes/schedules)"
       selector:
         entity:
           domain: input_number
 
     consigne_tempo:
-      name: 🎯 Consigne Tempo (optionnel)
-      description: "Consigne corrigée par Tempo (laisser vide si Tempo non utilisé)"
+      name: 🎯 Consigne Calculée Tempo (optionnel)
+      description: "Consigne corrigée par Tempo Eco (laisser vide si Tempo non utilisé)"
       default: ""
       selector:
         entity:
@@ -268,67 +268,69 @@ blueprint:
         entity:
           domain: input_number
 
-    # === REDUCTION ===
+    # === par PIECE - REDUCTION ===
     reduction_degrees:
-      name: ➖ Réduction en absence
+      name: ➖ Réduction de teméprature en absence
       description: "Nombre de degrés à retirer en mode Absence ou Manuel (pas appliqué si passage Presence → Absence)"
       default: input_number.chauffage_absence_auto_reduction_degrees
       selector:
         entity:
           domain: input_number
 
-    # === ACTIVATION ===
+    # === GLOBAL - ACTIVATION ===
     switch_global:
-      name: 🌐 Switch global Absence Auto
+      name: 🌐 Switch Gestion Absence Auto Globale
       description: "Désactive toutes les corrections Absence (toutes pièces) si OFF"
       default: input_boolean.chauffage_absence_auto_global_actif
       selector:
         entity:
           domain: input_boolean
-
+          
+    # === par PIECE - ACTIVATION ===
     switch_local:
-      name: 🏠 Switch local Absence Auto
+      name: 🏠 Gestion Absence Auto (pièce)
       description: "Désactive les corrections Absence pour cette pièce si OFF"
       selector:
         entity:
           domain: input_boolean
 
     switch_si_principal_absent:
-      name: 👤 Réduire si utilisateur principal absent
+      name: 👤 Absence si utilisateur principal absent (pièce)
       description: "Appliquer la réduction même si d'autres utilisateurs sont présents"
       selector:
         entity:
           domain: input_boolean
 
     utilisateur_principal:
-      name: 👤 Input Select - Utilisateur principal de la pièce
+      name: 👤 Utilisateur principal (pièce)
       description: "Choix de l'utilisateur (utilise la liste définie dans chauffage_absence_auto_config_package.yaml)"
       selector:
         entity:
           domain: input_select
 
-    # === MODE ===
+    # === par PIECE - MODE ===
     mode_actuel:
-      name: 🎚️ Mode radiateur actuel
-      description: "Mode de chauffage actuel (Presence, Absence, Manuel, Hors-gel, Arret)"
+      name: 🎚️ Radiateur mode (pièce)
+      description: "Mode de chauffage, choisi via la carte Lovelace (Presence, Absence, Manuel, Hors-gel, Arret)"
       selector:
         entity:
           domain: input_select
 
     mode_avant_absence:
-      name: 💾 Mode avant absence
-      description: "Stockage du mode avant départ (pour restauration ET calcul réduction)"
+      name: 💾 Mode Avant Absence (pièce)
+      description: "Stockage du mode actif avant départ (pour restauration ET calcul réduction)"
       selector:
         entity:
           domain: input_select
 
     boost_actif:
-      name: ⚡ Boost actif (optionnel)
+      name: ⚡ Boost (optionnel)
       description: "Si le boost est ON, ignore les corrections Absence pour cette pièce"
       default: ""
       selector:
         entity:
           domain: input_boolean
+
 
 # ========= VARIABLES =========
 variables:
