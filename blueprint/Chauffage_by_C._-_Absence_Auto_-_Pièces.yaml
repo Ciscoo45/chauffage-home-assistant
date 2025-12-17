@@ -240,7 +240,7 @@ blueprint:
           domain: input_number
 
     consigne_tempo:
-      name: 🎯 Consigne Calculée Tempo (optionnel)
+      name: 🎯 Consigne Calculée Tempo Eco (optionnel)
       description: "Consigne corrigée par Tempo Eco (laisser vide si Tempo non utilisé)"
       default: ""
       selector:
@@ -248,21 +248,21 @@ blueprint:
           domain: input_number
 
     consigne_absence:
-      name: ❄️ Consigne Absence (sortie)
-      description: "Consigne corrigée selon Absence Auto (calculée par ce blueprint)"
+      name: ❄️ Consigne Absence (pièce)
+      description: "Consigne corrigée selon Absence Auto (sortie, calculée par ce blueprint)"
       selector:
         entity:
           domain: input_number
 
     consigne_finale:
-      name: ✅ Consigne Finale (sortie)
-      description: "Consigne finale à utiliser dans Thermostat TPI et Pilotage"
+      name: ✅ Consigne Finale (pièce)
+      description: "Consigne finale à utiliser dans Thermostat TPI et Pilotage (sortie)"
       selector:
         entity:
           domain: input_number
 
     consigne_avant_absence:
-      name: 💾 Consigne Avant Absence
+      name: 💾 Consigne Avant Absence (pièce)
       description: "Stockage de la consigne avant départ (pour restauration)"
       selector:
         entity:
