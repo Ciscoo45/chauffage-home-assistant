@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Absence Auto - Globale
   description: "
 
-    version Absence Globale : v1.44 - 2025-12-17
+    version Absence Globale : v1.45 - 2025-12-17
     
     auteur : Ciscoo45
     
@@ -73,7 +73,7 @@ blueprint:
   source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/main/blueprint/Chauffage_by_C._-_Absence_Auto_-_Globale.yaml
   domain: automation
 
-  input:
+    input:
     # === GLOBAL - DETECTION PRESENCE ===
     binary_sensor_tous_absents:
       name: 👥 Chauffage Tous Utilisateurs Absents
@@ -157,7 +157,7 @@ blueprint:
         entity:
           domain: input_number
     piece_1_consigne_avant:
-      name: 💾 Pièce 1 - Consigne Avant Absence (pièce) 
+      name: 💾 Pièce 1 - Consigne Avant Absence (pièce)
       description: "Sauvegarde de la consigne avant absence"
       selector:
         entity:
@@ -185,7 +185,7 @@ blueprint:
     # Pièce 2
     piece_2_nom:
       name: 🏠 Pièce 2 - Nom de la pièce (pièce)
-      description: "Nom de la 2nd pièce (optionnel, laisser vide si non utilisé)"
+      description: "Nom de la 2ième pièce (optionnel, laisser vide si non utilisé)"
       default: ""
       selector:
         text:
@@ -211,7 +211,7 @@ blueprint:
         entity:
           domain: input_number
     piece_2_consigne_avant:
-      name: 💾 Pièce 2 - Consigne Avant Absence (pièce) 
+      name: 💾 Pièce 2 - Consigne Avant Absence (pièce)
       description: "Sauvegarde de la consigne avant absence"
       default: ""
       selector:
@@ -254,37 +254,43 @@ blueprint:
         entity:
           domain: input_select
     piece_3_mode_avant:
-      name: 💾 Pièce 3 - Mode Avant
+      name: 💾 Pièce 3 - Mode Avant Absence (pièce)
+      description: "Sauvegarde du mode avant absence"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_3_consigne:
-      name: 🌡️ Pièce 3 - Consigne
+      name: 🌡️ Pièce 3 - Consigne finale (pièce)
+      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_3_consigne_avant:
-      name: 💾 Pièce 3 - Consigne Avant
+      name: 💾 Pièce 3 - Consigne Avant Absence (pièce)
+      description: "Sauvegarde de la consigne avant absence"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_3_utilisateur:
-      name: 👤 Pièce 3 - Utilisateur Principal
+      name: 👤 Pièce 3 - Utilisateur Principal (pièce)
+      description: "Utilisateur principal pour cette pièce"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_3_si_principal:
-      name: 👤 Pièce 3 - Si Principal Absent
+      name: 👤 Pièce 3 - Absence si utilisateur principal absent (pièce)
+      description: "Activer réduction si utilisateur principal absent"
       default: ""
       selector:
         entity:
           domain: input_boolean
     piece_3_local_actif:
-      name: 🏠 Pièce 3 - Local Actif
+      name: 🏠 Pièce 3 - Gestion Absence Auto (pièce)
+      description: "Gestion Absence Auto active pour cette pièce"
       default: ""
       selector:
         entity:
@@ -305,37 +311,43 @@ blueprint:
         entity:
           domain: input_select
     piece_4_mode_avant:
-      name: 💾 Pièce 4 - Mode Avant
+      name: 💾 Pièce 4 - Mode Avant Absence (pièce)
+      description: "Sauvegarde du mode avant absence"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_4_consigne:
-      name: 🌡️ Pièce 4 - Consigne
+      name: 🌡️ Pièce 4 - Consigne finale (pièce)
+      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_4_consigne_avant:
-      name: 💾 Pièce 4 - Consigne Avant
+      name: 💾 Pièce 4 - Consigne Avant Absence (pièce)
+      description: "Sauvegarde de la consigne avant absence"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_4_utilisateur:
-      name: 👤 Pièce 4 - Utilisateur Principal
+      name: 👤 Pièce 4 - Utilisateur Principal (pièce)
+      description: "Utilisateur principal pour cette pièce"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_4_si_principal:
-      name: 👤 Pièce 4 - Si Principal Absent
+      name: 👤 Pièce 4 - Absence si utilisateur principal absent (pièce)
+      description: "Activer réduction si utilisateur principal absent"
       default: ""
       selector:
         entity:
           domain: input_boolean
     piece_4_local_actif:
-      name: 🏠 Pièce 4 - Local Actif
+      name: 🏠 Pièce 4 - Gestion Absence Auto (pièce)
+      description: "Gestion Absence Auto active pour cette pièce"
       default: ""
       selector:
         entity:
@@ -356,37 +368,43 @@ blueprint:
         entity:
           domain: input_select
     piece_5_mode_avant:
-      name: 💾 Pièce 5 - Mode Avant
+      name: 💾 Pièce 5 - Mode Avant Absence (pièce)
+      description: "Sauvegarde du mode avant absence"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_5_consigne:
-      name: 🌡️ Pièce 5 - Consigne
+      name: 🌡️ Pièce 5 - Consigne finale (pièce)
+      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_5_consigne_avant:
-      name: 💾 Pièce 5 - Consigne Avant
+      name: 💾 Pièce 5 - Consigne Avant Absence (pièce)
+      description: "Sauvegarde de la consigne avant absence"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_5_utilisateur:
-      name: 👤 Pièce 5 - Utilisateur Principal
+      name: 👤 Pièce 5 - Utilisateur Principal (pièce)
+      description: "Utilisateur principal pour cette pièce"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_5_si_principal:
-      name: 👤 Pièce 5 - Si Principal Absent
+      name: 👤 Pièce 5 - Absence si utilisateur principal absent (pièce)
+      description: "Activer réduction si utilisateur principal absent"
       default: ""
       selector:
         entity:
           domain: input_boolean
     piece_5_local_actif:
-      name: 🏠 Pièce 5 - Local Actif
+      name: 🏠 Pièce 5 - Gestion Absence Auto (pièce)
+      description: "Gestion Absence Auto active pour cette pièce"
       default: ""
       selector:
         entity:
@@ -400,43 +418,50 @@ blueprint:
       selector:
         text:
     piece_6_mode:
-      name: 🏠 Pièce 6 - Mode
+      name: 🏠 Pièce 6 - Radiateur Mode (pièce)
+      description: "Mode de chauffage actuel"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_6_mode_avant:
-      name: 💾 Pièce 6 - Mode Avant
+      name: 💾 Pièce 6 - Mode Avant Absence (pièce)
+      description: "Sauvegarde du mode avant absence"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_6_consigne:
-      name: 🌡️ Pièce 6 - Consigne
+      name: 🌡️ Pièce 6 - Consigne finale (pièce)
+      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_6_consigne_avant:
-      name: 💾 Pièce 6 - Consigne Avant
+      name: 💾 Pièce 6 - Consigne Avant Absence (pièce)
+      description: "Sauvegarde de la consigne avant absence"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_6_utilisateur:
-      name: 👤 Pièce 6 - Utilisateur Principal
+      name: 👤 Pièce 6 - Utilisateur Principal (pièce)
+      description: "Utilisateur principal pour cette pièce"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_6_si_principal:
-      name: 👤 Pièce 6 - Si Principal Absent
+      name: 👤 Pièce 6 - Absence si utilisateur principal absent (pièce)
+      description: "Activer réduction si utilisateur principal absent"
       default: ""
       selector:
         entity:
           domain: input_boolean
     piece_6_local_actif:
-      name: 🏠 Pièce 6 - Local Actif
+      name: 🏠 Pièce 6 - Gestion Absence Auto (pièce)
+      description: "Gestion Absence Auto active pour cette pièce"
       default: ""
       selector:
         entity:
@@ -450,43 +475,50 @@ blueprint:
       selector:
         text:
     piece_7_mode:
-      name: 🏠 Pièce 7 - Mode
+      name: 🏠 Pièce 7 - Radiateur Mode (pièce)
+      description: "Mode de chauffage actuel"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_7_mode_avant:
-      name: 💾 Pièce 7 - Mode Avant
+      name: 💾 Pièce 7 - Mode Avant Absence (pièce)
+      description: "Sauvegarde du mode avant absence"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_7_consigne:
-      name: 🌡️ Pièce 7 - Consigne
+      name: 🌡️ Pièce 7 - Consigne finale (pièce)
+      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_7_consigne_avant:
-      name: 💾 Pièce 7 - Consigne Avant
+      name: 💾 Pièce 7 - Consigne Avant Absence (pièce)
+      description: "Sauvegarde de la consigne avant absence"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_7_utilisateur:
-      name: 👤 Pièce 7 - Utilisateur Principal
+      name: 👤 Pièce 7 - Utilisateur Principal (pièce)
+      description: "Utilisateur principal pour cette pièce"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_7_si_principal:
-      name: 👤 Pièce 7 - Si Principal Absent
+      name: 👤 Pièce 7 - Absence si utilisateur principal absent (pièce)
+      description: "Activer réduction si utilisateur principal absent"
       default: ""
       selector:
         entity:
           domain: input_boolean
     piece_7_local_actif:
-      name: 🏠 Pièce 7 - Local Actif
+      name: 🏠 Pièce 7 - Gestion Absence Auto (pièce)
+      description: "Gestion Absence Auto active pour cette pièce"
       default: ""
       selector:
         entity:
@@ -500,43 +532,50 @@ blueprint:
       selector:
         text:
     piece_8_mode:
-      name: 🏠 Pièce 8 - Mode
+      name: 🏠 Pièce 8 - Radiateur Mode (pièce)
+      description: "Mode de chauffage actuel"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_8_mode_avant:
-      name: 💾 Pièce 8 - Mode Avant
+      name: 💾 Pièce 8 - Mode Avant Absence (pièce)
+      description: "Sauvegarde du mode avant absence"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_8_consigne:
-      name: 🌡️ Pièce 8 - Consigne
+      name: 🌡️ Pièce 8 - Consigne finale (pièce)
+      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_8_consigne_avant:
-      name: 💾 Pièce 8 - Consigne Avant
+      name: 💾 Pièce 8 - Consigne Avant Absence (pièce)
+      description: "Sauvegarde de la consigne avant absence"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_8_utilisateur:
-      name: 👤 Pièce 8 - Utilisateur Principal
+      name: 👤 Pièce 8 - Utilisateur Principal (pièce)
+      description: "Utilisateur principal pour cette pièce"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_8_si_principal:
-      name: 👤 Pièce 8 - Si Principal Absent
+      name: 👤 Pièce 8 - Absence si utilisateur principal absent (pièce)
+      description: "Activer réduction si utilisateur principal absent"
       default: ""
       selector:
         entity:
           domain: input_boolean
     piece_8_local_actif:
-      name: 🏠 Pièce 8 - Local Actif
+      name: 🏠 Pièce 8 - Gestion Absence Auto (pièce)
+      description: "Gestion Absence Auto active pour cette pièce"
       default: ""
       selector:
         entity:
@@ -550,43 +589,50 @@ blueprint:
       selector:
         text:
     piece_9_mode:
-      name: 🏠 Pièce 9 - Mode
+      name: 🏠 Pièce 9 - Radiateur Mode (pièce)
+      description: "Mode de chauffage actuel"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_9_mode_avant:
-      name: 💾 Pièce 9 - Mode Avant
+      name: 💾 Pièce 9 - Mode Avant Absence (pièce)
+      description: "Sauvegarde du mode avant absence"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_9_consigne:
-      name: 🌡️ Pièce 9 - Consigne
+      name: 🌡️ Pièce 9 - Consigne finale (pièce)
+      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_9_consigne_avant:
-      name: 💾 Pièce 9 - Consigne Avant
+      name: 💾 Pièce 9 - Consigne Avant Absence (pièce)
+      description: "Sauvegarde de la consigne avant absence"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_9_utilisateur:
-      name: 👤 Pièce 9 - Utilisateur Principal
+      name: 👤 Pièce 9 - Utilisateur Principal (pièce)
+      description: "Utilisateur principal pour cette pièce"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_9_si_principal:
-      name: 👤 Pièce 9 - Si Principal Absent
+      name: 👤 Pièce 9 - Absence si utilisateur principal absent (pièce)
+      description: "Activer réduction si utilisateur principal absent"
       default: ""
       selector:
         entity:
           domain: input_boolean
     piece_9_local_actif:
-      name: 🏠 Pièce 9 - Local Actif
+      name: 🏠 Pièce 9 - Gestion Absence Auto (pièce)
+      description: "Gestion Absence Auto active pour cette pièce"
       default: ""
       selector:
         entity:
@@ -600,43 +646,50 @@ blueprint:
       selector:
         text:
     piece_10_mode:
-      name: 🏠 Pièce 10 - Mode
+      name: 🏠 Pièce 10 - Radiateur Mode (pièce)
+      description: "Mode de chauffage actuel"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_10_mode_avant:
-      name: 💾 Pièce 10 - Mode Avant
+      name: 💾 Pièce 10 - Mode Avant Absence (pièce)
+      description: "Sauvegarde du mode avant absence"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_10_consigne:
-      name: 🌡️ Pièce 10 - Consigne
+      name: 🌡️ Pièce 10 - Consigne finale (pièce)
+      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_10_consigne_avant:
-      name: 💾 Pièce 10 - Consigne Avant
+      name: 💾 Pièce 10 - Consigne Avant Absence (pièce)
+      description: "Sauvegarde de la consigne avant absence"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_10_utilisateur:
-      name: 👤 Pièce 10 - Utilisateur Principal
+      name: 👤 Pièce 10 - Utilisateur Principal (pièce)
+      description: "Utilisateur principal pour cette pièce"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_10_si_principal:
-      name: 👤 Pièce 10 - Si Principal Absent
+      name: 👤 Pièce 10 - Absence si utilisateur principal absent (pièce)
+      description: "Activer réduction si utilisateur principal absent"
       default: ""
       selector:
         entity:
           domain: input_boolean
     piece_10_local_actif:
-      name: 🏠 Pièce 10 - Local Actif
+      name: 🏠 Pièce 10 - Gestion Absence Auto (pièce)
+      description: "Gestion Absence Auto active pour cette pièce"
       default: ""
       selector:
         entity:
@@ -650,43 +703,50 @@ blueprint:
       selector:
         text:
     piece_11_mode:
-      name: 🏠 Pièce 11 - Mode
+      name: 🏠 Pièce 11 - Radiateur Mode (pièce)
+      description: "Mode de chauffage actuel"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_11_mode_avant:
-      name: 💾 Pièce 11 - Mode Avant
+      name: 💾 Pièce 11 - Mode Avant Absence (pièce)
+      description: "Sauvegarde du mode avant absence"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_11_consigne:
-      name: 🌡️ Pièce 11 - Consigne
+      name: 🌡️ Pièce 11 - Consigne finale (pièce)
+      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_11_consigne_avant:
-      name: 💾 Pièce 11 - Consigne Avant
+      name: 💾 Pièce 11 - Consigne Avant Absence (pièce)
+      description: "Sauvegarde de la consigne avant absence"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_11_utilisateur:
-      name: 👤 Pièce 11 - Utilisateur Principal
+      name: 👤 Pièce 11 - Utilisateur Principal (pièce)
+      description: "Utilisateur principal pour cette pièce"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_11_si_principal:
-      name: 👤 Pièce 11 - Si Principal Absent
+      name: 👤 Pièce 11 - Absence si utilisateur principal absent (pièce)
+      description: "Activer réduction si utilisateur principal absent"
       default: ""
       selector:
         entity:
           domain: input_boolean
     piece_11_local_actif:
-      name: 🏠 Pièce 11 - Local Actif
+      name: 🏠 Pièce 11 - Gestion Absence Auto (pièce)
+      description: "Gestion Absence Auto active pour cette pièce"
       default: ""
       selector:
         entity:
@@ -700,43 +760,50 @@ blueprint:
       selector:
         text:
     piece_12_mode:
-      name: 🏠 Pièce 12 - Mode
+      name: 🏠 Pièce 12 - Radiateur Mode (pièce)
+      description: "Mode de chauffage actuel"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_12_mode_avant:
-      name: 💾 Pièce 12 - Mode Avant
+      name: 💾 Pièce 12 - Mode Avant Absence (pièce)
+      description: "Sauvegarde du mode avant absence"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_12_consigne:
-      name: 🌡️ Pièce 12 - Consigne
+      name: 🌡️ Pièce 12 - Consigne finale (pièce)
+      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_12_consigne_avant:
-      name: 💾 Pièce 12 - Consigne Avant
+      name: 💾 Pièce 12 - Consigne Avant Absence (pièce)
+      description: "Sauvegarde de la consigne avant absence"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_12_utilisateur:
-      name: 👤 Pièce 12 - Utilisateur Principal
+      name: 👤 Pièce 12 - Utilisateur Principal (pièce)
+      description: "Utilisateur principal pour cette pièce"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_12_si_principal:
-      name: 👤 Pièce 12 - Si Principal Absent
+      name: 👤 Pièce 12 - Absence si utilisateur principal absent (pièce)
+      description: "Activer réduction si utilisateur principal absent"
       default: ""
       selector:
         entity:
           domain: input_boolean
     piece_12_local_actif:
-      name: 🏠 Pièce 12 - Local Actif
+      name: 🏠 Pièce 12 - Gestion Absence Auto (pièce)
+      description: "Gestion Absence Auto active pour cette pièce"
       default: ""
       selector:
         entity:
@@ -750,43 +817,50 @@ blueprint:
       selector:
         text:
     piece_13_mode:
-      name: 🏠 Pièce 13 - Mode
+      name: 🏠 Pièce 13 - Radiateur Mode (pièce)
+      description: "Mode de chauffage actuel"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_13_mode_avant:
-      name: 💾 Pièce 13 - Mode Avant
+      name: 💾 Pièce 13 - Mode Avant Absence (pièce)
+      description: "Sauvegarde du mode avant absence"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_13_consigne:
-      name: 🌡️ Pièce 13 - Consigne
+      name: 🌡️ Pièce 13 - Consigne finale (pièce)
+      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_13_consigne_avant:
-      name: 💾 Pièce 13 - Consigne Avant
+      name: 💾 Pièce 13 - Consigne Avant Absence (pièce)
+      description: "Sauvegarde de la consigne avant absence"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_13_utilisateur:
-      name: 👤 Pièce 13 - Utilisateur Principal
+      name: 👤 Pièce 13 - Utilisateur Principal (pièce)
+      description: "Utilisateur principal pour cette pièce"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_13_si_principal:
-      name: 👤 Pièce 13 - Si Principal Absent
+      name: 👤 Pièce 13 - Absence si utilisateur principal absent (pièce)
+      description: "Activer réduction si utilisateur principal absent"
       default: ""
       selector:
         entity:
           domain: input_boolean
     piece_13_local_actif:
-      name: 🏠 Pièce 13 - Local Actif
+      name: 🏠 Pièce 13 - Gestion Absence Auto (pièce)
+      description: "Gestion Absence Auto active pour cette pièce"
       default: ""
       selector:
         entity:
@@ -800,43 +874,50 @@ blueprint:
       selector:
         text:
     piece_14_mode:
-      name: 🏠 Pièce 14 - Mode
+      name: 🏠 Pièce 14 - Radiateur Mode (pièce)
+      description: "Mode de chauffage actuel"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_14_mode_avant:
-      name: 💾 Pièce 14 - Mode Avant
+      name: 💾 Pièce 14 - Mode Avant Absence (pièce)
+      description: "Sauvegarde du mode avant absence"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_14_consigne:
-      name: 🌡️ Pièce 14 - Consigne
+      name: 🌡️ Pièce 14 - Consigne finale (pièce)
+      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_14_consigne_avant:
-      name: 💾 Pièce 14 - Consigne Avant
+      name: 💾 Pièce 14 - Consigne Avant Absence (pièce)
+      description: "Sauvegarde de la consigne avant absence"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_14_utilisateur:
-      name: 👤 Pièce 14 - Utilisateur Principal
+      name: 👤 Pièce 14 - Utilisateur Principal (pièce)
+      description: "Utilisateur principal pour cette pièce"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_14_si_principal:
-      name: 👤 Pièce 14 - Si Principal Absent
+      name: 👤 Pièce 14 - Absence si utilisateur principal absent (pièce)
+      description: "Activer réduction si utilisateur principal absent"
       default: ""
       selector:
         entity:
           domain: input_boolean
     piece_14_local_actif:
-      name: 🏠 Pièce 14 - Local Actif
+      name: 🏠 Pièce 14 - Gestion Absence Auto (pièce)
+      description: "Gestion Absence Auto active pour cette pièce"
       default: ""
       selector:
         entity:
@@ -850,43 +931,50 @@ blueprint:
       selector:
         text:
     piece_15_mode:
-      name: 🏠 Pièce 15 - Mode
+      name: 🏠 Pièce 15 - Radiateur Mode (pièce)
+      description: "Mode de chauffage actuel"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_15_mode_avant:
-      name: 💾 Pièce 15 - Mode Avant
+      name: 💾 Pièce 15 - Mode Avant Absence (pièce)
+      description: "Sauvegarde du mode avant absence"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_15_consigne:
-      name: 🌡️ Pièce 15 - Consigne
+      name: 🌡️ Pièce 15 - Consigne finale (pièce)
+      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_15_consigne_avant:
-      name: 💾 Pièce 15 - Consigne Avant
+      name: 💾 Pièce 15 - Consigne Avant Absence (pièce)
+      description: "Sauvegarde de la consigne avant absence"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_15_utilisateur:
-      name: 👤 Pièce 15 - Utilisateur Principal
+      name: 👤 Pièce 15 - Utilisateur Principal (pièce)
+      description: "Utilisateur principal pour cette pièce"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_15_si_principal:
-      name: 👤 Pièce 15 - Si Principal Absent
+      name: 👤 Pièce 15 - Absence si utilisateur principal absent (pièce)
+      description: "Activer réduction si utilisateur principal absent"
       default: ""
       selector:
         entity:
           domain: input_boolean
     piece_15_local_actif:
-      name: 🏠 Pièce 15 - Local Actif
+      name: 🏠 Pièce 15 - Gestion Absence Auto (pièce)
+      description: "Gestion Absence Auto active pour cette pièce"
       default: ""
       selector:
         entity:
@@ -900,43 +988,50 @@ blueprint:
       selector:
         text:
     piece_16_mode:
-      name: 🏠 Pièce 16 - Mode
+      name: 🏠 Pièce 16 - Radiateur Mode (pièce)
+      description: "Mode de chauffage actuel"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_16_mode_avant:
-      name: 💾 Pièce 16 - Mode Avant
+      name: 💾 Pièce 16 - Mode Avant Absence (pièce)
+      description: "Sauvegarde du mode avant absence"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_16_consigne:
-      name: 🌡️ Pièce 16 - Consigne
+      name: 🌡️ Pièce 16 - Consigne finale (pièce)
+      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_16_consigne_avant:
-      name: 💾 Pièce 16 - Consigne Avant
+      name: 💾 Pièce 16 - Consigne Avant Absence (pièce)
+      description: "Sauvegarde de la consigne avant absence"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_16_utilisateur:
-      name: 👤 Pièce 16 - Utilisateur Principal
+      name: 👤 Pièce 16 - Utilisateur Principal (pièce)
+      description: "Utilisateur principal pour cette pièce"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_16_si_principal:
-      name: 👤 Pièce 16 - Si Principal Absent
+      name: 👤 Pièce 16 - Absence si utilisateur principal absent (pièce)
+      description: "Activer réduction si utilisateur principal absent"
       default: ""
       selector:
         entity:
           domain: input_boolean
     piece_16_local_actif:
-      name: 🏠 Pièce 16 - Local Actif
+      name: 🏠 Pièce 16 - Gestion Absence Auto (pièce)
+      description: "Gestion Absence Auto active pour cette pièce"
       default: ""
       selector:
         entity:
@@ -950,43 +1045,50 @@ blueprint:
       selector:
         text:
     piece_17_mode:
-      name: 🏠 Pièce 17 - Mode
+      name: 🏠 Pièce 17 - Radiateur Mode (pièce)
+      description: "Mode de chauffage actuel"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_17_mode_avant:
-      name: 💾 Pièce 17 - Mode Avant
+      name: 💾 Pièce 17 - Mode Avant Absence (pièce)
+      description: "Sauvegarde du mode avant absence"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_17_consigne:
-      name: 🌡️ Pièce 17 - Consigne
+      name: 🌡️ Pièce 17 - Consigne finale (pièce)
+      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_17_consigne_avant:
-      name: 💾 Pièce 17 - Consigne Avant
+      name: 💾 Pièce 17 - Consigne Avant Absence (pièce)
+      description: "Sauvegarde de la consigne avant absence"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_17_utilisateur:
-      name: 👤 Pièce 17 - Utilisateur Principal
+      name: 👤 Pièce 17 - Utilisateur Principal (pièce)
+      description: "Utilisateur principal pour cette pièce"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_17_si_principal:
-      name: 👤 Pièce 17 - Si Principal Absent
+      name: 👤 Pièce 17 - Absence si utilisateur principal absent (pièce)
+      description: "Activer réduction si utilisateur principal absent"
       default: ""
       selector:
         entity:
           domain: input_boolean
     piece_17_local_actif:
-      name: 🏠 Pièce 17 - Local Actif
+      name: 🏠 Pièce 17 - Gestion Absence Auto (pièce)
+      description: "Gestion Absence Auto active pour cette pièce"
       default: ""
       selector:
         entity:
@@ -1000,43 +1102,50 @@ blueprint:
       selector:
         text:
     piece_18_mode:
-      name: 🏠 Pièce 18 - Mode
+      name: 🏠 Pièce 18 - Radiateur Mode (pièce)
+      description: "Mode de chauffage actuel"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_18_mode_avant:
-      name: 💾 Pièce 18 - Mode Avant
+      name: 💾 Pièce 18 - Mode Avant Absence (pièce)
+      description: "Sauvegarde du mode avant absence"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_18_consigne:
-      name: 🌡️ Pièce 18 - Consigne
+      name: 🌡️ Pièce 18 - Consigne finale (pièce)
+      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_18_consigne_avant:
-      name: 💾 Pièce 18 - Consigne Avant
+      name: 💾 Pièce 18 - Consigne Avant Absence (pièce)
+      description: "Sauvegarde de la consigne avant absence"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_18_utilisateur:
-      name: 👤 Pièce 18 - Utilisateur Principal
+      name: 👤 Pièce 18 - Utilisateur Principal (pièce)
+      description: "Utilisateur principal pour cette pièce"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_18_si_principal:
-      name: 👤 Pièce 18 - Si Principal Absent
+      name: 👤 Pièce 18 - Absence si utilisateur principal absent (pièce)
+      description: "Activer réduction si utilisateur principal absent"
       default: ""
       selector:
         entity:
           domain: input_boolean
     piece_18_local_actif:
-      name: 🏠 Pièce 18 - Local Actif
+      name: 🏠 Pièce 18 - Gestion Absence Auto (pièce)
+      description: "Gestion Absence Auto active pour cette pièce"
       default: ""
       selector:
         entity:
@@ -1050,43 +1159,50 @@ blueprint:
       selector:
         text:
     piece_19_mode:
-      name: 🏠 Pièce 19 - Mode
+      name: 🏠 Pièce 19 - Radiateur Mode (pièce)
+      description: "Mode de chauffage actuel"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_19_mode_avant:
-      name: 💾 Pièce 19 - Mode Avant
+      name: 💾 Pièce 19 - Mode Avant Absence (pièce)
+      description: "Sauvegarde du mode avant absence"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_19_consigne:
-      name: 🌡️ Pièce 19 - Consigne
+      name: 🌡️ Pièce 19 - Consigne finale (pièce)
+      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_19_consigne_avant:
-      name: 💾 Pièce 19 - Consigne Avant
+      name: 💾 Pièce 19 - Consigne Avant Absence (pièce)
+      description: "Sauvegarde de la consigne avant absence"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_19_utilisateur:
-      name: 👤 Pièce 19 - Utilisateur Principal
+      name: 👤 Pièce 19 - Utilisateur Principal (pièce)
+      description: "Utilisateur principal pour cette pièce"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_19_si_principal:
-      name: 👤 Pièce 19 - Si Principal Absent
+      name: 👤 Pièce 19 - Absence si utilisateur principal absent (pièce)
+      description: "Activer réduction si utilisateur principal absent"
       default: ""
       selector:
         entity:
           domain: input_boolean
     piece_19_local_actif:
-      name: 🏠 Pièce 19 - Local Actif
+      name: 🏠 Pièce 19 - Gestion Absence Auto (pièce)
+      description: "Gestion Absence Auto active pour cette pièce"
       default: ""
       selector:
         entity:
@@ -1100,43 +1216,50 @@ blueprint:
       selector:
         text:
     piece_20_mode:
-      name: 🏠 Pièce 20 - Mode
+      name: 🏠 Pièce 20 - Radiateur Mode (pièce)
+      description: "Mode de chauffage actuel"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_20_mode_avant:
-      name: 💾 Pièce 20 - Mode Avant
+      name: 💾 Pièce 20 - Mode Avant Absence (pièce)
+      description: "Sauvegarde du mode avant absence"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_20_consigne:
-      name: 🌡️ Pièce 20 - Consigne
+      name: 🌡️ Pièce 20 - Consigne finale (pièce)
+      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_20_consigne_avant:
-      name: 💾 Pièce 20 - Consigne Avant
+      name: 💾 Pièce 20 - Consigne Avant Absence (pièce)
+      description: "Sauvegarde de la consigne avant absence"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_20_utilisateur:
-      name: 👤 Pièce 20 - Utilisateur Principal
+      name: 👤 Pièce 20 - Utilisateur Principal (pièce)
+      description: "Utilisateur principal pour cette pièce"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_20_si_principal:
-      name: 👤 Pièce 20 - Si Principal Absent
+      name: 👤 Pièce 20 - Absence si utilisateur principal absent (pièce)
+      description: "Activer réduction si utilisateur principal absent"
       default: ""
       selector:
         entity:
           domain: input_boolean
     piece_20_local_actif:
-      name: 🏠 Pièce 20 - Local Actif
+      name: 🏠 Pièce 20 - Gestion Absence Auto (pièce)
+      description: "Gestion Absence Auto active pour cette pièce"
       default: ""
       selector:
         entity:
