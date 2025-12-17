@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Thermostat TPI
   description: "
 
-    version TPI : v.1.12 - 2025-12-16
+    version TPI : v.1.13 - 2025-12-17
     
     auteur : Ciscoo45
     
@@ -13,7 +13,7 @@ blueprint:
     
     de :
   
-    **Thermostat TPI (Time Propertional & Integral)** (12/2021)
+    **Thermostat TPI (Time Proportional & Integral)** (12/2021)
     
     par **Argonaute**
     
@@ -91,7 +91,7 @@ blueprint:
                     
     Thermostat principalement proportionnel, prenant en compte la température extérieure, accompagné de deux coefficients, fixés dans la config et permettant d'adapter la chauffe :
     
-    - à la taile du chauffage pour la pièce
+    - à la taille du chauffage pour la pièce
     
     - à l'isolation et l'inertie de la pièce
     
@@ -283,9 +283,9 @@ blueprint:
         
         **En pratique** (comportement proche de I sur thermostat PID) :
         
-        - à **augmenter** si on est en-dessous de la consigne quand le chaufffage est stable
+        - à **augmenter** si on est en-dessous de la consigne quand le chauffage est stable
         
-        - à **baisser** si la consigne est dépassée quand le chaufffage est stable"
+        - à **baisser** si la consigne est dépassée quand le chauffage est stable"
       selector:
         number:
           min: 0.0
@@ -482,7 +482,7 @@ action:
       temp_ext: '{{ states(entity_temp_ext) }}'
       temp_int: '{{ states(entity_temp_int) }}'
       puissance: >-
-        {% set val = coeff_c * (consigne | float - temp_int | float) + coeff_t * (consigne | float - temp_ext | float) %}
+        {% set val = coeff_c * ((consigne | float) - (temp_int | float)) + coeff_t * ((consigne | float) - (temp_ext | float)) %}
         {% if val > 1 and not fenetre_ouverte %}
           {% set val = 100 %}
         {% elif val < 0 or fenetre_ouverte %}
@@ -498,7 +498,7 @@ action:
   - alias: Met à jour l'état des ouvertures
     service: input_text.set_value
     target:
-      entity_id: ! input entity_etat_ouverture
+      entity_id: !input entity_etat_ouverture
     data:
       value: >-
         {% set ouverte = namespace(valeur=false) %}
@@ -506,8 +506,8 @@ action:
         {% for capteur in entity_fenetres %}
           {% if is_state(capteur, 'on') %}
             {% set ouverte.valeur = true %}
-            {% set duree = now() - states[capteur]. last_changed %}
-            {% if duree. total_seconds() >= 60 %}
+            {% set duree = now() - states[capteur].last_changed %}
+            {% if duree.total_seconds() >= 60 %}
               {% set ouverte_1min.valeur = true %}
             {% endif %}
           {% endif %}
@@ -557,7 +557,8 @@ action:
         target:
           entity_id: !input entity_chauffage
         data: "{{ service_on_data }}"
-      - delay: "{{ temps_chauffe }}"
+      - delay:
+          seconds: "{{ temps_chauffe }}"
       - service: "{{ service_off }}"
         target:
           entity_id: !input entity_chauffage
