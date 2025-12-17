@@ -184,49 +184,56 @@ blueprint:
     # === par PIECE - PIECES 2-20 (OPTIONNELLES) ===
     # Pièce 2
     piece_2_nom:
-      name: 🏠 Pièce 2 - Nom (optionnel)
-      description: "Laisser vide si non utilisée"
+      name: 🏠 Pièce 2 - Nom de la pièce (pièce)
+      description: "Nom de la 2nd pièce (optionnel, laisser vide si non utilisé)"
       default: ""
       selector:
         text:
     piece_2_mode:
-      name: 🏠 Pièce 2 - Mode
+      name: 🏠 Pièce 2 - Radiateur Mode (pièce)
+      description: "Mode de chauffage actuel"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_2_mode_avant:
-      name: 💾 Pièce 2 - Mode Avant
+      name: 💾 Pièce 2 - Mode Avant Absence (pièce)
+      description: "Sauvegarde du mode avant absence"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_2_consigne:
-      name: 🌡️ Pièce 2 - Consigne
+      name: 🌡️ Pièce 2 - Consigne finale (pièce)
+      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_2_consigne_avant:
-      name: 💾 Pièce 2 - Consigne Avant
+      name: 💾 Pièce 2 - Consigne Avant Absence (pièce) 
+      description: "Sauvegarde de la consigne avant absence"
       default: ""
       selector:
         entity:
           domain: input_number
     piece_2_utilisateur:
-      name: 👤 Pièce 2 - Utilisateur Principal
+      name: 👤 Pièce 2 - Utilisateur Principal (pièce)
+      description: "Utilisateur principal pour cette pièce"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_2_si_principal:
-      name: 👤 Pièce 2 - Si Principal Absent
+      name: 👤 Pièce 2 - Absence si utilisateur principal absent (pièce)
+      description: "Activer réduction si utilisateur principal absent"
       default: ""
       selector:
         entity:
           domain: input_boolean
     piece_2_local_actif:
-      name: 🏠 Pièce 2 - Local Actif
+      name: 🏠 Pièce 2 - Gestion Absence Auto (pièce)
+      description: "Gestion Absence Auto active pour cette pièce"
       default: ""
       selector:
         entity:
@@ -234,12 +241,14 @@ blueprint:
 
     # Pièce 3
     piece_3_nom:
-      name: 🏠 Pièce 3 - Nom (optionnel)
+      name: 🏠 Pièce 3 - Nom de la pièce (pièce)
+      description: "Nom de la 3ième pièce (optionnel, laisser vide si non utilisé)"
       default: ""
       selector:
         text:
     piece_3_mode:
-      name: 🏠 Pièce 3 - Mode
+      name: 🏠 Pièce 3 - Radiateur Mode (pièce)
+      description: "Mode de chauffage actuel"
       default: ""
       selector:
         entity:
@@ -283,12 +292,14 @@ blueprint:
 
     # Pièce 4
     piece_4_nom:
-      name: 🏠 Pièce 4 - Nom (optionnel)
+      name: 🏠 Pièce 4 - Nom de la pièce (pièce)
+      description: "Nom de la 4ième pièce (optionnel, laisser vide si non utilisé)"
       default: ""
       selector:
         text:
     piece_4_mode:
-      name: 🏠 Pièce 4 - Mode
+      name: 🏠 Pièce 4 - Radiateur Mode (pièce)
+      description: "Mode de chauffage actuel"
       default: ""
       selector:
         entity:
@@ -332,12 +343,14 @@ blueprint:
 
     # Pièce 5
     piece_5_nom:
-      name: 🏠 Pièce 5 - Nom (optionnel)
+      name: 🏠 Pièce 5 - Nom de la pièce (pièce)
+      description: "Nom de la 5ième pièce (optionnel, laisser vide si non utilisé)"
       default: ""
       selector:
         text:
     piece_5_mode:
-      name: 🏠 Pièce 5 - Mode
+      name: 🏠 Pièce 5 - Radiateur Mode (pièce)
+      description: "Mode de chauffage actuel"
       default: ""
       selector:
         entity:
@@ -381,7 +394,8 @@ blueprint:
 
     # Pièce 6
     piece_6_nom:
-      name: 🏠 Pièce 6 - Nom (optionnel)
+      name: 🏠 Pièce 6 - Nom de la pièce (pièce)
+      description: "Nom de la 6ième pièce (optionnel, laisser vide si non utilisé)"
       default: ""
       selector:
         text:
@@ -430,7 +444,8 @@ blueprint:
 
     # Pièce 7
     piece_7_nom:
-      name: 🏠 Pièce 7 - Nom (optionnel)
+      name: 🏠 Pièce 7 - Nom de la pièce (pièce)
+      description: "Nom de la 7ième pièce (optionnel, laisser vide si non utilisé)"
       default: ""
       selector:
         text:
@@ -479,7 +494,8 @@ blueprint:
 
     # Pièce 8
     piece_8_nom:
-      name: 🏠 Pièce 8 - Nom (optionnel)
+      name: 🏠 Pièce 8 - Nom de la pièce (pièce)
+      description: "Nom de la 8ième pièce (optionnel, laisser vide si non utilisé)"
       default: ""
       selector:
         text:
@@ -528,7 +544,8 @@ blueprint:
 
     # Pièce 9
     piece_9_nom:
-      name: 🏠 Pièce 9 - Nom (optionnel)
+      name: 🏠 Pièce 9 - Nom de la pièce (pièce)
+      description: "Nom de la 9ième pièce (optionnel, laisser vide si non utilisé)"
       default: ""
       selector:
         text:
@@ -577,7 +594,8 @@ blueprint:
 
     # Pièce 10
     piece_10_nom:
-      name: 🏠 Pièce 10 - Nom (optionnel)
+      name: 🏠 Pièce 10 - Nom de la pièce (pièce)
+      description: "Nom de la 10ième pièce (optionnel, laisser vide si non utilisé)"
       default: ""
       selector:
         text:
@@ -626,7 +644,8 @@ blueprint:
 
     # Pièce 11
     piece_11_nom:
-      name: 🏠 Pièce 11 - Nom (optionnel)
+      name: 🏠 Pièce 11 - Nom de la pièce (pièce)
+      description: "Nom de la 11ième pièce (optionnel, laisser vide si non utilisé)"
       default: ""
       selector:
         text:
@@ -675,7 +694,8 @@ blueprint:
 
     # Pièce 12
     piece_12_nom:
-      name: 🏠 Pièce 12 - Nom (optionnel)
+      name: 🏠 Pièce 12 - Nom de la pièce (pièce)
+      description: "Nom de la 12ième pièce (optionnel, laisser vide si non utilisé)"
       default: ""
       selector:
         text:
@@ -724,7 +744,8 @@ blueprint:
 
     # Pièce 13
     piece_13_nom:
-      name: 🏠 Pièce 13 - Nom (optionnel)
+      name: 🏠 Pièce 13 - Nom de la pièce (pièce)
+      description: "Nom de la 13ième pièce (optionnel, laisser vide si non utilisé)"
       default: ""
       selector:
         text:
@@ -773,7 +794,8 @@ blueprint:
 
     # Pièce 14
     piece_14_nom:
-      name: 🏠 Pièce 14 - Nom (optionnel)
+      name: 🏠 Pièce 14 - Nom de la pièce (pièce)
+      description: "Nom de la 14ième pièce (optionnel, laisser vide si non utilisé)"
       default: ""
       selector:
         text:
@@ -822,7 +844,8 @@ blueprint:
 
     # Pièce 15
     piece_15_nom:
-      name: 🏠 Pièce 15 - Nom (optionnel)
+      name: 🏠 Pièce 15 - Nom de la pièce (pièce)
+      description: "Nom de la 15ième pièce (optionnel, laisser vide si non utilisé)"
       default: ""
       selector:
         text:
@@ -871,7 +894,8 @@ blueprint:
 
     # Pièce 16
     piece_16_nom:
-      name: 🏠 Pièce 16 - Nom (optionnel)
+      name: 🏠 Pièce 16 - Nom de la pièce (pièce)
+      description: "Nom de la 16ième pièce (optionnel, laisser vide si non utilisé)"
       default: ""
       selector:
         text:
@@ -920,7 +944,8 @@ blueprint:
 
     # Pièce 17
     piece_17_nom:
-      name: 🏠 Pièce 17 - Nom (optionnel)
+      name: 🏠 Pièce 17 - Nom de la pièce (pièce)
+      description: "Nom de la 17ième pièce (optionnel, laisser vide si non utilisé)"
       default: ""
       selector:
         text:
@@ -969,7 +994,8 @@ blueprint:
 
     # Pièce 18
     piece_18_nom:
-      name: 🏠 Pièce 18 - Nom (optionnel)
+      name: 🏠 Pièce 18 - Nom de la pièce (pièce)
+      description: "Nom de la 18ième pièce (optionnel, laisser vide si non utilisé)"
       default: ""
       selector:
         text:
@@ -1018,7 +1044,8 @@ blueprint:
 
     # Pièce 19
     piece_19_nom:
-      name: 🏠 Pièce 19 - Nom (optionnel)
+      name: 🏠 Pièce 19 - Nom de la pièce (pièce)
+      description: "Nom de la 19ième pièce (optionnel, laisser vide si non utilisé)"
       default: ""
       selector:
         text:
@@ -1067,7 +1094,8 @@ blueprint:
 
     # Pièce 20
     piece_20_nom:
-      name: 🏠 Pièce 20 - Nom (optionnel)
+      name: 🏠 Pièce 20 - Nom de la pièce (pièce)
+      description: "Nom de la 20ième pièce (optionnel, laisser vide si non utilisé)"
       default: ""
       selector:
         text:
@@ -1113,6 +1141,9 @@ blueprint:
       selector:
         entity:
           domain: input_boolean
+
+
+          
 # ========= VARIABLES =========
 variables:
   switch_global: !input switch_global
