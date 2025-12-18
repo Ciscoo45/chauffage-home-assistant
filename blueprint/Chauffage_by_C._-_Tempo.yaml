@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Gestion Tempo EDF
   description: |
 
-    version Tempo : v1.07 - 2025-12-17
+    version Tempo : v1.08 - 2025-12-18
     
     auteur : Ciscoo45
     
@@ -135,7 +135,7 @@ blueprint:
 
     # === GLOBAL - SENSORS TEMPO ===
     sensor_couleur:
-      name: 🎨 Sensor Couleur Tempo
+      name: 🎨 Tempo Couleur Actuelle Texte (global)
       description: "Sensor indiquant la couleur du jour actuel (Bleu / Blanc / Rouge)"
       default: sensor.tempo_couleur_actuelle_texte
       selector:
@@ -143,7 +143,7 @@ blueprint:
           domain: sensor
 
     sensor_periode:
-      name: ⚡ Sensor Période tarifaire
+      name: ⚡ Tempo Période Actuelle (global)
       description: "Sensor indiquant la période actuelle (Heures Creuses / Heures Pleines)"
       default: sensor.tempo_periode_actuelle
       selector:
@@ -152,14 +152,14 @@ blueprint:
 
     # === par PIECE - CONSIGNES ===
     consigne_base:
-      name: 🌡️ Consigne de base de chauffe pour la pièce
+      name: 🌡️ Radiateur (pièce) consigne
       description: "Consigne définie par l'utilisateur (modifiée via UI/modes/schedules)"
       selector:
         entity:
           domain: input_number
 
     consigne_calculee:
-      name: 🎯 Consigne calculée Tempo Eco (sortie)
+      name: 🎯 (pièce) Consigne calculée Tempo Eco (sortie)
       description: "Consigne corrigée selon Tempo Eco (à utiliser aussi désormais dans Thermostat TPI et Pilotage)"
       selector:
         entity:
@@ -167,23 +167,23 @@ blueprint:
 
     # === par PIECE - RÉDUCTIONS ===
     reduction_blanc:
-      name: ⚪ Réduction jours Blanc (HP)
-      description: "Nombre de degrés à retirer en HP des jours blancs"
+      name: ⚪ (pièce) Réduction Tempo Blanc
+      description: "Nombre de degrés à retirer en HP des jours blancs (input_number)"
       selector:
         entity:
           domain: input_number
 
     reduction_rouge:
-      name: 🔴 Réduction jours Rouge (HP)
-      description: "Nombre de degrés à retirer en HP des jours rouges"
+      name: 🔴 (pièce) Réduction Tempo Rouge
+      description: "Nombre de degrés à retirer en HP des jours rouges (input_number)"
       selector:
         entity:
           domain: input_number
 
     # === GLOBAL - ACTIVATION ===
     switch_global:
-      name: 🌐 Switch global Tempo
-      description: "Désactive toutes les corrections Tempo (toutes pièces) si OFF"
+      name: 🌐 Tempo Global Actif (global)
+      description: "Désactive toutes les corrections Tempo (TOUTES LES PIECES) si OFF (input_boolean)"
       default: input_boolean.tempo_global_actif
       selector:
         entity:
@@ -191,19 +191,22 @@ blueprint:
 
     # === par PIECE - ACTIVATION ===
     switch_local:
-      name: 🏠 Switch Gestion Tempo local
-      description: "Désactive les corrections Tempo pour cette pièce si OFF"
+      name: 🏠 (pièce) Gestion Tempo
+      description: "Désactive les corrections Tempo pour CETTE PIECE si OFF"
       selector:
         entity:
           domain: input_boolean
 
     boost_actif:
-      name: ⚡ Boost actif (optionnel)
+      name: ⚡ Boost pièce (optionnel)
       description: "Si le boost est ON, ignore les corrections Tempo pour cette pièce"
       default: ""
       selector:
         entity:
           domain: input_boolean
+
+
+
 
 # ========= VARIABLES =========
 variables:
