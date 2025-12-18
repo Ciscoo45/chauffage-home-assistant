@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C.   - Absence Auto - Par Pièce
   description: "
 
-    version Absence : v1.37 - 2025-12-19
+    version Absence : v1.38 - 2025-12-19
     
     auteur : Ciscoo45
     
@@ -184,7 +184,7 @@ blueprint:
 
     # === GLOBAL - DETECTION PRESENCE ===
     binary_sensor_tous_absents:
-      name: 👥 Chauffage - Tous Utilisateurs absents (global)
+      name: 👥 Chauffage - Tous Utilisateurs Absents (global)
       description: "Binary_sensor indiquant si tous les utilisateurs sont absents"
       default: binary_sensor.chauffage_tous_utilisateurs_absents
       selector:
@@ -233,7 +233,7 @@ blueprint:
 
     # === par PIECE - CONSIGNES ===
     consigne_base:
-      name: 🌡️ Radiateur (pièce) consigne
+      name: 🌡️ Radiateur (pièce) Consigne
       description: "Consigne de base, définie par l'utilisateur (input_number, modifié via UI/modes/schedules)"
       selector:
         entity:
@@ -302,7 +302,7 @@ blueprint:
           domain: input_boolean
 
     utilisateur_principal:
-      name: 👤 (pièce) Utilisateur principal
+      name: 👤 (pièce) Utilisateur Principal
       description: "Choix de l'utilisateur principal (utilise la liste définie dans chauffage_absence_auto_config_package.yaml)"
       selector:
         entity:
@@ -310,7 +310,7 @@ blueprint:
 
     # === par PIECE - MODE ===
     mode_actuel:
-      name: 🎚️ Radiateur (pièce) mode 
+      name: 🎚️ Radiateur (pièce) Mode 
       description: "Mode de chauffage, choisi via la carte Lovelace (Presence, Absence, Manuel, Hors-gel, Arret)"
       selector:
         entity:
