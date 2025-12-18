@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C.   - Absence Auto - Par Pièce
   description: "
 
-    version Absence : v1.35 - 2025-12-17
+    version Absence : v1.36 - 2025-12-18
     
     auteur : Ciscoo45
     
@@ -184,8 +184,8 @@ blueprint:
 
     # === GLOBAL - DETECTION PRESENCE ===
     binary_sensor_tous_absents:
-      name: 👥 Sensor Tous Absents
-      description: "Binary sensor indiquant si tous les utilisateurs sont absents"
+      name: 👥 Chauffage - Tous Utilisateurs absents (global)
+      description: "Binary_sensor indiquant si tous les utilisateurs sont absents"
       default: binary_sensor.chauffage_tous_utilisateurs_absents
       selector:
         entity:
@@ -233,14 +233,14 @@ blueprint:
 
     # === par PIECE - CONSIGNES ===
     consigne_base:
-      name: 🌡️ Radiateur consigne (pièce)
-      description: "Consigne de base, définie par l'utilisateur (modifiée via UI/modes/schedules)"
+      name: 🌡️ Radiateur (pièce) consigne
+      description: "Consigne de base, définie par l'utilisateur (input_number, modifié via UI/modes/schedules)"
       selector:
         entity:
           domain: input_number
 
     consigne_tempo:
-      name: 🎯 Consigne Calculée Tempo Eco (optionnel)
+      name: 🎯 (pièce) Consigne Calculée Tempo Eco (optionnel)
       description: "Consigne corrigée par Tempo Eco (laisser vide si Tempo non utilisé)"
       default: ""
       selector:
@@ -248,30 +248,30 @@ blueprint:
           domain: input_number
 
     consigne_absence:
-      name: ❄️ Consigne Absence (pièce)
+      name: ❄️ (pièce) Consigne Absence
       description: "Consigne corrigée selon Absence Auto (sortie, calculée par ce blueprint)"
       selector:
         entity:
           domain: input_number
 
     consigne_finale:
-      name: ✅ Consigne Finale (pièce)
+      name: ✅ (pièce) Consigne Finale
       description: "Consigne finale à utiliser dans Thermostat TPI et Pilotage (sortie)"
       selector:
         entity:
           domain: input_number
 
     consigne_avant_absence:
-      name: 💾 Consigne Avant Absence (pièce)
+      name: 💾 (pièce) Consigne Avant Absence 
       description: "Stockage de la consigne avant départ (pour restauration)"
       selector:
         entity:
           domain: input_number
 
-    # === par PIECE - REDUCTION ===
+    # === GLOBAL - REDUCTION ===
     reduction_degrees:
-      name: ➖ Réduction de teméprature en absence
-      description: "Nombre de degrés à retirer en mode Absence ou Manuel (pas appliqué si passage Presence → Absence)"
+      name: ➖ Réduction de température en absence (global)
+      description: "Nombre de degrés à retirer en mode Absence ou Manuel (si on n'était pas en mode Presence → Absence)"
       default: input_number.chauffage_absence_auto_reduction_degrees
       selector:
         entity:
@@ -279,7 +279,7 @@ blueprint:
 
     # === GLOBAL - ACTIVATION ===
     switch_global:
-      name: 🌐 Switch Gestion Absence Auto Globale
+      name: 🌐 Gestion Absence Auto Globale (global)
       description: "Désactive toutes les corrections Absence (toutes pièces) si OFF"
       default: input_boolean.chauffage_absence_auto_global_actif
       selector:
@@ -288,48 +288,50 @@ blueprint:
           
     # === par PIECE - ACTIVATION ===
     switch_local:
-      name: 🏠 Gestion Absence Auto (pièce)
-      description: "Désactive les corrections Absence pour cette pièce si OFF"
+      name: 🏠 (pièce) Gestion Absence Auto 
+      description: "Désactive les corrections Absence Auto pour cette pièce si OFF"
       selector:
         entity:
           domain: input_boolean
 
     switch_si_principal_absent:
-      name: 👤 Absence si utilisateur principal absent (pièce)
+      name: 👤 (pièce) Absence si utilisateur principal absent
       description: "Appliquer la réduction même si d'autres utilisateurs sont présents"
       selector:
         entity:
           domain: input_boolean
 
     utilisateur_principal:
-      name: 👤 Utilisateur principal (pièce)
-      description: "Choix de l'utilisateur (utilise la liste définie dans chauffage_absence_auto_config_package.yaml)"
+      name: 👤 (pièce) Utilisateur principal
+      description: "Choix de l'utilisateur principal (utilise la liste définie dans chauffage_absence_auto_config_package.yaml)"
       selector:
         entity:
           domain: input_select
 
     # === par PIECE - MODE ===
     mode_actuel:
-      name: 🎚️ Radiateur mode (pièce)
+      name: 🎚️ Radiateur (pièce) mode 
       description: "Mode de chauffage, choisi via la carte Lovelace (Presence, Absence, Manuel, Hors-gel, Arret)"
       selector:
         entity:
           domain: input_select
 
     mode_avant_absence:
-      name: 💾 Mode Avant Absence (pièce)
+      name: 💾 (pièce) Mode Avant Absence
       description: "Stockage du mode actif avant départ (pour restauration ET calcul réduction)"
       selector:
         entity:
           domain: input_select
 
     boost_actif:
-      name: ⚡ Boost (optionnel)
-      description: "Si le boost est ON, ignore les corrections Absence pour cette pièce"
+      name: ⚡ Boost (pièce - optionnel)
+      description: "Si le boost est ON, ignore les corrections Absence Auto pour cette pièce"
       default: ""
       selector:
         entity:
           domain: input_boolean
+
+
 
 
 # ========= VARIABLES =========
