@@ -3,7 +3,7 @@ blueprint:
   description: >
 
     
-    version Boost : v1.12 - 2025-11-24
+    version Boost : v1.13 - 2025-12-18
 
     auteur : Ciscoo45
     
@@ -31,7 +31,12 @@ blueprint:
   source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Chauffage_by_C._-_Boost.yaml
   domain: automation
 
+
+################################
+
+
   input:
+  
     piece:
       name: 🏠 Pièce
       selector: { area: {} }
@@ -49,43 +54,43 @@ blueprint:
           manufacturer: IKEA of Sweden
 
     boost_switch:
-      name: 🎚️ Commutateur Boost (Dashboard)
-      description: (chauffage_boost > input_boolean)
+      name: 🎚️ Boost (pièce)
+      description: Switch pour l'activation du Boost de cete pièce (chauffage_boost_input_boolean.yaml)
       selector: { entity: { domain: input_boolean } }
 
     boost_timer:
-      name: ⌛ Timer de boost
-      description: pour le calcul de l'expiration (chauffage_boost > timer)
+      name: ⌛ Timer boost (pièce)
+      description: pour le calcul de l'expiration (timer > chauffage_boost_timer.yaml)
       selector: { entity: { domain: timer } }
 
     timer_entity:
-      name: ⏰ Heure de fin de Boost
-      description: pour afficher l'heure de fin dans l'UI (chauffage_boost > input_dateime)
+      name: ⏰ Heure de fin de Boost (pièce)
+      description: pour afficher l'heure de fin dans l'UI (input_datetime > chauffage_boost_input_datetime.yaml)
       selector: { entity: { domain: input_datetime } }
 
     mode_entity:
-      name: 📋 Module Chauffage - Radiateur Mode
-      description: lié au blueprint principal de pilotage du chauffage (chauffage > input_select)
+      name: 📋 Radiateur (pièce) Mode
+      description: lié au blueprint principal de pilotage du chauffage (input_select > chauffage_input_select.yaml)
       selector: { entity: { domain: input_select } }
 
     consigne_entity:
-      name: 🌡️ Module Chauffage - Radiateur Consigne
-      description: lié au blueprint principal de pilotage du chauffage (chauffage > input_number)
+      name: 🌡️ Radiateur (pièce) Consigne
+      description: lié au blueprint principal de pilotage du chauffage (input_number > chauffage_input_number.yaml)
       selector: { entity: { domain: input_number } }
 
     boost_temp_helper:
-      name: 🎯 Consigne de début de boost (°C)
-      description: (chauffage_boost > input_number)
+      name: 🎯 Radiateur (pièce) Consigne de début de boost (°C)
+      description: (input_number > chauffage_boost_input_number.yaml)
       selector: { entity: { domain: input_number } }
 
     consigne_boost_valeur_de_depart:
       name: Consigne de boost par défaut (°C)
       default: 21
-      selector: { number: { min: 8, max: 26, step: 0.5, mode: slider } }
+      selector: { number: { min: 0, max: 24, step: 0.5, mode: slider } }
 
     boost_duration_helper:
-      name: Durée de boost
-      description: (chauffage_boost > input_number)
+      name: Radiateur (pièce) Durée de boost
+      description: (input_number > chauffage_boost_input_number.yaml)
       selector: { entity: { domain: input_number } }
 
     duree_boost_valeur_de_depart:
@@ -100,40 +105,44 @@ blueprint:
 
     # === Restauration intelligente ===
     restore_behavior:
-      name: 😇 Comportement en fin de boost
-      description: Restaurer l'état précédent ou choisir un mode spécifique (chauffage_boost > input_select)
+      name: 😇 (pièce) Comportement en fin de boost
+      description: Restaurer l'état précédent ou choisir un mode spécifique (input_select > chauffage_boost_input_select.yaml)
       selector: { entity: { domain: input_select } }
 
     restore_mode_custom:
-      name: "[Si mode personnalisé] Mode à restaurer en fin de boost"
-      description: Mode de chauffage à appliquer en fin de boost (chauffage_boost > input_select)
+      name: "(pièce) Mode à restaurer en fin de boost"
+      description: Mode de chauffage à appliquer en fin de boost (input_select > chauffage_boost_input_select.yaml)
       selector: { entity: { domain: input_select } }
 
     restore_override_consigne:
-      name: "[Si mode personnalisé] Choix de forcer une consigne spécifique en fin de boost"
-      description: Activer pour imposer une consigne différente de celle de la programmation auto du Scheduler (chauffage_boost > input_boolean)
+      name: "(pièce) Choix de forcer une consigne dérogative en fin de boost"
+      description: Activer pour imposer une consigne différente de celle de la programmation auto du Scheduler (input_boolean > chauffage_boost_input_boolean.yaml)
       selector: { entity: { domain: input_boolean } }
 
     restore_consigne_custom:
-      name: "[Si mode personnalisé + consigne forcée] Température de consigne forcée en fin (°C)"
-      description: Consigne à appliquer si l'override est activé (chauffage_boost > input_number)
+      name: "(pièce) Température de consigne forcée en fin de boost (°C)"
+      description: Consigne à appliquer si l'override est activé (input_number > chauffage_boost_input_number.yaml)
       selector: { entity: { domain: input_number } }
 
     previous_mode_storage:
-      name: 💾 Enregistrement du 📋 Mode précédent
-      description: pour mémoriser le mode existant avant le boost (chauffage_boost > input_text)
+      name: 💾 (pièce) Mode précédent mémorisé
+      description: pour mémoriser le mode existant avant le boost (input_text > chauffage_boost_input_text.yaml)
       selector: { entity: { domain: input_text } }
 
     previous_consigne_storage:
-      name: 💾 Enregistrement de la 🌡️ Consigne précédente
-      description: pour mémoriser la consigne existante avant boost (chauffage_boost > input_number)
+      name: 💾 (pièce) 🌡️ Consigne précédente mémorisée
+      description: pour mémoriser la consigne existante avant boost (input_number > chauffage_boost_input_number.yaml)
       selector: { entity: { domain: input_number } }
 
     sync_helpers_on_reload:
       name: Initialiser les helpers à chaque redémarrage / rechargement
-      description: Si actif, on reset les paramètres de consigne et durée à ceux définis dans le Blueprint. Si désactivé, on garde les paramètres définis sur le dashboard Lovelace lorsqu'on re[...]
+      description: Si actif, on reset les paramètres de consigne et durée à ceux définis ici. Si désactivé, on garde les paramètres définis sur le dashboard Lovelace lorsqu'on reboot.
       default: false
       selector: { boolean: {} }
+
+
+
+
 
 # ========= Déclencheurs =========
 trigger:
