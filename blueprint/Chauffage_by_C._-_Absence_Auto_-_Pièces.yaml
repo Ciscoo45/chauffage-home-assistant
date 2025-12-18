@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C.   - Absence Auto - Par Pièce
   description: "
 
-    version Absence : v1.38 - 2025-12-19
+    version Absence : v1.39 - 2025-12-19
     
     auteur : Ciscoo45
     
@@ -193,22 +193,22 @@ blueprint:
 
     binary_sensor_utilisateur_1_absent:
       name: 👤 Utilisateur 1 Absent (obligatoire)
-      description: "Binary sensor pour le premier utilisateur (obligatoire)"
+      description: "Binary sensor pour le premier utilisateur (obligatoire, ex. Chauffage Michel Absent)"
       default: binary_sensor.chauffage_utilisateur1_absent
       selector:
         entity:
           domain: binary_sensor
 
     binary_sensor_utilisateur_2_absent:
-      name: 👤 Utilisateur 2 Absent (optionnel)
-      description: "Binary sensor pour le deuxième utilisateur (laisser par défaut si non utilisé)"
+      name: 👤 Utilisateur 2 Absent (optionnel, à modifier si utilisé)
+      description: "Binary sensor pour le deuxième utilisateur (optionnel, ex. Chauffage François Absent, laisser par défaut si non utilisé)"
       default: binary_sensor.chauffage_utilisateur2_absent
       selector:
         entity:
           domain: binary_sensor
 
     binary_sensor_utilisateur_3_absent:
-      name: 👤 Utilisateur 3 Absent (optionnel)
+      name: 👤 Utilisateur 3 Absent (optionnel, à modifier si utilisé)
       description: "Binary sensor pour le troisième utilisateur (laisser par défaut si non utilisé)"
       default: binary_sensor.chauffage_utilisateur3_absent
       selector:
@@ -216,7 +216,7 @@ blueprint:
           domain: binary_sensor
 
     binary_sensor_utilisateur_4_absent:
-      name: 👤 Utilisateur 4 Absent (optionnel)
+      name: 👤 Utilisateur 4 Absent (optionnel, à modifier si utilisé)
       description: "Binary sensor pour le quatrième utilisateur (laisser par défaut si non utilisé)"
       default: binary_sensor.chauffage_utilisateur4_absent
       selector:
@@ -224,7 +224,7 @@ blueprint:
           domain: binary_sensor
 
     binary_sensor_utilisateur_5_absent:
-      name: 👤 Utilisateur 5 Absent (optionnel)
+      name: 👤 Utilisateur 5 Absent (optionnel, à modifier si utilisé)
       description: "Binary sensor pour le cinquième utilisateur (laisser par défaut si non utilisé)"
       default: binary_sensor.chauffage_utilisateur5_absent
       selector:
