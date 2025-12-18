@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Thermostat TPI
   description: "
 
-    version TPI : v.1.13 - 2025-12-17
+    version TPI : v.1.14 - 2025-12-18
     
     auteur : Ciscoo45
     
@@ -293,23 +293,24 @@ blueprint:
           step: 0.001
           
     entity_consigne:
-      name: Consigne
-      description: "Température de Consigne - note : **Consigne calculée** si module Tempo optionnel utilisé, ou **Consigne Finale** si module Absence Auto utilisé. (input_number)"
+      name: Radiateur (pièce) Consigne
+      description: "Température de Consigne de base - note : sélectionner **Consigne calculée** si module Tempo optionnel utilisé, ou **Consigne Finale** si module Absence Auto utilisé (input_number > chauffage_input_number.yaml)"
       selector:
         entity:
           domain: input_number
           
     entity_temp_ext:
-      name: Température extérieure
+      name: Température extérieure (global)
       description: Sonde de mesure de la Température Extérieure (sensor)
+      default: sensor.temperature_exterieure_virtuelle_consolidee
       selector:
         entity:
           domain: sensor
           device_class: temperature
           
     entity_temp_int:
-      name: Température intérieure
-      description: Sonde de mesure de la Température Intérieure de la pièce (sensor)
+      name: Température (pièce)
+      description: Sonde matérielle de mesure de la Température Intérieure de la pièce (sensor)
       selector:
         entity:
           domain: sensor
@@ -325,15 +326,15 @@ blueprint:
           multiple: true
                  
     entity_puissance:
-      name: Puissance
-      description: Puissance de chauffe calculée (input_number)
+      name: Radiateur (pièce) Puissance
+      description: Puissance de chauffe calculée (input_number > chauffage_input_number.yaml)
       selector:
         entity:
           domain: input_number
     
     entity_etat_ouverture:
-      name: État ouverture (pour affichage carte)
-      description: "Input text qui sera mis à jour par le blueprint pour refléter l'état des ouvertures (input_text)"
+      name: État ouverture 
+      description: "mis à jour par le blueprint pour refléter sur la carte Lovelace l'état des ouvertures (input_text > chauffage_input_text.yaml)"
       selector:
         entity:
           domain: input_text
