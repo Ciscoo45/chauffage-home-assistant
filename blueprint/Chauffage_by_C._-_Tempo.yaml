@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Gestion Tempo EDF
   description: |
 
-    version Tempo : v1.08 - 2025-12-18
+    version Tempo : v1.09 - 2025-12-18
     
     auteur : Ciscoo45
     
@@ -250,7 +250,7 @@ variables:
       {{ 0.0 }}
     {% endif %}
   
-  consigne_finale: "{{ [ consigne_valeur - reduction, 5 ] | max }}"
+  consigne_finale: "{{ consigne_valeur - reduction }}"
 
 
 # ========= DÉCLENCHEURS =========
