@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Pilotage Semaine et WE/fériés
   description: "
     
-    version Chauff : v1.03 - 2025-11-16
+    version Chauff : v1.04 - 2025-11-18
     
     auteur : Ciscoo45
     
@@ -264,7 +264,7 @@ blueprint:
       default: 8.0
       selector:
         number:
-          min: 2.0
+          min: 1.0
           max: 14.0
           step: 0.5
           
@@ -420,6 +420,7 @@ action:
 
           
 mode: single
+
 
 
 
