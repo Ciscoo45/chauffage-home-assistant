@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C.   - Absence Auto - Par Pièce
   description: "
 
-    version Absence : v1.36 - 2025-12-18
+    version Absence : v1.37 - 2025-12-19
     
     auteur : Ciscoo45
     
@@ -420,7 +420,7 @@ variables:
     {% endif %}
 
   # Consignes finales (minimum 5°C) - CORRIGÉ : cast float explicite
-  consigne_absence_calc: "{{ [ (consigne_source | float) - (reduction | float), 5 ] | max }}"
+  consigne_absence_calc: "{{ (consigne_source | float) - (reduction | float) }}"
   consigne_finale_calc: "{{ consigne_absence_calc | float }}"
 
 # ========= DÉCLENCHEURS =========
