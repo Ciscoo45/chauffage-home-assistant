@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C.   - Absence Auto - Par Pièce
   description: "
 
-    version Absence : v1.41 - 2025-12-19
+    version Absence : v1.42 - 2025-12-19
     
     auteur : Ciscoo45
     
@@ -185,14 +185,18 @@ blueprint:
     # === GLOBAL - DETECTION PRESENCE ===
     binary_sensor_tous_absents:
       name: 👥 Chauffage - Tous Utilisateurs Absents (global)
-      description: "Binary_sensor indiquant si tous les utilisateurs sont absents, ex. binary_sensor.chauffage_tous_utilisateurs_absents"
+      description: "Binary_sensor indiquant si tous les utilisateurs sont absents,
+      
+      Ex. : binary_sensor.chauffage_tous_utilisateurs_absents"
       selector:
         entity:
           domain: binary_sensor
 
     binary_sensor_utilisateur_1_absent:
       name: 👤 Utilisateur 1 Absent (obligatoire)
-      description: "Binary sensor pour le premier utilisateur (obligatoire, ex. Chauffage Michel Absent)"
+      description: "Binary sensor pour le premier utilisateur
+      
+      (obligatoire, ex. Chauffage Michel Absent)"
       default: binary_sensor.chauffage_utilisateur1_absent
       selector:
         entity:
@@ -200,7 +204,9 @@ blueprint:
 
     binary_sensor_utilisateur_2_absent:
       name: 👤 Utilisateur 2 Absent (optionnel, à modifier si utilisé)
-      description: "Binary sensor pour le deuxième utilisateur (optionnel, ex. Chauffage François Absent, laisser par défaut si non utilisé)"
+      description: "Binary sensor pour le deuxième utilisateur
+      
+      (optionnel, ex. Chauffage François Absent, laisser par défaut si non utilisé)"
       default: binary_sensor.chauffage_utilisateur2_absent
       selector:
         entity:
