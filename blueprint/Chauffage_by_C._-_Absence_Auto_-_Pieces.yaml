@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Absence Auto - Par Pièce
   description: "
 
-    version Absence : v1.52 - 2025-12-20
+    version Absence : v1.43 - 2025-12-19
     
     auteur : Ciscoo45
     
@@ -341,7 +341,6 @@ blueprint:
 
 # ========= VARIABLES =========
 variables:
-
   piece_name: !input piece_name
   consigne_base: !input consigne_base
   consigne_tempo_input: !input consigne_tempo
@@ -401,45 +400,36 @@ variables:
     {% endfor %}
     {{ result }}
 
-  # Calcul de la réduction (CORRIGÉ : évaluation directe sans variables booléennes texte + action si utilisateur principal est absent)
+  # Calcul de la réduction (CORRIGÉ : évaluation directe sans variables booléennes texte)
   reduction: >-
     {% set mode_actif = mode_actuel_valeur in ['Presence', 'Absence', 'Manuel'] %}
+    {% set transition_presence_absence = (mode_avant_valeur == 'Presence' and mode_actuel_valeur == 'Absence') %}
     {% set boost_on = boost_actif_input not in ['', 'none', None] and is_state(boost_actif_input, 'on') %}
-    {% set principal_rule = is_state(switch_si_principal_absent, 'on') and (principal_absent | bool) %}
-    {% set transition_pa = (mode_avant_valeur == 'Presence' and mode_actuel_valeur == 'Absence') %}
-
+    
     {% if not is_state(switch_global, 'on') %}
       0
     {% elif not is_state(switch_local, 'on') %}
       0
     {% elif not mode_actif %}
       0
-    {% elif mode_actuel_valeur in ['Hors-gel', 'Arret'] %}
-      0
     {% elif boost_on %}
       0
-    {% elif is_state(binary_sensor_tous_absents, 'on') or principal_rule %}
-      {% if transition_pa %}
-        0                      {# Presence → Absence : pas de -2, le scheduler gère #}
-      {% elif mode_actuel_valeur in ['Absence', 'Manuel'] %}
-        {{ states(reduction_degrees) | float(2) }}
-      {% else %}
-        0
-      {% endif %}
+    {% elif transition_presence_absence %}
+      0
+    {% elif is_state(binary_sensor_tous_absents, 'on') %}
+      {{ states(reduction_degrees) | float(2) }}
+    {% elif is_state(switch_si_principal_absent, 'on') and (principal_absent | bool) %}
+      {{ states(reduction_degrees) | float(2) }}
     {% else %}
       0
     {% endif %}
 
-  # Consignes finales (pas de minimum) - CORRIGÉ : cast float explicite
+  # Consignes finales (minimum 5°C) - CORRIGÉ : cast float explicite
   consigne_absence_calc: "{{ (consigne_source | float) - (reduction | float) }}"
   consigne_finale_calc: "{{ consigne_absence_calc | float }}"
 
-
-
-
 # ========= DÉCLENCHEURS =========
 trigger:
-
   # Recalcul quand la consigne de base change
   - platform: state
     entity_id: !input consigne_base
@@ -491,36 +481,10 @@ trigger:
   - platform: event
     event_type: automation_reloaded
 
-
-
-
 condition: []
-
-
-
-
 
 # ========= ACTIONS =========
 action:
-
-  # Forcer le passage en mode Absence quand seul le principal est absent
-  # Mise à jour des consignes (sauf Hors-gel / Arrêt, gérés par Pilotage)
-  - choose:
-      - conditions:
-          - condition: template
-            value_template: "{{ mode_actuel_valeur not in ['Hors-gel', 'Arret'] }}"
-        sequence:
-          - service: input_number.set_value
-            target:
-              entity_id: !input consigne_absence
-            data:
-              value: "{{ consigne_absence_calc | float }}"
-          - service: input_number.set_value
-            target:
-              entity_id: !input consigne_finale
-            data:
-              value: "{{ consigne_finale_calc | float }}"
-
   # Mise à jour de la consigne absence
   - service: input_number.set_value
     target:
