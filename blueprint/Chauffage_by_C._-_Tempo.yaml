@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Gestion Tempo EDF
   description: |
 
-    version Tempo : v1.09 - 2025-12-18
+    version Tempo : v1.10 - 2025-12-19
     
     auteur : Ciscoo45
     
@@ -136,16 +136,18 @@ blueprint:
     # === GLOBAL - SENSORS TEMPO ===
     sensor_couleur:
       name: 🎨 Tempo Couleur Actuelle Texte (global)
-      description: "Sensor indiquant la couleur du jour actuel (Bleu / Blanc / Rouge)"
-      default: sensor.tempo_couleur_actuelle_texte
+      description: "Sensor indiquant la couleur du jour actuel (Bleu / Blanc / Rouge)
+      
+      Ex. sensor.tempo_couleur_actuelle_texte"
       selector:
         entity:
           domain: sensor
 
     sensor_periode:
       name: ⚡ Tempo Période Actuelle (global)
-      description: "Sensor indiquant la période actuelle (Heures Creuses / Heures Pleines)"
-      default: sensor.tempo_periode_actuelle
+      description: "Sensor indiquant la période actuelle (Heures Creuses / Heures Pleines)
+      
+      Ex. : sensor.tempo_periode_actuelle"
       selector:
         entity:
           domain: sensor
@@ -183,8 +185,9 @@ blueprint:
     # === GLOBAL - ACTIVATION ===
     switch_global:
       name: 🌐 Tempo Global Actif (global)
-      description: "Désactive toutes les corrections Tempo (TOUTES LES PIECES) si OFF (input_boolean)"
-      default: input_boolean.tempo_global_actif
+      description: "Désactive toutes les corrections Tempo (TOUTES LES PIECES) si OFF (input_boolean)
+     
+      Ex. : input_boolean.tempo_global_actif"
       selector:
         entity:
           domain: input_boolean
