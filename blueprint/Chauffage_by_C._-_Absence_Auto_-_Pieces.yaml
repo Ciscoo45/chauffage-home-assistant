@@ -1,8 +1,8 @@
 blueprint:
-  name: Chauffage by C.   - Absence Auto - Par Pièce
+  name: Chauffage by C. - Absence Auto - Par Pièce
   description: "
 
-    version Absence : v1.42 - 2025-12-19
+    version Absence : v1.43 - 2025-12-19
     
     auteur : Ciscoo45
     
@@ -172,7 +172,7 @@ blueprint:
     
     ## Paramétrage du Blueprint
     "
-  source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/main/blueprint/Chauffage_by_C._-_Absence_Auto_-_Pièces.yaml
+  source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/main/blueprint/Chauffage_by_C._-_Absence_Auto_-_Pieces.yaml
   domain: automation
 
   input:
