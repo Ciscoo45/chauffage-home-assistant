@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Absence Auto - Par Pièce
   description: "
 
-    version Absence : v1.43 - 2025-12-19
+    version Absence : v1.50 - 2025-12-20
     
     auteur : Ciscoo45
     
@@ -400,12 +400,12 @@ variables:
     {% endfor %}
     {{ result }}
 
-  # Calcul de la réduction (CORRIGÉ : évaluation directe sans variables booléennes texte)
+  # Calcul de la réduction (CORRIGÉ : évaluation directe sans variables booléennes texte + action si utilisateur principal est absent)
   reduction: >-
     {% set mode_actif = mode_actuel_valeur in ['Presence', 'Absence', 'Manuel'] %}
-    {% set transition_presence_absence = (mode_avant_valeur == 'Presence' and mode_actuel_valeur == 'Absence') %}
     {% set boost_on = boost_actif_input not in ['', 'none', None] and is_state(boost_actif_input, 'on') %}
-    
+    {% set principal_rule = is_state(switch_si_principal_absent, 'on') and (principal_absent | bool) %}
+
     {% if not is_state(switch_global, 'on') %}
       0
     {% elif not is_state(switch_local, 'on') %}
@@ -414,12 +414,13 @@ variables:
       0
     {% elif boost_on %}
       0
-    {% elif transition_presence_absence %}
-      0
-    {% elif is_state(binary_sensor_tous_absents, 'on') %}
-      {{ states(reduction_degrees) | float(2) }}
-    {% elif is_state(switch_si_principal_absent, 'on') and (principal_absent | bool) %}
-      {{ states(reduction_degrees) | float(2) }}
+    {% elif is_state(binary_sensor_tous_absents, 'on') or principal_rule %}
+      {# Réduction seulement si on est en Absence ou Manuel (pas en Presence directe) #}
+      {% if mode_actuel_valeur in ['Absence', 'Manuel'] %}
+        {{ states(reduction_degrees) | float(2) }}
+      {% else %}
+        0
+      {% endif %}
     {% else %}
       0
     {% endif %}
@@ -427,6 +428,9 @@ variables:
   # Consignes finales (minimum 5°C) - CORRIGÉ : cast float explicite
   consigne_absence_calc: "{{ (consigne_source | float) - (reduction | float) }}"
   consigne_finale_calc: "{{ consigne_absence_calc | float }}"
+
+
+
 
 # ========= DÉCLENCHEURS =========
 trigger:
@@ -481,10 +485,41 @@ trigger:
   - platform: event
     event_type: automation_reloaded
 
+
+
+
 condition: []
+
+
+
+
 
 # ========= ACTIONS =========
 action:
+
+  # Forcer le passage en mode Absence quand seul le principal est absent
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: >
+              {{ is_state(switch_si_principal_absent, 'on')
+                 and (principal_absent | bool)
+                 and is_state(mode_actuel, 'Presence') }}
+        sequence:
+          # On mémorise le mode avant (si besoin)
+          - service: input_select.select_option
+            target:
+              entity_id: !input mode_avant_absence
+            data:
+              option: "Presence"
+          # On passe en Absence
+          - service: input_select.select_option
+            target:
+              entity_id: !input mode_actuel
+            data:
+              option: "Absence"
+
+
   # Mise à jour de la consigne absence
   - service: input_number.set_value
     target:
