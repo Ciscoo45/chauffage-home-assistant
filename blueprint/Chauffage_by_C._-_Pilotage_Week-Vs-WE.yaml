@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Pilotage Semaine et WE/fériés
   description: "
     
-    version Chauff : v1.04 - 2025-11-18
+    version Chauff : v1.06 - 2025-11-19
     
     auteur : Ciscoo45
     
@@ -259,7 +259,7 @@ blueprint:
   input:
   
     temperature_hg:
-      name: Température pour le mode Hors-gel
+      name: ❄️ Température pour le mode Hors-gel
       description: "Défaut 8°C (ne se modifie uniquement qu'ici)"
       default: 8.0
       selector:
@@ -269,21 +269,21 @@ blueprint:
           step: 0.5
           
     entity_consigne:
-      name: Consigne
-      description: Entité Température de Consigne (input_number)
+      name: 🎯 Radiateur (pièce) Consigne
+      description: "Température de Consigne de chauffe - note : sélectionner **Consigne calculée** si module Tempo optionnel utilisé, ou **Consigne Finale** si module Absence Auto utilisé (input_number > chauffage_input_number.yaml)"
       selector:
         entity:
           domain: input_number
           
     entity_mode:
-      name: Sélection du Mode
-      description: Entité de Gestion du Mode de gestion du chauffage (input_select)
+      name: 🎚️ Radiateur (pièce) Mode 
+      description: "Mode de chauffage, choisi via la carte Lovelace (Presence, Absence, Manuel, Hors-gel, Arret)"
       selector:
         entity:
           domain: input_select
           
     entity_schedule_presence:
-      name: Schedule mode Présence
+      name: 🏠 (pièce) mode Presence
       description: Entité(s) générée(s) par le Scheduler pour la planification du mode Presence (switch)
       selector:
         entity:
@@ -291,7 +291,7 @@ blueprint:
           multiple: true
           
     entity_schedule_absence:
-      name: Schedule mode Absence
+      name: 🚗 (pièce) mode Absence
       description: Entité(s) générée(s) par le Scheduler pour la planification du mode Absence (switch)
       selector:
         entity:
@@ -299,8 +299,8 @@ blueprint:
           multiple: true
           
     entity_thermostat_tpi:
-      name: Thermostat
-      description: Entité de gestion du Thermostat TPI (automation)
+      name: 🌡️ Thermostat TPI (pièce)
+      description: Entité du blueprint de gestion du Thermostat TPI (automation)
       selector:
         entity:
           domain: automation
@@ -420,6 +420,7 @@ action:
 
           
 mode: single
+
 
 
 
