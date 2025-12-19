@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Pilotage Semaine et WE/fériés
   description: "
     
-    version Chauff : v1.06 - 2025-11-19
+    version Chauff : v1.07 - 2025-11-19
     
     auteur : Ciscoo45
     
@@ -259,7 +259,7 @@ blueprint:
   input:
   
     temperature_hg:
-      name: ❄️ Température pour le mode Hors-gel
+      name: ❄️ Température pour le mode Hors-gel (pièce)
       description: "Défaut 8°C (ne se modifie uniquement qu'ici)"
       default: 8.0
       selector:
@@ -420,6 +420,7 @@ action:
 
           
 mode: single
+
 
 
 
