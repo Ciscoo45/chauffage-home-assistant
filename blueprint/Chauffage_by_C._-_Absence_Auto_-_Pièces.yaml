@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C.   - Absence Auto - Par Pièce
   description: "
 
-    version Absence : v1.40 - 2025-12-19
+    version Absence : v1.41 - 2025-12-19
     
     auteur : Ciscoo45
     
@@ -232,7 +232,7 @@ blueprint:
 
     # === par PIECE - CONSIGNES ===
     consigne_base:
-      name: 🌡️ Radiateur (pièce) Consigne
+      name: 🌡️ 🎯 Radiateur (pièce) Consigne
       description: "Consigne de base, définie par l'utilisateur (input_number, modifié via UI/modes/schedules)"
       selector:
         entity:
