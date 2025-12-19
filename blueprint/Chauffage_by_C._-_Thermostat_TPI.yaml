@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Thermostat TPI
   description: "
 
-    version TPI : v.1.14 - 2025-12-18
+    version TPI : v.1.15 - 2025-12-19
     
     auteur : Ciscoo45
     
@@ -294,7 +294,7 @@ blueprint:
           
     entity_consigne:
       name: Radiateur (pièce) Consigne
-      description: "Température de Consigne de base - note : sélectionner **Consigne calculée** si module Tempo optionnel utilisé, ou **Consigne Finale** si module Absence Auto utilisé (input_number > chauffage_input_number.yaml)"
+      description: "Température de Consigne de chauffe - note : sélectionner **Consigne calculée** si module Tempo optionnel utilisé, ou **Consigne Finale** si module Absence Auto utilisé (input_number > chauffage_input_number.yaml)"
       selector:
         entity:
           domain: input_number
