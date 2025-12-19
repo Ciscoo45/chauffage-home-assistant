@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Absence Auto - Par Pièce
   description: "
 
-    version Absence : v1.51 - 2025-12-20
+    version Absence : v1.52 - 2025-12-20
     
     auteur : Ciscoo45
     
@@ -504,24 +504,22 @@ condition: []
 action:
 
   # Forcer le passage en mode Absence quand seul le principal est absent
+  # Mise à jour des consignes (sauf Hors-gel / Arrêt, gérés par Pilotage)
   - choose:
       - conditions:
           - condition: template
-            value_template: >
-              {{ (is_state('!input binary_sensor_tous_absents', 'on')
-                  or (is_state('!input switch_si_principal_absent', 'on') and (principal_absent | bool)))
-                 and is_state('!input mode_actuel', 'Presence') }}
+            value_template: "{{ mode_actuel_valeur not in ['Hors-gel', 'Arret'] }}"
         sequence:
-          - service: input_select.select_option
+          - service: input_number.set_value
             target:
-              entity_id: !input mode_avant_absence
+              entity_id: !input consigne_absence
             data:
-              option: "Presence"
-          - service: input_select.select_option
+              value: "{{ consigne_absence_calc | float }}"
+          - service: input_number.set_value
             target:
-              entity_id: !input mode_actuel
+              entity_id: !input consigne_finale
             data:
-              option: "Absence"
+              value: "{{ consigne_finale_calc | float }}"
 
   # Mise à jour de la consigne absence
   - service: input_number.set_value
