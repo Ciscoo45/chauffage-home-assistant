@@ -138,7 +138,7 @@ blueprint:
       name: 🎨 Tempo Couleur Actuelle Texte (global)
       description: "Sensor indiquant la couleur du jour actuel (Bleu / Blanc / Rouge)
       
-      Ex. sensor.tempo_couleur_actuelle_texte"
+      Ex. : sensor.tempo_couleur_actuelle_texte"
       selector:
         entity:
           domain: sensor
