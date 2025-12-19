@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Absence Auto - Par Pièce
   description: "
 
-    version Absence : v1.50 - 2025-12-20
+    version Absence : v1.51 - 2025-12-20
     
     auteur : Ciscoo45
     
@@ -341,6 +341,7 @@ blueprint:
 
 # ========= VARIABLES =========
 variables:
+
   piece_name: !input piece_name
   consigne_base: !input consigne_base
   consigne_tempo_input: !input consigne_tempo
@@ -405,6 +406,7 @@ variables:
     {% set mode_actif = mode_actuel_valeur in ['Presence', 'Absence', 'Manuel'] %}
     {% set boost_on = boost_actif_input not in ['', 'none', None] and is_state(boost_actif_input, 'on') %}
     {% set principal_rule = is_state(switch_si_principal_absent, 'on') and (principal_absent | bool) %}
+    {% set transition_pa = (mode_avant_valeur == 'Presence' and mode_actuel_valeur == 'Absence') %}
 
     {% if not is_state(switch_global, 'on') %}
       0
@@ -412,11 +414,14 @@ variables:
       0
     {% elif not mode_actif %}
       0
+    {% elif mode_actuel_valeur in ['Hors-gel', 'Arret'] %}
+      0
     {% elif boost_on %}
       0
     {% elif is_state(binary_sensor_tous_absents, 'on') or principal_rule %}
-      {# Réduction seulement si on est en Absence ou Manuel (pas en Presence directe) #}
-      {% if mode_actuel_valeur in ['Absence', 'Manuel'] %}
+      {% if transition_pa %}
+        0                      {# Presence → Absence : pas de -2, le scheduler gère #}
+      {% elif mode_actuel_valeur in ['Absence', 'Manuel'] %}
         {{ states(reduction_degrees) | float(2) }}
       {% else %}
         0
@@ -425,7 +430,7 @@ variables:
       0
     {% endif %}
 
-  # Consignes finales (minimum 5°C) - CORRIGÉ : cast float explicite
+  # Consignes finales (pas de minimum) - CORRIGÉ : cast float explicite
   consigne_absence_calc: "{{ (consigne_source | float) - (reduction | float) }}"
   consigne_finale_calc: "{{ consigne_absence_calc | float }}"
 
@@ -434,6 +439,7 @@ variables:
 
 # ========= DÉCLENCHEURS =========
 trigger:
+
   # Recalcul quand la consigne de base change
   - platform: state
     entity_id: !input consigne_base
@@ -502,23 +508,20 @@ action:
       - conditions:
           - condition: template
             value_template: >
-              {{ is_state(switch_si_principal_absent, 'on')
-                 and (principal_absent | bool)
-                 and is_state(mode_actuel, 'Presence') }}
+              {{ (is_state('!input binary_sensor_tous_absents', 'on')
+                  or (is_state('!input switch_si_principal_absent', 'on') and (principal_absent | bool)))
+                 and is_state('!input mode_actuel', 'Presence') }}
         sequence:
-          # On mémorise le mode avant (si besoin)
           - service: input_select.select_option
             target:
               entity_id: !input mode_avant_absence
             data:
               option: "Presence"
-          # On passe en Absence
           - service: input_select.select_option
             target:
               entity_id: !input mode_actuel
             data:
               option: "Absence"
-
 
   # Mise à jour de la consigne absence
   - service: input_number.set_value
