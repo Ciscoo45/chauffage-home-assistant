@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Absence Auto - Par Pièce
   description: "
 
-    version Absence : v1.53 - 2025-12-20
+    version Absence : v1.54 - 2025-12-20
     
     auteur : Ciscoo45
     
@@ -431,6 +431,9 @@ variables:
       0
     {% endif %}
 
+  consigne_absence_calc: "{{ (consigne_source | float) - (reduction | float) }}"
+  consigne_finale_calc: "{{ consigne_absence_calc | float }}"
+
 
 
 
@@ -501,7 +504,6 @@ condition: []
 action:
 
   # Forcer le passage en mode Absence quand seul le principal est absent
-  # Mise à jour des consignes (sauf Hors-gel / Arrêt, gérés par Pilotage)
   - choose:
       - conditions:
           - condition: template
@@ -518,7 +520,7 @@ action:
             data:
               option: "Absence"
 
-  # Mise à jour de la consigne absence
+  # Mise à jour des consignes (sauf Hors-gel / Arret, gérés par Pilotage)
   - choose:
       - conditions:
           - condition: template
@@ -534,13 +536,6 @@ action:
               entity_id: !input consigne_finale
             data:
               value: "{{ consigne_finale_calc | float }}"
-
-  # Mise à jour de la consigne finale
-  - service: input_number.set_value
-    target:
-      entity_id: !input consigne_finale
-    data:
-      value: "{{ consigne_finale_calc | float }}"
 
   # Log pour débogage (CORRIGÉ : cast bool explicite)
   - service: logbook.log
