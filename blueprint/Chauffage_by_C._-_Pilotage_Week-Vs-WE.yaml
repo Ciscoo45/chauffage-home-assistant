@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Pilotage Semaine et WE/fériés
   description: "
     
-    version Chauff : v1.07 - 2025-11-19
+    version Chauff : v1.08 - 2025-12-20
     
     auteur : Ciscoo45
     
@@ -270,7 +270,9 @@ blueprint:
           
     entity_consigne:
       name: 🎯 Radiateur (pièce) Consigne
-      description: "Température de Consigne de chauffe - note : sélectionner **Consigne calculée** si module Tempo optionnel utilisé, ou **Consigne Finale** si module Absence Auto utilisé (input_number > chauffage_input_number.yaml)"
+      description: "Température de Consigne de base (input_number > chauffage_input_number.yaml)
+      
+      **NE PAS** utiliser ici ni la Consigne Calculée Tempo Eco, ni la Consigne Finale (que dans le Thermsotat TPI, pas ici)"
       selector:
         entity:
           domain: input_number
@@ -420,6 +422,7 @@ action:
 
           
 mode: single
+
 
 
 
