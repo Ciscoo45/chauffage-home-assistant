@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Absence Auto - Par Pièce
   description: "
 
-    version Absence : v1.55 - 2025-12-20
+    version Absence : v1.56 - 2025-12-20
     
     auteur : Ciscoo45
     
@@ -370,7 +370,9 @@ variables:
   # Valeurs actuelles
   consigne_source: >-
     {% set tempo_input = consigne_tempo_input %}
-    {% if tempo_input not in ['', 'none', None] and states(tempo_input) not in ['unknown', 'unavailable', ''] %}
+    {% if mode_actuel_valeur in ['Hors-gel', 'Arret'] %}
+      {{ states(consigne_base) | float(19) }}           {# on force la base (Pilotage met déjà la valeur HG) #}
+    {% elif tempo_input not in ['', 'none', None] and states(tempo_input) not in ['unknown', 'unavailable', ''] %}
       {{ states(tempo_input) | float(19) }}
     {% else %}
       {{ states(consigne_base) | float(19) }}
