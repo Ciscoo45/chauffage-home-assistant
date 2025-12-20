@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Absence Auto - Par Pièce
   description: "
 
-    version Absence : v1.57 - 2025-12-20
+    version Absence : v1.58 - 2025-12-20
     
     auteur : Ciscoo45
     
@@ -546,6 +546,8 @@ action:
           - condition: template
             value_template: "{{ mode_actuel_valeur == 'Hors-gel' }}"
         sequence:
+          - delay:
+              seconds: 1   # laisser Pilotage écrire la consigne HG dans consigne_base
           - service: input_number.set_value
             target:
               entity_id: !input consigne_absence
