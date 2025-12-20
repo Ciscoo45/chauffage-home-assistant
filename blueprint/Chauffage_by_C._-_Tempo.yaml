@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Gestion Tempo EDF
   description: |
 
-    version Tempo : v1.10 - 2025-12-19
+    version Tempo : v1.11 - 2025-12-20
     
     auteur : Ciscoo45
     
@@ -106,7 +106,7 @@ blueprint:
     
     **Dans le blueprint Pilotage** :
     
-    - Utiliser `input_number.radiateur_sdb_consigne_calculee` au lieu de `radiateur_sdb_consigne`
+    - Garder l'input_number pou la consigne de base, ne pas modifier.
     
     
     **Dans le blueprint Boost** :
@@ -200,6 +200,15 @@ blueprint:
         entity:
           domain: input_boolean
 
+    mode_actuel:
+      name: 🎚️ Radiateur (pièce) Mode
+      description: "Liste des modes Presence / Absence / Manuel / Hors-gel / Arret
+      
+      pour ignorer Tempo quand on est sur les modes Arret ou Hors-gel."
+      selector:
+        entity:
+          domain: input_select
+
     boost_actif:
       name: ⚡ Boost pièce (optionnel)
       description: "Si le boost est ON, ignore les corrections Tempo pour cette pièce"
@@ -223,6 +232,11 @@ variables:
   switch_global: !input switch_global
   switch_local: !input switch_local
   boost_actif_input: !input boost_actif
+
+  # quand ne pas appliquer la correction Tempo : si en mode Arret ou Hors-gel :
+  mode_actuel_input: !input mode_actuel
+  mode_val: "{{ states(mode_actuel_input) if mode_actuel_input not in ['', 'none', None] else '' }}"
+  skip_tempo: "{{ mode_val in ['Hors-gel', 'Arret'] }}"
 
   # Valeurs actuelles
   consigne_valeur: "{{ states(consigne_base) | float(19) }}"
@@ -256,8 +270,10 @@ variables:
   consigne_finale: "{{ consigne_valeur - reduction }}"
 
 
+
 # ========= DÉCLENCHEURS =========
 trigger:
+
   # Recalcul quand la consigne de base change
   - platform: state
     entity_id: !input consigne_base
@@ -296,10 +312,20 @@ trigger:
   - platform: event
     event_type: automation_reloaded
 
+
+
 condition: []
+
+
+
 
 # ========= ACTIONS =========
 action:
+
+  # pas d'actio nde Tempo si on est en mode Arret ou Hors-gel
+  - condition: template
+    value_template: "{{ not skip_tempo }}"
+
   # Mise à jour de la consigne calculée
   - service: input_number.set_value
     target:
