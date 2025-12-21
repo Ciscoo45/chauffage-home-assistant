@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Absence Auto - Globale
   description: "
 
-    version Absence Globale : v1.48 - 2025-12-18
+    version Absence Globale : v1.49 - 2025-12-18
     
     auteur : Ciscoo45
     
@@ -1838,7 +1838,7 @@ action:
               sequence:
                 - condition:  template
                   value_template: "{{ repeat.item.local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
-                
+                            
                 - condition: template
                   value_template: "{{ states(repeat.item.mode) in ['Presence','Absence','Manuel'] }}"
                 
@@ -1894,9 +1894,12 @@ action:
                 - condition: template
                   value_template: "{{ repeat.item.local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
                 
-                # ✅ IGNORER si mode_avant était Hors-gel ou Arret
+                # ✅ IGNORER si le mode ACTUEL est Hors-gel ou Arret
                 - condition: template
-                  value_template: "{{ states(repeat.item.mode_avant) not in ['Hors-gel','Arret'] }}"
+                  value_template: "{{ states(repeat.item.mode) not in ['Hors-gel','Arret'] }}"
+                # ✅ IGNORER si mode_avant est invalide/obsolète
+                - condition: template
+                  value_template: "{{ states(repeat.item.mode_avant) in ['Presence','Absence','Manuel'] }}"
                 
                 # Si mode_avant était Manuel, restaurer la consigne uniquement
                 - if: 
@@ -2040,9 +2043,13 @@ action:
                       value_template: "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item.si_principal,'on') }}"
                     - condition: template
                       value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
-                    # ✅ IGNORER si mode_avant était Hors-gel ou Arret
+                      
+                    # ✅ IGNORER si le mode ACTUEL est Hors-gel ou Arret
                     - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) not in ['Hors-gel','Arret'] }}"
+                      value_template: "{{ states(repeat.item.mode) not in ['Hors-gel','Arret'] }}"
+                    # ✅ IGNORER si mode_avant est invalide/obsolète
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode_avant) in ['Presence','Absence','Manuel'] }}"
                 
                 # Si mode_avant était Manuel, restaurer la consigne uniquement
                 - if: 
@@ -2186,9 +2193,13 @@ action:
                       value_template: "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item.si_principal,'on') }}"
                     - condition: template
                       value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
-                    # ✅ IGNORER si mode_avant était Hors-gel ou Arret
+                      
+                    # ✅ IGNORER si le mode ACTUEL est Hors-gel ou Arret
                     - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) not in ['Hors-gel','Arret'] }}"
+                      value_template: "{{ states(repeat.item.mode) not in ['Hors-gel','Arret'] }}"
+                    # ✅ IGNORER si mode_avant est invalide/obsolète
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode_avant) in ['Presence','Absence','Manuel'] }}"
                 
                 # Si mode_avant était Manuel, restaurer la consigne uniquement
                 - if: 
@@ -2335,9 +2346,13 @@ action:
                       value_template: "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item.si_principal,'on') }}"
                     - condition: template
                       value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
-                    # ✅ IGNORER si mode_avant était Hors-gel ou Arret
+                      
+                    # ✅ IGNORER si le mode ACTUEL est Hors-gel ou Arret
                     - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) not in ['Hors-gel','Arret'] }}"
+                      value_template: "{{ states(repeat.item.mode) not in ['Hors-gel','Arret'] }}"
+                    # ✅ IGNORER si mode_avant est invalide/obsolète
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode_avant) in ['Presence','Absence','Manuel'] }}"
                 
                 # Si mode_avant était Manuel, restaurer la consigne uniquement
                 - if: 
@@ -2481,9 +2496,13 @@ action:
                       value_template: "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item.si_principal,'on') }}"
                     - condition: template
                       value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
-                    # ✅ IGNORER si mode_avant était Hors-gel ou Arret
+                      
+                    # ✅ IGNORER si le mode ACTUEL est Hors-gel ou Arret
                     - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) not in ['Hors-gel','Arret'] }}"
+                      value_template: "{{ states(repeat.item.mode) not in ['Hors-gel','Arret'] }}"
+                    # ✅ IGNORER si mode_avant est invalide/obsolète
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode_avant) in ['Presence','Absence','Manuel'] }}"
                 
                 # Si mode_avant était Manuel, restaurer la consigne uniquement
                 - if: 
@@ -2627,9 +2646,14 @@ action:
                       value_template: "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item.si_principal,'on') }}"
                     - condition: template
                       value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
-                    # ✅ IGNORER si mode_avant était Hors-gel ou Arret
+                      
+                    # ✅ IGNORER si le mode ACTUEL est Hors-gel ou Arret
                     - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) not in ['Hors-gel','Arret'] }}"
+                      value_template: "{{ states(repeat.item.mode) not in ['Hors-gel','Arret'] }}"
+                    # ✅ IGNORER si mode_avant est invalide/obsolète
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode_avant) in ['Presence','Absence','Manuel'] }}"
+
                 
                 # Si mode_avant était Manuel, restaurer la consigne uniquement
                 - if: 
