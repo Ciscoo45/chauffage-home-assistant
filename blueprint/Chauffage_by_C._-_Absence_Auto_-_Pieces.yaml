@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Absence Auto - Par Pièce
   description: "
 
-    version Absence : v1.62 - 2025-12-21
+    version Absence : v1.63 - 2025-12-21
     
     auteur : Ciscoo45
     
@@ -340,16 +340,16 @@ blueprint:
 
 
 # ========= VARIABLES =========
-variables:
+variables: 
 
-  piece_name: !input piece_name
+  piece_name:  ! input piece_name
   consigne_base: !input consigne_base
   consigne_tempo_input: !input consigne_tempo
-  consigne_absence: !input consigne_absence
+  consigne_absence:  !input consigne_absence
   consigne_finale: !input consigne_finale
   consigne_avant_absence: !input consigne_avant_absence
   reduction_degrees: !input reduction_degrees
-  switch_global: !input switch_global
+  switch_global:  !input switch_global
   switch_local: !input switch_local
   switch_si_principal_absent: !input switch_si_principal_absent
   mode_actuel: !input mode_actuel
@@ -361,61 +361,59 @@ variables:
   binary_sensor_utilisateur_4_absent: !input binary_sensor_utilisateur_4_absent
   binary_sensor_utilisateur_5_absent: !input binary_sensor_utilisateur_5_absent
   boost_actif_input: !input boost_actif
-  utilisateur_entity: !input utilisateur_principal
+  utilisateur_entity:  !input utilisateur_principal
 
-  # Liste des utilisateurs (récupérée dynamiquement depuis la config)
   liste_utilisateurs: >-
-    {{ state_attr('input_select.chauffage_absence_auto_liste_utilisateurs', 'options')[1:] or [] }}
+    {{ state_attr('input_select.chauffage_absence_auto_liste_utilisateurs','options')[1:] or [] }}
 
-  # Valeurs actuelles
   consigne_source: >-
     {% set tempo_input = consigne_tempo_input %}
-    {% if mode_actuel_valeur in ['Hors-gel', 'Arret'] %}
+    {% if mode_actuel_valeur in ['Hors-gel','Arret'] %}
       {{ states(consigne_base) | float(19) }}
-    {% elif tempo_input not in ['', 'none', None] and states(tempo_input) not in ['unknown', 'unavailable', ''] %}
+    {% elif tempo_input not in ['','none',None] and states(tempo_input) not in ['unknown','unavailable',''] %}
       {{ states(tempo_input) | float(19) }}
     {% else %}
       {{ states(consigne_base) | float(19) }}
     {% endif %}
 
-  # Mode actuel et avant absence
   mode_actuel_valeur: "{{ states(mode_actuel) }}"
   mode_avant_valeur: "{{ states(mode_avant_absence) }}"
 
-  # Principal utilisateur absent (calcul robuste)
-  principal: "{{ states(utilisateur_entity) }}"
+  principal:  "{{ states(utilisateur_entity) }}"
 
-  # Principal utilisateur absent - MODIFIÉ pour gérer presence_effective
   principal_absent: >-
     {% set entities = states('input_text.chauffage_absence_auto_utilisateurs_entities').split(',') %}
     {% set noms = liste_utilisateurs %}
-    {% set result = false %}
-    {% for i in range(noms|length) %}
-      {% if principal == noms[i] and i < entities|length and entities[i] not in ['', 'unknown', 'unavailable'] %}
-        {% if entities[i].startswith('binary_sensor.') %}
-          {# Binary sensor presence_effective : ON = présent, OFF = absent #}
-          {% set result = not is_state(entities[i], 'on') %}
-        {% elif entities[i].startswith('person.') %}
-          {# Person classique : home = présent, not_home = absent #}
-          {% set result = is_state(entities[i], 'not_home') %}
+    {% set principal_name = states(utilisateur_entity) %}
+    {% if principal_name in noms %}
+      {% set idx = noms. index(principal_name) %}
+      {% if idx < entities|length and entities[idx] not in ['','unknown','unavailable'] %}
+        {% if entities[idx]. startswith('binary_sensor.') %}
+          {{ not is_state(entities[idx],'on') }}
+        {% elif entities[idx]. startswith('person.') %}
+          {{ is_state(entities[idx],'not_home') }}
+        {% else %}
+          {{ false }}
         {% endif %}
+      {% else %}
+        {{ false }}
       {% endif %}
-    {% endfor %}
-    {{ result }}
+    {% else %}
+      {{ false }}
+    {% endif %}
 
-  # Calcul de la réduction (CORRIGÉ : évaluation directe sans variables booléennes texte + action si utilisateur principal est absent)
   reduction: >-
-    {% set mode_actif = mode_actuel_valeur in ['Presence', 'Absence', 'Manuel'] %}
-    {% set boost_on = boost_actif_input not in ['', 'none', None] and is_state(boost_actif_input, 'on') %}
-    {% set principal_rule = is_state(switch_si_principal_absent, 'on') and (principal_absent | bool) %}
+    {% set mode_actif = mode_actuel_valeur in ['Presence','Absence','Manuel'] %}
+    {% set boost_on = boost_actif_input not in ['','none',None] and is_state(boost_actif_input,'on') %}
+    {% set principal_rule = is_state(switch_si_principal_absent,'on') and (principal_absent | bool) %}
     {% set transition_pa = (mode_avant_valeur == 'Presence' and mode_actuel_valeur == 'Absence') %}
-    {% set everybody_absent = is_state(binary_sensor_tous_absents, 'on') %}
+    {% set everybody_absent = is_state(binary_sensor_tous_absents,'on') %}
 
-    {% if not is_state(switch_global, 'on') %}
+    {% if not is_state(switch_global,'on') %}
       0
-    {% elif not is_state(switch_local, 'on') %}
+    {% elif not is_state(switch_local,'on') %}
       0
-    {% elif mode_actuel_valeur in ['Hors-gel', 'Arret'] %}
+    {% elif mode_actuel_valeur in ['Hors-gel','Arret'] %}
       0
     {% elif not mode_actif %}
       0
@@ -423,8 +421,8 @@ variables:
       0
     {% elif everybody_absent or principal_rule %}
       {% if transition_pa %}
-        0                      {# P→A : le scheduler mettra la consigne Absence #}
-      {% elif mode_actuel_valeur in ['Absence', 'Manuel'] %}
+        0
+      {% elif mode_actuel_valeur in ['Absence','Manuel'] %}
         {{ states(reduction_degrees) | float(2) }}
       {% else %}
         0
