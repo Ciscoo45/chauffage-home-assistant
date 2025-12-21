@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Absence Auto - Par Pièce
   description: "
 
-    version Absence : v1.61 - 2025-12-20
+    version Absence : v1.62 - 2025-12-21
     
     auteur : Ciscoo45
     
@@ -365,7 +365,7 @@ variables:
 
   # Liste des utilisateurs (récupérée dynamiquement depuis la config)
   liste_utilisateurs: >-
-    {{ state_attr('input_select.chauffage_absence_auto_liste_utilisateurs', 'options') or [] }}
+    {{ state_attr('input_select.chauffage_absence_auto_liste_utilisateurs', 'options')[1:] or [] }}
 
   # Valeurs actuelles
   consigne_source: >-
