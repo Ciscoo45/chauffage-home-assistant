@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Absence Auto - Globale
   description: "
 
-    version Absence Globale : v1.46 - 2025-12-18
+    version Absence Globale : v1.47 - 2025-12-18
     
     auteur : Ciscoo45
     
@@ -85,7 +85,12 @@ blueprint:
 
     binary_sensor_utilisateur_1_absent:
       name: 👤 Utilisateur 1 Absent (obligatoire)
-      description: "Binary_sensor pour le premier utilisateur si absent : Chauffage personne1 Absent"
+      description: |
+        Binary_sensor pour le premier utilisateur si absent : Chauffage Utilisateur1 Absent
+        
+        Bien rester sur le sensor **binary_sensor.chauffage_utilisateur1_absent** !!
+        
+        **NE PAS** choisir un sensor type binary_sensor.chauffage_michel_absent :(
       default: binary_sensor.chauffage_utilisateur1_absent
       selector:
         entity:
@@ -93,7 +98,12 @@ blueprint:
 
     binary_sensor_utilisateur_2_absent:
       name: 👤 Utilisateur 2 Absent (optionnel)
-      description: "Binary_sensor pour le deuxième utilisateur si absent : Chauffage personne2 Absent"
+      description: |
+        Binary_sensor pour le deuxième utilisateur si absent : Chauffage Utilisateur2 Absent
+        
+        Bien rester sur le sensor **binary_sensor.chauffage_utilisateur2_absent** !!
+        
+        **NE PAS** choisir un sensor type binary_sensor.chauffage_michel_absent :(
       default: binary_sensor.chauffage_utilisateur2_absent
       selector:
         entity:
@@ -101,7 +111,7 @@ blueprint:
 
     binary_sensor_utilisateur_3_absent:
       name: 👤 Utilisateur 3 Absent (optionnel)
-      description: "Binary_sensor pour le troisième utilisateur si absent : Chauffage personne3 Absent"
+      description: "Binary_sensor pour le troisième utilisateur si absent : Chauffage Utilisateur3 Absent"
       default: binary_sensor.chauffage_utilisateur3_absent
       selector:
         entity:
@@ -109,7 +119,7 @@ blueprint:
 
     binary_sensor_utilisateur_4_absent:
       name: 👤 Utilisateur 4 Absent (optionnel)
-      description: "Binary_sensor pour le quatrième utilisateur si absent : Chauffage personne4 Absent"
+      description: "Binary_sensor pour le quatrième utilisateur si absent : Chauffage Utilisateur4 Absent"
       default: binary_sensor.chauffage_utilisateur4_absent
       selector:
         entity:
@@ -117,7 +127,7 @@ blueprint:
 
     binary_sensor_utilisateur_5_absent:
       name: 👤 Utilisateur 5 Absent (optionnel)
-      description: "Binary_sensor pour le cinquième utilisateur si absent : Chauffage personne5 Absent"
+      description: "Binary_sensor pour le cinquième utilisateur si absent : Chauffage Utilisateur Absent"
       default: binary_sensor.chauffage_utilisateur5_absent
       selector:
         entity:
