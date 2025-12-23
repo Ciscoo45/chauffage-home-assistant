@@ -1062,12 +1062,12 @@ variables:
       mode: !input piece_8_mode
       etait_presence: !input piece_8_etait_presence
       utilisateur: !input piece_8_utilisateur
-      si_principal: ! input piece_8_si_principal
-      local_actif: ! input piece_8_local_actif
+      si_principal: !input piece_8_si_principal
+      local_actif: !input piece_8_local_actif
 
     - nom: !input piece_9_nom
       mode: !input piece_9_mode
-      etait_presence: ! input piece_9_etait_presence
+      etait_presence: !input piece_9_etait_presence
       utilisateur: !input piece_9_utilisateur
       si_principal: !input piece_9_si_principal
       local_actif: !input piece_9_local_actif
@@ -1100,7 +1100,7 @@ variables:
       si_principal:  !input piece_13_si_principal
       local_actif:  !input piece_13_local_actif
 
-    - nom: ! input piece_14_nom
+    - nom: !input piece_14_nom
       mode: !input piece_14_mode
       etait_presence:  !input piece_14_etait_presence
       utilisateur: !input piece_14_utilisateur
@@ -1279,7 +1279,7 @@ action:
 
                 - if:
                     - condition:  template
-                      value_template:  "{{ states(repeat.item. mode) in ['Manuel','Absence'] }}"
+                      value_template:  "{{ states(repeat.item.mode) in ['Manuel','Absence'] }}"
                   then: 
                     - service: logbook.log
                       data:
@@ -1304,7 +1304,7 @@ action:
 
                 # ✅ IGNORER les pièces avec utilisateur principal actif
                 - condition: template
-                  value_template: "{{ repeat. item.si_principal in ['','none',None] or not is_state(repeat.item.si_principal,'on') }}"
+                  value_template: "{{ repeat.item.si_principal in ['','none',None] or not is_state(repeat.item.si_principal,'on') }}"
 
                 # ✅ IGNORER si le mode ACTUEL est Hors-gel ou Arret
                 - condition: template
@@ -1351,7 +1351,7 @@ action:
                     - condition: template
                       value_template: "{{ repeat.item.local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
                     - condition: template
-                      value_template: "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item. si_principal,'on') }}"
+                      value_template: "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item.si_principal,'on') }}"
                     - condition: template
                       value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
                     - condition: template
@@ -1361,13 +1361,13 @@ action:
                     - condition: template
                       value_template: "{{ states(repeat.item.mode) == 'Presence' }}"
                   then:
-                    - service: input_boolean. turn_on
+                    - service: input_boolean.turn_on
                       target: 
                         entity_id: "{{ repeat.item.etait_presence }}"
 
                     - service: input_select.select_option
                       target:
-                        entity_id: "{{ repeat. item.mode }}"
+                        entity_id: "{{ repeat.item.mode }}"
                       data:
                         option: 'Absence'
 
@@ -1383,7 +1383,7 @@ action:
                     - service:  logbook.log
                       data:
                         name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} absent → Mode {{ states(repeat.item. mode) }}"
+                        message: "{{ nom_utilisateur }} absent → Mode {{ states(repeat.item.mode) }}"
 
       # === UTILISATEUR 1 REVIENT ===
       - conditions:
@@ -1406,11 +1406,11 @@ action:
                     - condition:  template
                       value_template:  "{{ repeat.item.local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
                     - condition: template
-                      value_template: "{{ repeat.item. si_principal not in ['','none',None] and is_state(repeat.item.si_principal,'on') }}"
+                      value_template: "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item.si_principal,'on') }}"
                     - condition: template
-                      value_template: "{{ states(repeat. item.utilisateur) == nom_utilisateur }}"
+                      value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
                     - condition: template
-                      value_template: "{{ states(repeat. item.mode) not in ['Hors-gel','Arret'] }}"
+                      value_template: "{{ states(repeat.item.mode) not in ['Hors-gel','Arret'] }}"
 
                 - if:
                     - condition: template
@@ -1474,7 +1474,7 @@ action:
 
                     - service: logbook.log
                       data:
-                        name: "Absence Auto {{ repeat.item. nom }}"
+                        name: "Absence Auto {{ repeat.item.nom }}"
                         message:  "{{ nom_utilisateur }} absent → Mode Presence → Absence"
 
                 - if:
@@ -1483,7 +1483,7 @@ action:
                   then:
                     - service: logbook.log
                       data:
-                        name: "Absence Auto {{ repeat.item. nom }}"
+                        name: "Absence Auto {{ repeat.item.nom }}"
                         message:  "{{ nom_utilisateur }} absent → Mode {{ states(repeat.item.mode) }}"
 
       # === UTILISATEUR 2 REVIENT ===
@@ -1494,7 +1494,7 @@ action:
           - variables:
               nom_utilisateur: "{{ liste_utilisateurs[1] if liste_utilisateurs|length > 1 else 'Utilisateur2' }}"
 
-          - service: logbook. log
+          - service: logbook.log
             data:
               name: "Absence Auto Globale"
               message: "🏠 {{ nom_utilisateur }} est de retour - restauration de ses pièces"
@@ -1528,7 +1528,7 @@ action:
                         name: "Absence Auto {{ repeat.item.nom }}"
                         message: "{{ nom_utilisateur }} de retour → Mode Presence restauré"
 
-                    - service: input_boolean. turn_off
+                    - service: input_boolean.turn_off
                       target: 
                         entity_id: "{{ repeat.item.etait_presence }}"
 
@@ -1551,9 +1551,9 @@ action:
                 - condition:  and
                   conditions:
                     - condition: template
-                      value_template: "{{ repeat. item.local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
+                      value_template: "{{ repeat.item.local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
                     - condition: template
-                      value_template: "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item. si_principal,'on') }}"
+                      value_template: "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item.si_principal,'on') }}"
                     - condition: template
                       value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
                     - condition: template
@@ -1563,13 +1563,13 @@ action:
                     - condition: template
                       value_template: "{{ states(repeat.item.mode) == 'Presence' }}"
                   then:
-                    - service: input_boolean. turn_on
+                    - service: input_boolean.turn_on
                       target: 
                         entity_id: "{{ repeat.item.etait_presence }}"
 
                     - service: input_select.select_option
                       target:
-                        entity_id: "{{ repeat. item.mode }}"
+                        entity_id: "{{ repeat.item.mode }}"
                       data:
                         option: 'Absence'
 
@@ -1584,7 +1584,7 @@ action:
                   then:
                     - service: logbook.log
                       data:
-                        name: "Absence Auto {{ repeat.item. nom }}"
+                        name: "Absence Auto {{ repeat.item.nom }}"
                         message:  "{{ nom_utilisateur }} absent → Mode {{ states(repeat.item.mode) }}"
 
       # === UTILISATEUR 3 REVIENT ===
@@ -1595,7 +1595,7 @@ action:
           - variables:
               nom_utilisateur: "{{ liste_utilisateurs[2] if liste_utilisateurs|length > 2 else 'Utilisateur3' }}"
 
-          - service: logbook. log
+          - service: logbook.log
             data:
               name: "Absence Auto Globale"
               message: "🏠 {{ nom_utilisateur }} est de retour - restauration de ses pièces"
@@ -1606,9 +1606,9 @@ action:
                 - condition: and
                   conditions:
                     - condition: template
-                      value_template: "{{ repeat.item. local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
+                      value_template: "{{ repeat.item.local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
                     - condition: template
-                      value_template: "{{ repeat. item.si_principal not in ['','none',None] and is_state(repeat.item.si_principal,'on') }}"
+                      value_template: "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item.si_principal,'on') }}"
                     - condition: template
                       value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
                     - condition: template
@@ -1616,7 +1616,7 @@ action:
 
                 - if:
                     - condition:  template
-                      value_template:  "{{ is_state(repeat. item.etait_presence,'on') }}"
+                      value_template:  "{{ is_state(repeat.item.etait_presence,'on') }}"
                   then: 
                     - service: input_select.select_option
                       target:
@@ -1652,7 +1652,7 @@ action:
                 - condition: and
                   conditions: 
                     - condition: template
-                      value_template: "{{ repeat.item.local_actif not in ['','none',None] and is_state(repeat.item. local_actif,'on') }}"
+                      value_template: "{{ repeat.item.local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
                     - condition: template
                       value_template: "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item.si_principal,'on') }}"
                     - condition: template
@@ -1662,7 +1662,7 @@ action:
 
                 - if:
                     - condition:  template
-                      value_template:  "{{ states(repeat.item. mode) == 'Presence' }}"
+                      value_template:  "{{ states(repeat.item.mode) == 'Presence' }}"
                   then: 
                     - service: input_boolean.turn_on
                       target:
@@ -1676,7 +1676,7 @@ action:
 
                     - service: logbook.log
                       data:
-                        name: "Absence Auto {{ repeat. item.nom }}"
+                        name: "Absence Auto {{ repeat.item.nom }}"
                         message: "{{ nom_utilisateur }} absent → Mode Presence → Absence"
 
                 - if: 
@@ -1685,7 +1685,7 @@ action:
                   then:
                     - service: logbook.log
                       data:
-                        name: "Absence Auto {{ repeat. item.nom }}"
+                        name: "Absence Auto {{ repeat.item.nom }}"
                         message: "{{ nom_utilisateur }} absent → Mode {{ states(repeat.item.mode) }}"
 
       # === UTILISATEUR 4 REVIENT ===
@@ -1707,9 +1707,9 @@ action:
                 - condition:  and
                   conditions:
                     - condition: template
-                      value_template: "{{ repeat. item.local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
+                      value_template: "{{ repeat.item.local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
                     - condition: template
-                      value_template: "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item. si_principal,'on') }}"
+                      value_template: "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item.si_principal,'on') }}"
                     - condition: template
                       value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
                     - condition: template
@@ -1727,12 +1727,12 @@ action:
 
                     - service: logbook.log
                       data:
-                        name: "Absence Auto {{ repeat.item. nom }}"
+                        name: "Absence Auto {{ repeat.item.nom }}"
                         message:  "{{ nom_utilisateur }} de retour → Mode Presence restauré"
 
                     - service: input_boolean.turn_off
                       target:
-                        entity_id: "{{ repeat.item. etait_presence }}"
+                        entity_id: "{{ repeat.item.etait_presence }}"
 
       # === UTILISATEUR 5 PART ===
       - conditions:
@@ -1753,7 +1753,7 @@ action:
                 - condition: and
                   conditions:
                     - condition: template
-                      value_template: "{{ repeat.item.local_actif not in ['','none',None] and is_state(repeat. item.local_actif,'on') }}"
+                      value_template: "{{ repeat.item.local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
                     - condition: template
                       value_template: "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item.si_principal,'on') }}"
                     - condition: template
@@ -1763,19 +1763,19 @@ action:
 
                 - if:
                     - condition: template
-                      value_template: "{{ states(repeat. item.mode) == 'Presence' }}"
+                      value_template: "{{ states(repeat.item.mode) == 'Presence' }}"
                   then:
                     - service: input_boolean.turn_on
                       target:
-                        entity_id: "{{ repeat.item. etait_presence }}"
+                        entity_id: "{{ repeat.item.etait_presence }}"
 
-                    - service: input_select. select_option
+                    - service: input_select.select_option
                       target: 
                         entity_id: "{{ repeat.item.mode }}"
                       data:
                         option: 'Absence'
 
-                    - service: logbook. log
+                    - service: logbook.log
                       data:
                         name: "Absence Auto {{ repeat.item.nom }}"
                         message: "{{ nom_utilisateur }} absent → Mode Presence → Absence"
@@ -1784,7 +1784,7 @@ action:
                     - condition: template
                       value_template: "{{ states(repeat.item.mode) in ['Manuel','Absence'] }}"
                   then: 
-                    - service: logbook. log
+                    - service: logbook.log
                       data:
                         name: "Absence Auto {{ repeat.item.nom }}"
                         message: "{{ nom_utilisateur }} absent → Mode {{ states(repeat.item.mode) }}"
@@ -1810,11 +1810,11 @@ action:
                     - condition: template
                       value_template: "{{ repeat.item.local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
                     - condition:  template
-                      value_template:  "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat. item.si_principal,'on') }}"
+                      value_template:  "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item.si_principal,'on') }}"
                     - condition:  template
-                      value_template:  "{{ states(repeat.item. utilisateur) == nom_utilisateur }}"
+                      value_template:  "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
                     - condition:  template
-                      value_template:  "{{ states(repeat.item. mode) not in ['Hors-gel','Arret'] }}"
+                      value_template:  "{{ states(repeat.item.mode) not in ['Hors-gel','Arret'] }}"
 
                 - if:
                     - condition: template
@@ -1828,12 +1828,12 @@ action:
 
                     - service: logbook.log
                       data:
-                        name: "Absence Auto {{ repeat. item.nom }}"
+                        name: "Absence Auto {{ repeat.item.nom }}"
                         message: "{{ nom_utilisateur }} de retour → Mode Presence restauré"
 
                     - service: input_boolean.turn_off
                       target:
-                        entity_id: "{{ repeat. item.etait_presence }}"
+                        entity_id: "{{ repeat.item.etait_presence }}"
 
 mode: queued
 max:  10
