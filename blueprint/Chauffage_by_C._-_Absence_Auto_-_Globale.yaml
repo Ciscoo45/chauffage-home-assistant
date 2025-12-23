@@ -1,8 +1,8 @@
 blueprint:
   name: Chauffage by C. - Absence Auto - Globale
   description: |
-
-    version Absence Globale : v1.61 - 2025-12-23
+  
+    version Absence Auto - Globale : v1.62 - 2025-12-23
     
     auteur : Ciscoo45
     
@@ -11,62 +11,90 @@ blueprint:
     
     ## Description
     
-    Blueprint **compagnon** de la Gestion Absence Auto qui gère les **transitions** entre Presence et Absence.
-    
-    
-    **Fonctionnement** :
-    
-    - Détecte quand **tous les utilisateurs partent** ou **reviennent**
-    
-    - Détecte quand un **utilisateur principal** part ou revient (par pièce)
-    
-    - Sauvegarde le mode et la consigne avant départ
-    
-    - Restaure le mode et la consigne au retour :
-    
-      • **Absence si était en Presence avant le départ** → forcer cycle Arret (1s) puis Presence (resync Scheduler qui gère la consigne)
-
-      • **Absence si était déjà en Absence avant départ** → forcer cycle Arret (1s) puis Absence (resync Scheduler qui gère la consigne)
-      
-      • **Manuel** → repasser en Manuel + **restaurer la consigne sauvegardée**
-    
-    - **Ne touche PAS** aux modes Hors-gel ou Arret
-    
-    
-    **Important** : Ce blueprint doit être créé **une seule fois** (pas par pièce).
-    
-    Il gère toutes les pièces en même temps (1 obligatoire + 19 optionnelles).
+    Ce Blueprint, **compagnon** de la Gestion Absence Auto, gère **uniquement les transitions de mode**
+    entre **Presence** et **Absence**, à l’échelle **globale** (tous absents) et **par utilisateur principal**.
     
     
     ___
     
-    ## Configuration universelle
+    ## Fonctionnement
     
-    Ce blueprint est **100% universel** :
+    Ce blueprint :
     
-    - Support de **1 à 5 utilisateurs** (1 obligatoire + 4 optionnels)
+    - Détecte quand **tous les utilisateurs partent** ou **reviennent**
     
-    - Support de **1 à 20 pièces** (1 obligatoire + 19 optionnelles)
+    - Détecte quand un **utilisateur principal** part ou revient **par pièce**
     
-    - Utilise la liste des utilisateurs définie dans `package \ chauffage_absence_auto_config_package.yaml`
+    - Gère les pièces :
+      - **sans utilisateur principal**
+      - **avec utilisateur principal actif**
     
-    - Fonctionne avec n'importe quel groupe de présence
+    - Mémorise si une pièce était en **mode Presence** avant le départ
+      via le helper :
+      `input_boolean.radiateur_xxx_etait_presence`
     
-    - **Restaure la consigne** en mode Manuel uniquement
+    - Bascule une pièce en **mode Absence** uniquement si elle était en **Presence**
+    
+    - Restaure le **mode Presence** uniquement si la pièce était précédemment en Presence
+    
+    
+    ___
+    
+    ## Règles importantes
+    
+    - Ce blueprint :
+      - **NE GÈRE PAS** les consignes de température
+      - **NE FORCE PAS** de cycle Arret / Presence
+      - **NE MODIFIE PAS** le mode Manuel
+      - **NE TOUCHE PAS** aux modes **Hors-gel** ou **Arret**
+    
+    - La gestion des consignes est laissée :
+      - au Scheduler
+      - ou à des automatisations séparées
+    
+    
+    ___
+    
+    ## Architecture
+    
+    - Ce blueprint doit être créé **UNE SEULE FOIS**
+    
+    - Il gère simultanément :
+      - **1 à 5 utilisateurs**
+      - **1 à 20 pièces**
+    
+    - Les pièces sont traitées dynamiquement à partir des helpers configurés
     
     
     ___
     
     ## Pré-requis
     
-    - Group `group.xxxx_utilisateurs` contenant tous les utilisateurs
+    - Groupe `group.xxx_utilisateurs` contenant tous les utilisateurs
     
-    - Binary sensors de présence (créés automatiquement par `template \ chauffage_absence_auto_template.yaml`)
+    - Binary sensors d’absence utilisateur :
+      - `binary_sensor.chauffage_utilisateurX_absent`
     
-    - Tous les helpers Absence Auto créés pour chaque pièce
-
-    - **NOUVEAU** : Input boolean `radiateur_xxx_etait_presence` pour chaque pièce
+    - Helpers par pièce :
+      - `input_select.radiateur_xxx_mode`
+      - `input_boolean.radiateur_xxx_etait_presence`
+      - `input_boolean.radiateur_xxx_absence_auto_actif`
+      - `input_boolean.radiateur_xxx_absence_si_principal_absent`
     
+    - Liste des utilisateurs définie dans :
+      `chauffage_absence_auto_config_package.yaml`
+    
+    
+    ___
+    
+    ## Philosophie
+    
+    Ce blueprint assure une **transition fiable et propre des modes**
+    en fonction de la présence réelle,
+    tout en laissant la **logique de chauffage (consignes, planning, puissance)**
+    entièrement découplée.
+  
+      
     
     ___
     
