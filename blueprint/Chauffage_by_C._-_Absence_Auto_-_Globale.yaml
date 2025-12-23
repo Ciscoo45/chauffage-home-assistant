@@ -1005,8 +1005,11 @@ blueprint:
           
 # ========= VARIABLES =========
 variables:
+
   liste_utilisateurs: >-
-    {{ state_attr('input_select.chauffage_absence_auto_liste_utilisateurs','options')[1:] or [] }}
+    {% set opts = state_attr('input_select.chauffage_absence_auto_liste_utilisateurs','options') or [] %}
+    {{ opts[1:] }}
+
 
   pieces: 
     - nom: !input piece_1_nom
