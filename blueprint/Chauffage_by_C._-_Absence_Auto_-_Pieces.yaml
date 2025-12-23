@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Absence Auto - Par Pièce
   description: |
   
-    version Absence Auto – par Pièce : v1.82 – 2025-12-23
+    version Absence Auto – par Pièce : v1.83 – 2025-12-23
     
     auteur : Ciscoo45
     
@@ -396,20 +396,16 @@ variables:
       0
     {% elif boost_on %}
       0
+    {% elif mode_actuel_valeur == 'Absence' and (transition_pa or etait_en_presence) %}
+      0
+    {% elif mode_actuel_valeur == 'Manuel' and transition_pa %}
+      0
     {% elif principal_rule and not everybody_absent %}
-      {% if mode_actuel_valeur == 'Absence' and transition_pa %}
-        0
-      {% elif mode_actuel_valeur == 'Manuel' and transition_pa %}
-        0
-      {% elif mode_actuel_valeur in ['Absence','Manuel'] %}
+      {% if mode_actuel_valeur in ['Absence','Manuel'] %}
         {{ states(reduction_degrees) | float(2) }}
       {% else %}
         0
       {% endif %}
-    {% elif everybody_absent and mode_actuel_valeur == 'Absence' and (transition_pa or etait_en_presence) %}
-      0
-    {% elif everybody_absent and mode_actuel_valeur == 'Manuel' and transition_pa %}
-      0
     {% else %}
       0
     {% endif %}
