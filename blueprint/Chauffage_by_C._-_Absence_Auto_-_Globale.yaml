@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Absence Auto - Globale
   description: |
   
-    version Absence Auto - Globale : v1.62 - 2025-12-23
+    version Absence Auto - Globale : v1.63 - 2025-12-23
     
     auteur : Ciscoo45
     
@@ -215,7 +215,7 @@ blueprint:
     # Pièce 2
     piece_2_nom:
       name: 🏠 Pièce 2 - Nom de la pièce (pièce)
-      description: "Nom de la 2ième pièce (optionnel, laisser vide si non utilisé)"
+      description: "Nom de la 2ième pièce (optionnel, laisser vide si non utilisée)"
       default: ""
       selector:
         text:
@@ -230,26 +230,28 @@ blueprint:
       name:  💾 Pièce 2 - Était en Presence avant le départ de/des utilisateurs (pièce)
       description: |
         Input_boolean pour mémoriser si la pièce était en mode Presence
+        (optionnel, laisser vide si la pièce n'est pas utilisée)
+      default: ""
       selector:
         entity:
           domain: input_boolean
     piece_2_utilisateur:
       name: 👤 Pièce 2 - Utilisateur Principal (pièce)
-      description: "Utilisateur principal pour cette pièce"
+      description: "Utilisateur principal pour cette pièce (optionnel, laisser vide si la pièce n'est pas utilisée)"
       default: ""
       selector:
         entity:
           domain: input_select
     piece_2_si_principal:
       name: 👤 Pièce 2 - Absence si utilisateur principal absent (pièce)
-      description: "Activer réduction si utilisateur principal absent"
+      description: "Activer réduction si utilisateur principal absent (optionnel, laisser vide si la pièce n'est pas utilisée)"
       default: ""
       selector:
         entity:
           domain: input_boolean
     piece_2_local_actif:
       name: 🏠 Pièce 2 - Gestion Absence Auto (pièce)
-      description: "Gestion Absence Auto active pour cette pièce"
+      description: "Gestion Absence Auto active pour cette pièce (optionnel, laisser vide si la pièce n'est pas utilisée)"
       default: ""
       selector:
         entity:
@@ -273,6 +275,7 @@ blueprint:
       name:  💾 Pièce 3 - Était en Presence avant le départ de/des utilisateurs (pièce)
       description: |
         Input_boolean pour mémoriser si la pièce était en mode Presence
+      default: ""
       selector:
         entity:
           domain: input_boolean
@@ -316,6 +319,7 @@ blueprint:
       name:  💾 Pièce 4 - Était en Presence avant le départ de/des utilisateurs (pièce)
       description: |
         Input_boolean pour mémoriser si la pièce était en mode Presence
+      default: ""
       selector:
         entity:
           domain: input_boolean
@@ -359,6 +363,7 @@ blueprint:
       name:  💾 Pièce 5 - Était en Presence avant le départ de/des utilisateurs (pièce)
       description: |
         Input_boolean pour mémoriser si la pièce était en mode Presence
+      default: ""
       selector:
         entity:
           domain: input_boolean
@@ -402,6 +407,7 @@ blueprint:
       name:  💾 Pièce 6 - Était en Presence avant le départ de/des utilisateurs (pièce)
       description: |
         Input_boolean pour mémoriser si la pièce était en mode Presence
+      default: ""
       selector:
         entity:
           domain: input_boolean
@@ -445,6 +451,7 @@ blueprint:
       name:  💾 Pièce 7 - Était en Presence avant le départ de/des utilisateurs (pièce)
       description: |
         Input_boolean pour mémoriser si la pièce était en mode Presence
+      default: ""
       selector:
         entity:
           domain: input_boolean
@@ -488,6 +495,7 @@ blueprint:
       name:  💾 Pièce 8 - Était en Presence avant le départ de/des utilisateurs (pièce)
       description: |
         Input_boolean pour mémoriser si la pièce était en mode Presence
+      default: ""
       selector:
         entity:
           domain: input_boolean
@@ -531,6 +539,7 @@ blueprint:
       name:  💾 Pièce 9 - Était en Presence avant le départ de/des utilisateurs (pièce)
       description: |
         Input_boolean pour mémoriser si la pièce était en mode Presence
+      default: ""
       selector:
         entity:
           domain: input_boolean
@@ -574,6 +583,7 @@ blueprint:
       name:  💾 Pièce 10 - Était en Presence avant le départ de/des utilisateurs (pièce)
       description: |
         Input_boolean pour mémoriser si la pièce était en mode Presence
+      default: ""
       selector:
         entity:
           domain: input_boolean
@@ -617,6 +627,7 @@ blueprint:
       name:  💾 Pièce 11 - Était en Presence avant le départ de/des utilisateurs (pièce)
       description: |
         Input_boolean pour mémoriser si la pièce était en mode Presence
+      default: ""
       selector:
         entity:
           domain: input_boolean
@@ -660,6 +671,7 @@ blueprint:
       name:  💾 Pièce 12 - Était en Presence avant le départ de/des utilisateurs (pièce)
       description: |
         Input_boolean pour mémoriser si la pièce était en mode Presence
+      default: ""
       selector:
         entity:
           domain: input_boolean
@@ -703,6 +715,7 @@ blueprint:
       name:  💾 Pièce 13 - Était en Presence avant le départ de/des utilisateurs (pièce)
       description: |
         Input_boolean pour mémoriser si la pièce était en mode Presence
+      default: ""
       selector:
         entity:
           domain: input_boolean
@@ -746,6 +759,7 @@ blueprint:
       name:  💾 Pièce 14 - Était en Presence avant le départ de/des utilisateurs (pièce)
       description: |
         Input_boolean pour mémoriser si la pièce était en mode Presence
+      default: ""
       selector:
         entity:
           domain: input_boolean
@@ -789,6 +803,7 @@ blueprint:
       name:  💾 Pièce 15 - Était en Presence avant le départ de/des utilisateurs (pièce)
       description: |
         Input_boolean pour mémoriser si la pièce était en mode Presence
+      default: ""
       selector:
         entity:
           domain: input_boolean
@@ -832,6 +847,7 @@ blueprint:
       name:  💾 Pièce 16 - Était en Presence avant le départ de/des utilisateurs (pièce)
       description: |
         Input_boolean pour mémoriser si la pièce était en mode Presence
+      default: ""
       selector:
         entity:
           domain: input_boolean
@@ -875,6 +891,7 @@ blueprint:
       name:  💾 Pièce 17 - Était en Presence avant le départ de/des utilisateurs (pièce)
       description: |
         Input_boolean pour mémoriser si la pièce était en mode Presence
+      default: ""
       selector:
         entity:
           domain: input_boolean
@@ -918,6 +935,7 @@ blueprint:
       name:  💾 Pièce 18 - Était en Presence avant le départ de/des utilisateurs (pièce)
       description: |
         Input_boolean pour mémoriser si la pièce était en mode Presence
+      default: ""
       selector:
         entity:
           domain: input_boolean
@@ -961,6 +979,7 @@ blueprint:
       name:  💾 Pièce 19 - Était en Presence avant le départ de/des utilisateurs (pièce)
       description: |
         Input_boolean pour mémoriser si la pièce était en mode Presence
+      default: ""
       selector:
         entity:
           domain: input_boolean
@@ -1004,6 +1023,7 @@ blueprint:
       name:  💾 Pièce 20 - Était en Presence avant le départ de/des utilisateurs (pièce)
       description: |
         Input_boolean pour mémoriser si la pièce était en mode Presence
+      default: ""
       selector:
         entity:
           domain: input_boolean
