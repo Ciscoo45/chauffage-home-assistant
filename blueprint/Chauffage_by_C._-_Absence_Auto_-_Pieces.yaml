@@ -490,7 +490,7 @@ action:
   
   # ✅ NOUVEAU : Attendre que le Scheduler réagisse au changement de mode
   - delay:
-      seconds: 3
+      seconds: 0
       
   # ✅ sauvegarde mode_avant_absence dès le début de l'absence
   - choose:
