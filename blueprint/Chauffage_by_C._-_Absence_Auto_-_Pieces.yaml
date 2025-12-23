@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Absence Auto - Par Pièce
   description: |
   
-    version Absence Auto – par Pièce : v1.79 – 2025-12-23
+    version Absence Auto – par Pièce : v1.80 – 2025-12-23
     
     auteur : Ciscoo45
     
@@ -396,8 +396,8 @@ variables:
       0
     {% elif boost_on %}
       0
-    {% elif mode_actuel_valeur == 'Absence' and (transition_pa or etait_en_presence) %}
-      0
+    {% elif everybody_absent and mode_actuel_valeur == 'Absence' and (transition_pa or etait_en_presence) %}
+      0   # ✅ MODIFIÉ : pas de réduction si TOUS absents + mode Absence + (transition OU était en Presence)
     {% elif mode_actuel_valeur == 'Manuel' and transition_pa %}
       0
     {% elif principal_rule and not everybody_absent %}
