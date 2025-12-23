@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Absence Auto - Par Pièce
   description: |
   
-    version Absence Auto – par Pièce : v1.74 – 2025-12-23
+    version Absence Auto – par Pièce : v1.75 – 2025-12-23
     
     auteur : Ciscoo45
     
@@ -483,12 +483,7 @@ condition: []
 
 # ========= ACTIONS =========
 action:
-
-
-  # ✅ NOUVEAU : Attendre que le Scheduler se mette à jour
-  - delay:
-      seconds: 2
-      
+  
 
   # ✅ sauvegarde mode_avant_absence dès le début de l'absence
   - choose:
