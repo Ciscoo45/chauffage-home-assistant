@@ -333,12 +333,13 @@ variables:
   binary_sensor_utilisateur_5_absent: !input binary_sensor_utilisateur_5_absent
   boost_actif_input: !input boost_actif
   utilisateur_entity: !input utilisateur_principal
+  etait_presence_input: !input etait_presence
 
   liste_utilisateurs: >-
     {% set opts = state_attr('input_select.chauffage_absence_auto_liste_utilisateurs','options') or [] %}
     {{ opts[1:] }}
 
-  mode_actuel_valeur: "{{ states(mode_actuel) }}"      # était après consigne_source, mais cette variable utilise la variable mode_actuel_valeur qui n'était alors pas encore définie
+  mode_actuel_valeur: "{{ states(mode_actuel) }}"
   
   consigne_source: >-
     {% set tempo_input = consigne_tempo_input %}
@@ -375,6 +376,9 @@ variables:
       {{ false }}
     {% endif %}
 
+  etait_en_presence: >-
+    {{ etait_presence_input not in ['','none',None] and is_state(etait_presence_input,'on') }}
+
   reduction: >-
     {% set mode_actif = mode_actuel_valeur in ['Presence','Absence','Manuel'] %}
     {% set boost_on = boost_actif_input not in ['','none',None] and is_state(boost_actif_input,'on') %}
@@ -392,7 +396,7 @@ variables:
       0
     {% elif boost_on %}
       0
-    % elif everybody_absent and etait_en_presence %}
+    {% elif everybody_absent and etait_en_presence %}
       0   # ✅ NOUVEAU :  pas de réduction si tous absents ET on était en Presence (transition gérée par Scheduler)  
     {% elif principal_rule and not everybody_absent %}
       {% if transition_pa %}
@@ -408,7 +412,7 @@ variables:
 
   consigne_absence_calc: "{{ (consigne_source | float) - (reduction | float) }}"
   consigne_finale_calc: "{{ consigne_absence_calc | float }}"
-  etait_presence_input: !input etait_presence
+  
 
 
 
