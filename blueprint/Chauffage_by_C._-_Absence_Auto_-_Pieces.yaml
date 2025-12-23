@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Absence Auto - Par Pièce
   description: |
 
-    version Absence Auto par Pièce : v1.67 - 2025-12-22
+    version Absence Auto par Pièce : v1.70 - 2025-12-23
     
     auteur : Ciscoo45
     
@@ -370,7 +370,8 @@ variables:
   utilisateur_entity: !input utilisateur_principal
 
   liste_utilisateurs: >-
-    {{ state_attr('input_select.chauffage_absence_auto_liste_utilisateurs','options')[1:] or [] }}
+    {% set opts = state_attr('input_select.chauffage_absence_auto_liste_utilisateurs','options') or [] %}
+    {{ opts[1:] }}
 
   mode_actuel_valeur: "{{ states(mode_actuel) }}"      # était après consigne_source, mais cette variable utilise la variable mode_actuel_valeur qui n'était alors pas encore définie
   
