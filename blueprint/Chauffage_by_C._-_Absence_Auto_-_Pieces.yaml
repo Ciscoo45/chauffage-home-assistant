@@ -1,8 +1,8 @@
 blueprint:
   name: Chauffage by C. - Absence Auto - Par Pièce
   description: |
-
-    version Absence Auto par Pièce : v1.70 - 2025-12-23
+  
+    version Absence Auto – Par Pièce : v1.70 – 2025-12-23
     
     auteur : Ciscoo45
     
@@ -11,162 +11,128 @@ blueprint:
     
     ## Description
     
-    Blueprint **optionnel** pour gérer automatiquement le mode Absence et réduire la consigne de chauffage quand les utilisateurs sont absents.   
+    Blueprint **par pièce** permettant de calculer automatiquement une **consigne finale de chauffage**
+    en fonction :
     
+    - de la présence des utilisateurs
+    - du mode de chauffage actif
+    - du boost
+    - des règles d’absence (globale et par utilisateur principal)
     
-    **Fonctionnement** :
+    Ce blueprint **ne pilote pas directement le chauffage** :
+    il produit une **consigne finale** destinée à être utilisée par :
     
-    - Calcule en temps réel une **consigne finale** selon le contexte :
-    
-      • **Mode Presence → Absence** : Pas de réduction (Scheduler gère la consigne Absence)
-      
-      • **Mode Absence ou Manuel** : Réduction de -2°C supplémentaire
-      
-      • **Mode Hors-gel ou Arret** : Aucune action
-    
-    - N'applique **aucune réduction** si :
-    
-      • le switch **global** Absence Auto est désactivé
-      
-      • le switch **local** Absence Auto (de la pièce) est désactivé
-      
-      • le **boost** est actif (confort prioritaire)
-    
-    
-    **Configuration universelle** :
-    
-    - Support de **1 à 5 utilisateurs** (1 obligatoire + 4 optionnels)
-    
-    - Aucun nom d'utilisateur codé en dur
-    
-    - Configuration centralisée dans `package/chauffage_absence_auto_config_package.yaml`
+    - le Thermostat TPI
+    - le blueprint de Pilotage
     
     
     ___
     
-    ## Modes de chauffage supportés
+    ## Rôle exact du blueprint
     
-    - **Presence** : Mode confort avec température normale
+    Ce blueprint :
     
-    - **Absence** : Mode économie avec température réduite
+    - Calcule une **consigne Absence** à partir :
+      - de la consigne de base
+      - ou de la consigne Tempo (si utilisée)
     
-    - **Manuel** : Mode manuel avec température fixée par l'utilisateur
+    - Applique une **réduction supplémentaire** uniquement dans certains cas
     
-    - **Hors-gel** : Protection antigel (pas d'action Absence Auto)
+    - Met à jour :
+      - `radiateur_xxx_consigne_absence`
+      - `radiateur_xxx_consigne_finale`
     
-    - **Arret** : Chauffage éteint (pas d'action Absence Auto)
-    
-    
-    ___
-    
-    ## Pré-requis
-    
-    Vous devez disposer de :
-    
-    - Un group contenant tous les utilisateurs configuré dans `package/chauffage_absence_auto_config_package.yaml`
-    
-    - Des entités pour chaque utilisateur :
-    
-      . soit person.* (détection GPS classique)
-      
-      . soit binary_sensor.*_presence_effective (détection GPS + override manuel)
-    
-    - Le blueprint `Gestion_Absence_Globale` (gestion des transitions présence/absence)
+    - Peut forcer le passage **Presence → Absence**
+      si l’utilisateur principal devient absent
     
     
     ___
     
-    ## Helpers à créer
+    ## Logique de réduction
     
-
-    **input_number (globaux - communs à toutes les pièces)** :
-
-    - `chauffage_absence_auto_reduction_degrees` : nombre de degrés de réduction (défaut: 2)
-     
-    - `dummy_tempo` (optionnel) : helper dummy si Tempo non utilisé (valeur fixe: 19)
+    La réduction (ex. -2°C) est appliquée **UNIQUEMENT SI** :
     
-    - `dummy_boost` (optionnel) : helper dummy si Boost non utilisé (toujours OFF)
-
-    
-    
-    Pour chaque pièce équipée, créer les helpers suivants (exemple pour SdB) :
-    
-    
-    **input_number** :
-    
-    - `radiateur_sdb_consigne` : consigne de base (existant)
-    
-    - `radiateur_sdb_consigne_tempo` : consigne corrigée par Tempo (si Tempo actif)
-    
-    - `radiateur_sdb_consigne_absence` : consigne corrigée par Absence (nouveau)
-    
-    - `radiateur_sdb_consigne_finale` : consigne finale utilisée par Thermostat TPI (nouveau)
-    
-    - `radiateur_sdb_consigne_avant_absence` : sauvegarde pour restauration (nouveau)
-    
-    
-    **input_boolean** :
-    
-    - `chauffage_absence_auto_global_actif` : activation/désactivation globale (commun)
-    
-    - `radiateur_sdb_absence_auto_actif` : activation/désactivation pour cette pièce (nouveau)
-    
-    - `radiateur_sdb_show_absence_config` : afficher/masquer config dans la carte
-    
-    - `radiateur_sdb_absence_si_principal_absent` : réduire si utilisateur principal absent
-    
-    - `boost_sdb` : état du boost (existant si blueprint Boost utilisé)
-    
-    
-    **input_select** :
-    
-    - `radiateur_sdb_utilisateur_principal` : choix de l'utilisateur (utilise la liste dynamique)
-    
-    - `radiateur_sdb_mode` : mode de chauffage (existant)
-    
-    - `radiateur_sdb_mode_avant_absence` : sauvegarde pour restauration (nouveau)
-    
+    - la gestion Absence Auto globale est **ON**
+    - la gestion Absence Auto de la pièce est **ON**
+    - le mode est **Absence** ou **Manuel**
+    - le boost est **OFF**
+    - et :
+      - soit **l’utilisateur principal est absent**
+      - soit la pièce est déjà en Absence
     
     
     ___
     
-    ## Utilisation dans les autres blueprints
+    ## Cas particuliers importants
     
-    **Dans le blueprint Thermostat TPI** :
+    - **Transition Presence → Absence** :
+      - Aucune réduction supplémentaire
+      - Le Scheduler est censé gérer la consigne Absence
     
-    - Utiliser `input_number.radiateur_sdb_consigne_finale` au lieu de `radiateur_sdb_consigne`
+    - **Mode Manuel** :
+      - La réduction Absence Auto peut s’appliquer
     
+    - **Mode Hors-gel ou Arret** :
+      - Aucune réduction
+      - La consigne finale est forcée (0 ou HG)
     
-    **Dans le blueprint Pilotage** :
-    
-    - Utiliser `input_number.radiateur_sdb_consigne_finale` au lieu de `radiateur_sdb_consigne`
-    
-    
-    **Dans le blueprint Boost** :
-    
-    - Continuer à utiliser `radiateur_sdb_boost_consigne` (pas de changement)
-    
-    
-    Si vous n'utilisez **pas** ce blueprint Absence :
-    
-    - Continuez à utiliser `radiateur_sdb_consigne_tempo` (si Tempo actif) ou `radiateur_sdb_consigne` partout
+    - **Boost actif** :
+      - Ignore totalement l’Absence Auto
     
     
-    Remplacez person.XXXXX par binary_sensor.michel_presence_effective pour prendre en compte l'override manuel.
-
+    ___
+    
+    ## Ce blueprint NE FAIT PAS
+    
+    - ❌ Ne pilote pas directement le chauffage
+    - ❌ Ne déclenche pas de cycle Arret / Presence
+    - ❌ Ne modifie pas les consignes Boost
+    - ❌ Ne modifie pas les modes Hors-gel ou Arret
+    
     
     ___
     
     ## Ordre de priorité des consignes
     
-    1.  **Boost actif** → `radiateur_xxx_boost_consigne` (ignore tout le reste)
+    1. **Boost actif**
+       → consigne Boost (gérée ailleurs)
     
-    2.  **Absence Auto actif** → `radiateur_xxx_consigne_absence` (consigne Tempo ou base avec réduction selon mode)
+    2. **Absence Auto**
+       → `radiateur_xxx_consigne_absence`
     
-    3.  **Tempo actif** → `radiateur_xxx_consigne_tempo` (consigne base avec réduction HP)
+    3. **Tempo**
+       → `radiateur_xxx_consigne_tempo`
     
-    4.  **Normal** → `radiateur_xxx_consigne` (consigne programmée par Scheduler)
+    4. **Normal**
+       → `radiateur_xxx_consigne`
     
+    
+    ___
+    
+    ## Architecture recommandée
+    
+    - 1 blueprint **Absence Auto – Globale**
+      → gère les **transitions de mode**
+    
+    - 1 blueprint **Absence Auto – Par Pièce**
+      → gère le **calcul de consigne**
+    
+    - 1 blueprint **Thermostat / Pilotage**
+      → applique physiquement la consigne
+    
+    
+    ___
+    
+    ## Philosophie
+    
+    Ce blueprint applique une logique **déterministe, lisible et traçable** :
+    
+    - chaque réduction est justifiée
+    - chaque consigne est calculée explicitement
+    - aucune règle implicite ou cachée
+    
+    L’objectif est une gestion Absence **robuste, prévisible et débogable**.
+
     
     ___
     
