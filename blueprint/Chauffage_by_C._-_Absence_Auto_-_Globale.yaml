@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Absence Auto - Globale
   description: "
 
-    version Absence Globale : v1.49 - 2025-12-18
+    version Absence Globale : v1.60 - 2025-12-23
     
     auteur : Ciscoo45
     
@@ -64,6 +64,8 @@ blueprint:
     - Binary sensors de présence (créés automatiquement par `template \ chauffage_absence_auto_template.yaml`)
     
     - Tous les helpers Absence Auto créés pour chaque pièce
+
+    - **NOUVEAU** : Input boolean `radiateur_xxx_etait_presence` pour chaque pièce
     
     
     ___
@@ -154,24 +156,14 @@ blueprint:
       selector:
         entity:
           domain: input_select
-    piece_1_mode_avant:
-      name: 💾 Pièce 1 - Mode Avant Absence (pièce)
-      description: "Sauvegarde du mode avant absence"
+    piece_1_etait_presence:
+      name:  💾 Pièce 1 - Était en Presence avant le départ de/des utilisateurs (pièce)
+      description: |
+        Input_boolean pour mémoriser si la pièce était en mode Presence
+        (ex: input_boolean > chauffage_absence_input_boolean.yaml > input_boolean.radiateur_sdb_etait_presence)
       selector:
         entity:
-          domain: input_select
-    piece_1_consigne:
-      name: 🌡️ Pièce 1 - Consigne finale (pièce)
-      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
-      selector:
-        entity:
-          domain: input_number
-    piece_1_consigne_avant:
-      name: 💾 Pièce 1 - Consigne Avant Absence (pièce)
-      description: "Sauvegarde de la consigne avant absence"
-      selector:
-        entity:
-          domain: input_number
+          domain: input_boolean
     piece_1_utilisateur:
       name: 👤 Pièce 1 - Utilisateur Principal (pièce)
       description: "Utilisateur principal pour cette pièce"
@@ -206,27 +198,13 @@ blueprint:
       selector:
         entity:
           domain: input_select
-    piece_2_mode_avant:
-      name: 💾 Pièce 2 - Mode Avant Absence (pièce)
-      description: "Sauvegarde du mode avant absence"
-      default: ""
+    piece_2_etait_presence:
+      name:  💾 Pièce 2 - Était en Presence avant le départ de/des utilisateurs (pièce)
+      description: |
+        Input_boolean pour mémoriser si la pièce était en mode Presence
       selector:
         entity:
-          domain: input_select
-    piece_2_consigne:
-      name: 🌡️ Pièce 2 - Consigne finale (pièce)
-      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
-    piece_2_consigne_avant:
-      name: 💾 Pièce 2 - Consigne Avant Absence (pièce)
-      description: "Sauvegarde de la consigne avant absence"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
+          domain: input_boolean
     piece_2_utilisateur:
       name: 👤 Pièce 2 - Utilisateur Principal (pièce)
       description: "Utilisateur principal pour cette pièce"
@@ -263,27 +241,13 @@ blueprint:
       selector:
         entity:
           domain: input_select
-    piece_3_mode_avant:
-      name: 💾 Pièce 3 - Mode Avant Absence (pièce)
-      description: "Sauvegarde du mode avant absence"
-      default: ""
+    piece_2_etait_presence:
+      name:  💾 Pièce 2 - Était en Presence avant le départ de/des utilisateurs (pièce)
+      description: |
+        Input_boolean pour mémoriser si la pièce était en mode Presence
       selector:
         entity:
-          domain: input_select
-    piece_3_consigne:
-      name: 🌡️ Pièce 3 - Consigne finale (pièce)
-      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
-    piece_3_consigne_avant:
-      name: 💾 Pièce 3 - Consigne Avant Absence (pièce)
-      description: "Sauvegarde de la consigne avant absence"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
+          domain: input_boolean
     piece_3_utilisateur:
       name: 👤 Pièce 3 - Utilisateur Principal (pièce)
       description: "Utilisateur principal pour cette pièce"
@@ -320,27 +284,13 @@ blueprint:
       selector:
         entity:
           domain: input_select
-    piece_4_mode_avant:
-      name: 💾 Pièce 4 - Mode Avant Absence (pièce)
-      description: "Sauvegarde du mode avant absence"
-      default: ""
+    piece_4_etait_presence:
+      name:  💾 Pièce 4 - Était en Presence avant le départ de/des utilisateurs (pièce)
+      description: |
+        Input_boolean pour mémoriser si la pièce était en mode Presence
       selector:
         entity:
-          domain: input_select
-    piece_4_consigne:
-      name: 🌡️ Pièce 4 - Consigne finale (pièce)
-      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
-    piece_4_consigne_avant:
-      name: 💾 Pièce 4 - Consigne Avant Absence (pièce)
-      description: "Sauvegarde de la consigne avant absence"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
+          domain: input_boolean
     piece_4_utilisateur:
       name: 👤 Pièce 4 - Utilisateur Principal (pièce)
       description: "Utilisateur principal pour cette pièce"
@@ -377,27 +327,13 @@ blueprint:
       selector:
         entity:
           domain: input_select
-    piece_5_mode_avant:
-      name: 💾 Pièce 5 - Mode Avant Absence (pièce)
-      description: "Sauvegarde du mode avant absence"
-      default: ""
+    piece_5_etait_presence:
+      name:  💾 Pièce 5 - Était en Presence avant le départ de/des utilisateurs (pièce)
+      description: |
+        Input_boolean pour mémoriser si la pièce était en mode Presence
       selector:
         entity:
-          domain: input_select
-    piece_5_consigne:
-      name: 🌡️ Pièce 5 - Consigne finale (pièce)
-      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
-    piece_5_consigne_avant:
-      name: 💾 Pièce 5 - Consigne Avant Absence (pièce)
-      description: "Sauvegarde de la consigne avant absence"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
+          domain: input_boolean
     piece_5_utilisateur:
       name: 👤 Pièce 5 - Utilisateur Principal (pièce)
       description: "Utilisateur principal pour cette pièce"
@@ -434,27 +370,13 @@ blueprint:
       selector:
         entity:
           domain: input_select
-    piece_6_mode_avant:
-      name: 💾 Pièce 6 - Mode Avant Absence (pièce)
-      description: "Sauvegarde du mode avant absence"
-      default: ""
+    piece_6_etait_presence:
+      name:  💾 Pièce 6 - Était en Presence avant le départ de/des utilisateurs (pièce)
+      description: |
+        Input_boolean pour mémoriser si la pièce était en mode Presence
       selector:
         entity:
-          domain: input_select
-    piece_6_consigne:
-      name: 🌡️ Pièce 6 - Consigne finale (pièce)
-      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
-    piece_6_consigne_avant:
-      name: 💾 Pièce 6 - Consigne Avant Absence (pièce)
-      description: "Sauvegarde de la consigne avant absence"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
+          domain: input_boolean
     piece_6_utilisateur:
       name: 👤 Pièce 6 - Utilisateur Principal (pièce)
       description: "Utilisateur principal pour cette pièce"
@@ -491,27 +413,13 @@ blueprint:
       selector:
         entity:
           domain: input_select
-    piece_7_mode_avant:
-      name: 💾 Pièce 7 - Mode Avant Absence (pièce)
-      description: "Sauvegarde du mode avant absence"
-      default: ""
+    piece_7_etait_presence:
+      name:  💾 Pièce 7 - Était en Presence avant le départ de/des utilisateurs (pièce)
+      description: |
+        Input_boolean pour mémoriser si la pièce était en mode Presence
       selector:
         entity:
-          domain: input_select
-    piece_7_consigne:
-      name: 🌡️ Pièce 7 - Consigne finale (pièce)
-      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
-    piece_7_consigne_avant:
-      name: 💾 Pièce 7 - Consigne Avant Absence (pièce)
-      description: "Sauvegarde de la consigne avant absence"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
+          domain: input_boolean
     piece_7_utilisateur:
       name: 👤 Pièce 7 - Utilisateur Principal (pièce)
       description: "Utilisateur principal pour cette pièce"
@@ -548,27 +456,13 @@ blueprint:
       selector:
         entity:
           domain: input_select
-    piece_8_mode_avant:
-      name: 💾 Pièce 8 - Mode Avant Absence (pièce)
-      description: "Sauvegarde du mode avant absence"
-      default: ""
+    piece_8_etait_presence:
+      name:  💾 Pièce 8 - Était en Presence avant le départ de/des utilisateurs (pièce)
+      description: |
+        Input_boolean pour mémoriser si la pièce était en mode Presence
       selector:
         entity:
-          domain: input_select
-    piece_8_consigne:
-      name: 🌡️ Pièce 8 - Consigne finale (pièce)
-      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
-    piece_8_consigne_avant:
-      name: 💾 Pièce 8 - Consigne Avant Absence (pièce)
-      description: "Sauvegarde de la consigne avant absence"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
+          domain: input_boolean
     piece_8_utilisateur:
       name: 👤 Pièce 8 - Utilisateur Principal (pièce)
       description: "Utilisateur principal pour cette pièce"
@@ -605,27 +499,13 @@ blueprint:
       selector:
         entity:
           domain: input_select
-    piece_9_mode_avant:
-      name: 💾 Pièce 9 - Mode Avant Absence (pièce)
-      description: "Sauvegarde du mode avant absence"
-      default: ""
+    piece_9_etait_presence:
+      name:  💾 Pièce 9 - Était en Presence avant le départ de/des utilisateurs (pièce)
+      description: |
+        Input_boolean pour mémoriser si la pièce était en mode Presence
       selector:
         entity:
-          domain: input_select
-    piece_9_consigne:
-      name: 🌡️ Pièce 9 - Consigne finale (pièce)
-      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
-    piece_9_consigne_avant:
-      name: 💾 Pièce 9 - Consigne Avant Absence (pièce)
-      description: "Sauvegarde de la consigne avant absence"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
+          domain: input_boolean
     piece_9_utilisateur:
       name: 👤 Pièce 9 - Utilisateur Principal (pièce)
       description: "Utilisateur principal pour cette pièce"
@@ -662,27 +542,13 @@ blueprint:
       selector:
         entity:
           domain: input_select
-    piece_10_mode_avant:
-      name: 💾 Pièce 10 - Mode Avant Absence (pièce)
-      description: "Sauvegarde du mode avant absence"
-      default: ""
+    piece_10_etait_presence:
+      name:  💾 Pièce 10 - Était en Presence avant le départ de/des utilisateurs (pièce)
+      description: |
+        Input_boolean pour mémoriser si la pièce était en mode Presence
       selector:
         entity:
-          domain: input_select
-    piece_10_consigne:
-      name: 🌡️ Pièce 10 - Consigne finale (pièce)
-      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
-    piece_10_consigne_avant:
-      name: 💾 Pièce 10 - Consigne Avant Absence (pièce)
-      description: "Sauvegarde de la consigne avant absence"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
+          domain: input_boolean
     piece_10_utilisateur:
       name: 👤 Pièce 10 - Utilisateur Principal (pièce)
       description: "Utilisateur principal pour cette pièce"
@@ -719,27 +585,13 @@ blueprint:
       selector:
         entity:
           domain: input_select
-    piece_11_mode_avant:
-      name: 💾 Pièce 11 - Mode Avant Absence (pièce)
-      description: "Sauvegarde du mode avant absence"
-      default: ""
+    piece_11_etait_presence:
+      name:  💾 Pièce 11 - Était en Presence avant le départ de/des utilisateurs (pièce)
+      description: |
+        Input_boolean pour mémoriser si la pièce était en mode Presence
       selector:
         entity:
-          domain: input_select
-    piece_11_consigne:
-      name: 🌡️ Pièce 11 - Consigne finale (pièce)
-      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
-    piece_11_consigne_avant:
-      name: 💾 Pièce 11 - Consigne Avant Absence (pièce)
-      description: "Sauvegarde de la consigne avant absence"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
+          domain: input_boolean
     piece_11_utilisateur:
       name: 👤 Pièce 11 - Utilisateur Principal (pièce)
       description: "Utilisateur principal pour cette pièce"
@@ -776,27 +628,13 @@ blueprint:
       selector:
         entity:
           domain: input_select
-    piece_12_mode_avant:
-      name: 💾 Pièce 12 - Mode Avant Absence (pièce)
-      description: "Sauvegarde du mode avant absence"
-      default: ""
+    piece_12_etait_presence:
+      name:  💾 Pièce 12 - Était en Presence avant le départ de/des utilisateurs (pièce)
+      description: |
+        Input_boolean pour mémoriser si la pièce était en mode Presence
       selector:
         entity:
-          domain: input_select
-    piece_12_consigne:
-      name: 🌡️ Pièce 12 - Consigne finale (pièce)
-      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
-    piece_12_consigne_avant:
-      name: 💾 Pièce 12 - Consigne Avant Absence (pièce)
-      description: "Sauvegarde de la consigne avant absence"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
+          domain: input_boolean
     piece_12_utilisateur:
       name: 👤 Pièce 12 - Utilisateur Principal (pièce)
       description: "Utilisateur principal pour cette pièce"
@@ -833,27 +671,13 @@ blueprint:
       selector:
         entity:
           domain: input_select
-    piece_13_mode_avant:
-      name: 💾 Pièce 13 - Mode Avant Absence (pièce)
-      description: "Sauvegarde du mode avant absence"
-      default: ""
+    piece_13_etait_presence:
+      name:  💾 Pièce 13 - Était en Presence avant le départ de/des utilisateurs (pièce)
+      description: |
+        Input_boolean pour mémoriser si la pièce était en mode Presence
       selector:
         entity:
-          domain: input_select
-    piece_13_consigne:
-      name: 🌡️ Pièce 13 - Consigne finale (pièce)
-      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
-    piece_13_consigne_avant:
-      name: 💾 Pièce 13 - Consigne Avant Absence (pièce)
-      description: "Sauvegarde de la consigne avant absence"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
+          domain: input_boolean
     piece_13_utilisateur:
       name: 👤 Pièce 13 - Utilisateur Principal (pièce)
       description: "Utilisateur principal pour cette pièce"
@@ -890,27 +714,13 @@ blueprint:
       selector:
         entity:
           domain: input_select
-    piece_14_mode_avant:
-      name: 💾 Pièce 14 - Mode Avant Absence (pièce)
-      description: "Sauvegarde du mode avant absence"
-      default: ""
+    piece_14_etait_presence:
+      name:  💾 Pièce 14 - Était en Presence avant le départ de/des utilisateurs (pièce)
+      description: |
+        Input_boolean pour mémoriser si la pièce était en mode Presence
       selector:
         entity:
-          domain: input_select
-    piece_14_consigne:
-      name: 🌡️ Pièce 14 - Consigne finale (pièce)
-      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
-    piece_14_consigne_avant:
-      name: 💾 Pièce 14 - Consigne Avant Absence (pièce)
-      description: "Sauvegarde de la consigne avant absence"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
+          domain: input_boolean
     piece_14_utilisateur:
       name: 👤 Pièce 14 - Utilisateur Principal (pièce)
       description: "Utilisateur principal pour cette pièce"
@@ -947,27 +757,13 @@ blueprint:
       selector:
         entity:
           domain: input_select
-    piece_15_mode_avant:
-      name: 💾 Pièce 15 - Mode Avant Absence (pièce)
-      description: "Sauvegarde du mode avant absence"
-      default: ""
+    piece_15_etait_presence:
+      name:  💾 Pièce 15 - Était en Presence avant le départ de/des utilisateurs (pièce)
+      description: |
+        Input_boolean pour mémoriser si la pièce était en mode Presence
       selector:
         entity:
-          domain: input_select
-    piece_15_consigne:
-      name: 🌡️ Pièce 15 - Consigne finale (pièce)
-      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
-    piece_15_consigne_avant:
-      name: 💾 Pièce 15 - Consigne Avant Absence (pièce)
-      description: "Sauvegarde de la consigne avant absence"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
+          domain: input_boolean
     piece_15_utilisateur:
       name: 👤 Pièce 15 - Utilisateur Principal (pièce)
       description: "Utilisateur principal pour cette pièce"
@@ -1004,27 +800,13 @@ blueprint:
       selector:
         entity:
           domain: input_select
-    piece_16_mode_avant:
-      name: 💾 Pièce 16 - Mode Avant Absence (pièce)
-      description: "Sauvegarde du mode avant absence"
-      default: ""
+    piece_16_etait_presence:
+      name:  💾 Pièce 16 - Était en Presence avant le départ de/des utilisateurs (pièce)
+      description: |
+        Input_boolean pour mémoriser si la pièce était en mode Presence
       selector:
         entity:
-          domain: input_select
-    piece_16_consigne:
-      name: 🌡️ Pièce 16 - Consigne finale (pièce)
-      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
-    piece_16_consigne_avant:
-      name: 💾 Pièce 16 - Consigne Avant Absence (pièce)
-      description: "Sauvegarde de la consigne avant absence"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
+          domain: input_boolean
     piece_16_utilisateur:
       name: 👤 Pièce 16 - Utilisateur Principal (pièce)
       description: "Utilisateur principal pour cette pièce"
@@ -1061,27 +843,13 @@ blueprint:
       selector:
         entity:
           domain: input_select
-    piece_17_mode_avant:
-      name: 💾 Pièce 17 - Mode Avant Absence (pièce)
-      description: "Sauvegarde du mode avant absence"
-      default: ""
+    piece_17_etait_presence:
+      name:  💾 Pièce 17 - Était en Presence avant le départ de/des utilisateurs (pièce)
+      description: |
+        Input_boolean pour mémoriser si la pièce était en mode Presence
       selector:
         entity:
-          domain: input_select
-    piece_17_consigne:
-      name: 🌡️ Pièce 17 - Consigne finale (pièce)
-      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
-    piece_17_consigne_avant:
-      name: 💾 Pièce 17 - Consigne Avant Absence (pièce)
-      description: "Sauvegarde de la consigne avant absence"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
+          domain: input_boolean
     piece_17_utilisateur:
       name: 👤 Pièce 17 - Utilisateur Principal (pièce)
       description: "Utilisateur principal pour cette pièce"
@@ -1118,27 +886,13 @@ blueprint:
       selector:
         entity:
           domain: input_select
-    piece_18_mode_avant:
-      name: 💾 Pièce 18 - Mode Avant Absence (pièce)
-      description: "Sauvegarde du mode avant absence"
-      default: ""
+    piece_18_etait_presence:
+      name:  💾 Pièce 18 - Était en Presence avant le départ de/des utilisateurs (pièce)
+      description: |
+        Input_boolean pour mémoriser si la pièce était en mode Presence
       selector:
         entity:
-          domain: input_select
-    piece_18_consigne:
-      name: 🌡️ Pièce 18 - Consigne finale (pièce)
-      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
-    piece_18_consigne_avant:
-      name: 💾 Pièce 18 - Consigne Avant Absence (pièce)
-      description: "Sauvegarde de la consigne avant absence"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
+          domain: input_boolean
     piece_18_utilisateur:
       name: 👤 Pièce 18 - Utilisateur Principal (pièce)
       description: "Utilisateur principal pour cette pièce"
@@ -1175,27 +929,13 @@ blueprint:
       selector:
         entity:
           domain: input_select
-    piece_19_mode_avant:
-      name: 💾 Pièce 19 - Mode Avant Absence (pièce)
-      description: "Sauvegarde du mode avant absence"
-      default: ""
+    piece_19_etait_presence:
+      name:  💾 Pièce 19 - Était en Presence avant le départ de/des utilisateurs (pièce)
+      description: |
+        Input_boolean pour mémoriser si la pièce était en mode Presence
       selector:
         entity:
-          domain: input_select
-    piece_19_consigne:
-      name: 🌡️ Pièce 19 - Consigne finale (pièce)
-      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
-    piece_19_consigne_avant:
-      name: 💾 Pièce 19 - Consigne Avant Absence (pièce)
-      description: "Sauvegarde de la consigne avant absence"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
+          domain: input_boolean
     piece_19_utilisateur:
       name: 👤 Pièce 19 - Utilisateur Principal (pièce)
       description: "Utilisateur principal pour cette pièce"
@@ -1232,27 +972,13 @@ blueprint:
       selector:
         entity:
           domain: input_select
-    piece_20_mode_avant:
-      name: 💾 Pièce 20 - Mode Avant Absence (pièce)
-      description: "Sauvegarde du mode avant absence"
-      default: ""
+    piece_20_etait_presence:
+      name:  💾 Pièce 20 - Était en Presence avant le départ de/des utilisateurs (pièce)
+      description: |
+        Input_boolean pour mémoriser si la pièce était en mode Presence
       selector:
         entity:
-          domain: input_select
-    piece_20_consigne:
-      name: 🌡️ Pièce 20 - Consigne finale (pièce)
-      description: "Consigne en sortie du Blueprint Absence Auto par Pièce (ex.: input_number.radiateur_sdb_consigne_finale)"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
-    piece_20_consigne_avant:
-      name: 💾 Pièce 20 - Consigne Avant Absence (pièce)
-      description: "Sauvegarde de la consigne avant absence"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
+          domain: input_boolean
     piece_20_utilisateur:
       name: 👤 Pièce 20 - Utilisateur Principal (pièce)
       description: "Utilisateur principal pour cette pièce"
@@ -1279,537 +1005,220 @@ blueprint:
           
 # ========= VARIABLES =========
 variables:
-  switch_global: !input switch_global
-  binary_sensor_tous_absents: !input binary_sensor_tous_absents
-  binary_sensor_utilisateur_1_absent: !input binary_sensor_utilisateur_1_absent
-  binary_sensor_utilisateur_2_absent: !input binary_sensor_utilisateur_2_absent
-  binary_sensor_utilisateur_3_absent: !input binary_sensor_utilisateur_3_absent
-  binary_sensor_utilisateur_4_absent: !input binary_sensor_utilisateur_4_absent
-  binary_sensor_utilisateur_5_absent: !input binary_sensor_utilisateur_5_absent
-  
-  # Pièce 1 (obligatoire)
-  piece_1_nom: !input piece_1_nom
-  piece_1_mode: !input piece_1_mode
-  piece_1_mode_avant: !input piece_1_mode_avant
-  piece_1_consigne: !input piece_1_consigne
-  piece_1_consigne_avant: !input piece_1_consigne_avant
-  piece_1_utilisateur: !input piece_1_utilisateur
-  piece_1_si_principal: !input piece_1_si_principal
-  piece_1_local_actif: !input piece_1_local_actif
-
-  # Pièces 2-20 (optionnelles)
-  piece_2_nom: !input piece_2_nom
-  piece_2_mode: !input piece_2_mode
-  piece_2_mode_avant: !input piece_2_mode_avant
-  piece_2_consigne: !input piece_2_consigne
-  piece_2_consigne_avant: !input piece_2_consigne_avant
-  piece_2_utilisateur: !input piece_2_utilisateur
-  piece_2_si_principal: !input piece_2_si_principal
-  piece_2_local_actif: !input piece_2_local_actif
-
-  piece_3_nom: !input piece_3_nom
-  piece_3_mode: !input piece_3_mode
-  piece_3_mode_avant: !input piece_3_mode_avant
-  piece_3_consigne: !input piece_3_consigne
-  piece_3_consigne_avant: !input piece_3_consigne_avant
-  piece_3_utilisateur: !input piece_3_utilisateur
-  piece_3_si_principal: !input piece_3_si_principal
-  piece_3_local_actif: !input piece_3_local_actif
-
-  piece_4_nom: !input piece_4_nom
-  piece_4_mode: !input piece_4_mode
-  piece_4_mode_avant: !input piece_4_mode_avant
-  piece_4_consigne: !input piece_4_consigne
-  piece_4_consigne_avant: !input piece_4_consigne_avant
-  piece_4_utilisateur: !input piece_4_utilisateur
-  piece_4_si_principal: !input piece_4_si_principal
-  piece_4_local_actif: !input piece_4_local_actif
-
-  piece_5_nom: !input piece_5_nom
-  piece_5_mode: !input piece_5_mode
-  piece_5_mode_avant: !input piece_5_mode_avant
-  piece_5_consigne: !input piece_5_consigne
-  piece_5_consigne_avant: !input piece_5_consigne_avant
-  piece_5_utilisateur: !input piece_5_utilisateur
-  piece_5_si_principal: !input piece_5_si_principal
-  piece_5_local_actif: !input piece_5_local_actif
-
-  piece_6_nom: !input piece_6_nom
-  piece_6_mode: !input piece_6_mode
-  piece_6_mode_avant: !input piece_6_mode_avant
-  piece_6_consigne: !input piece_6_consigne
-  piece_6_consigne_avant: !input piece_6_consigne_avant
-  piece_6_utilisateur: !input piece_6_utilisateur
-  piece_6_si_principal: !input piece_6_si_principal
-  piece_6_local_actif: !input piece_6_local_actif
-
-  piece_7_nom: !input piece_7_nom
-  piece_7_mode: !input piece_7_mode
-  piece_7_mode_avant: !input piece_7_mode_avant
-  piece_7_consigne: !input piece_7_consigne
-  piece_7_consigne_avant: !input piece_7_consigne_avant
-  piece_7_utilisateur: !input piece_7_utilisateur
-  piece_7_si_principal: !input piece_7_si_principal
-  piece_7_local_actif: !input piece_7_local_actif
-
-  piece_8_nom: !input piece_8_nom
-  piece_8_mode: !input piece_8_mode
-  piece_8_mode_avant: !input piece_8_mode_avant
-  piece_8_consigne: !input piece_8_consigne
-  piece_8_consigne_avant: !input piece_8_consigne_avant
-  piece_8_utilisateur: !input piece_8_utilisateur
-  piece_8_si_principal: !input piece_8_si_principal
-  piece_8_local_actif: !input piece_8_local_actif
-
-  piece_9_nom: !input piece_9_nom
-  piece_9_mode: !input piece_9_mode
-  piece_9_mode_avant: !input piece_9_mode_avant
-  piece_9_consigne: !input piece_9_consigne
-  piece_9_consigne_avant: !input piece_9_consigne_avant
-  piece_9_utilisateur: !input piece_9_utilisateur
-  piece_9_si_principal: !input piece_9_si_principal
-  piece_9_local_actif: !input piece_9_local_actif
-
-  piece_10_nom: !input piece_10_nom
-  piece_10_mode: !input piece_10_mode
-  piece_10_mode_avant: !input piece_10_mode_avant
-  piece_10_consigne: !input piece_10_consigne
-  piece_10_consigne_avant: !input piece_10_consigne_avant
-  piece_10_utilisateur: !input piece_10_utilisateur
-  piece_10_si_principal: !input piece_10_si_principal
-  piece_10_local_actif: !input piece_10_local_actif
-
-  piece_11_nom: !input piece_11_nom
-  piece_11_mode: !input piece_11_mode
-  piece_11_mode_avant: !input piece_11_mode_avant
-  piece_11_consigne: !input piece_11_consigne
-  piece_11_consigne_avant: !input piece_11_consigne_avant
-  piece_11_utilisateur: !input piece_11_utilisateur
-  piece_11_si_principal: !input piece_11_si_principal
-  piece_11_local_actif: !input piece_11_local_actif
-
-  piece_12_nom: !input piece_12_nom
-  piece_12_mode: !input piece_12_mode
-  piece_12_mode_avant: !input piece_12_mode_avant
-  piece_12_consigne: !input piece_12_consigne
-  piece_12_consigne_avant: !input piece_12_consigne_avant
-  piece_12_utilisateur: !input piece_12_utilisateur
-  piece_12_si_principal: !input piece_12_si_principal
-  piece_12_local_actif: !input piece_12_local_actif
-
-  piece_13_nom: !input piece_13_nom
-  piece_13_mode: !input piece_13_mode
-  piece_13_mode_avant: !input piece_13_mode_avant
-  piece_13_consigne: !input piece_13_consigne
-  piece_13_consigne_avant: !input piece_13_consigne_avant
-  piece_13_utilisateur: !input piece_13_utilisateur
-  piece_13_si_principal: !input piece_13_si_principal
-  piece_13_local_actif: !input piece_13_local_actif
-
-  piece_14_nom: !input piece_14_nom
-  piece_14_mode: !input piece_14_mode
-  piece_14_mode_avant: !input piece_14_mode_avant
-  piece_14_consigne: !input piece_14_consigne
-  piece_14_consigne_avant: !input piece_14_consigne_avant
-  piece_14_utilisateur: !input piece_14_utilisateur
-  piece_14_si_principal: !input piece_14_si_principal
-  piece_14_local_actif: !input piece_14_local_actif
-
-  piece_15_nom: !input piece_15_nom
-  piece_15_mode: !input piece_15_mode
-  piece_15_mode_avant: !input piece_15_mode_avant
-  piece_15_consigne: !input piece_15_consigne
-  piece_15_consigne_avant: !input piece_15_consigne_avant
-  piece_15_utilisateur: !input piece_15_utilisateur
-  piece_15_si_principal: !input piece_15_si_principal
-  piece_15_local_actif: !input piece_15_local_actif
-
-  piece_16_nom: !input piece_16_nom
-  piece_16_mode: !input piece_16_mode
-  piece_16_mode_avant: !input piece_16_mode_avant
-  piece_16_consigne: !input piece_16_consigne
-  piece_16_consigne_avant: !input piece_16_consigne_avant
-  piece_16_utilisateur: !input piece_16_utilisateur
-  piece_16_si_principal: !input piece_16_si_principal
-  piece_16_local_actif: !input piece_16_local_actif
-
-  piece_17_nom: !input piece_17_nom
-  piece_17_mode: !input piece_17_mode
-  piece_17_mode_avant: !input piece_17_mode_avant
-  piece_17_consigne: !input piece_17_consigne
-  piece_17_consigne_avant: !input piece_17_consigne_avant
-  piece_17_utilisateur: !input piece_17_utilisateur
-  piece_17_si_principal: !input piece_17_si_principal
-  piece_17_local_actif: !input piece_17_local_actif
-
-  piece_18_nom: !input piece_18_nom
-  piece_18_mode: !input piece_18_mode
-  piece_18_mode_avant: !input piece_18_mode_avant
-  piece_18_consigne: !input piece_18_consigne
-  piece_18_consigne_avant: !input piece_18_consigne_avant
-  piece_18_utilisateur: !input piece_18_utilisateur
-  piece_18_si_principal: !input piece_18_si_principal
-  piece_18_local_actif: !input piece_18_local_actif
-
-  piece_19_nom: !input piece_19_nom
-  piece_19_mode: !input piece_19_mode
-  piece_19_mode_avant: !input piece_19_mode_avant
-  piece_19_consigne: !input piece_19_consigne
-  piece_19_consigne_avant: !input piece_19_consigne_avant
-  piece_19_utilisateur: !input piece_19_utilisateur
-  piece_19_si_principal: !input piece_19_si_principal
-  piece_19_local_actif: !input piece_19_local_actif
-
-  piece_20_nom: !input piece_20_nom
-  piece_20_mode: !input piece_20_mode
-  piece_20_mode_avant: !input piece_20_mode_avant
-  piece_20_consigne: !input piece_20_consigne
-  piece_20_consigne_avant: !input piece_20_consigne_avant
-  piece_20_utilisateur: !input piece_20_utilisateur
-  piece_20_si_principal: !input piece_20_si_principal
-  piece_20_local_actif: !input piece_20_local_actif
-  
-  # Liste des utilisateurs (récupérée dynamiquement)
   liste_utilisateurs: >-
-    {{ state_attr('input_select.chauffage_absence_auto_liste_utilisateurs', 'options')[1:] if states('input_select.chauffage_absence_auto_liste_utilisateurs') not in ['unknown', 'unavailable'] else ['Utilisateur1', 'Utilisateur2', 'Utilisateur3', 'Utilisateur4', 'Utilisateur5'] }}
-  
-  liste_entities: >-
-    {{ states('input_text.chauffage_absence_auto_utilisateurs_entities').split(',') if states('input_text.chauffage_absence_auto_utilisateurs_entities') not in ['unknown', 'unavailable'] else [] }}
+    {{ state_attr('input_select.chauffage_absence_auto_liste_utilisateurs','options')[1:] or [] }}
 
-  # Construction dynamique de la liste des pièces actives
-  pieces: >-
-    {% set result = [] %}
-    {% if piece_1_nom != '' %}
-      {% set result = result + [{
-        'nom': piece_1_nom,
-        'mode': piece_1_mode,
-        'mode_avant': piece_1_mode_avant,
-        'consigne': piece_1_consigne,
-        'consigne_avant': piece_1_consigne_avant,
-        'utilisateur': piece_1_utilisateur,
-        'si_principal': piece_1_si_principal,
-        'local_actif': piece_1_local_actif
-      }] %}
-    {% endif %}
-    {% if piece_2_nom not in ['', 'none', None] %}
-      {% set result = result + [{
-        'nom': piece_2_nom,
-        'mode': piece_2_mode,
-        'mode_avant': piece_2_mode_avant,
-        'consigne': piece_2_consigne,
-        'consigne_avant': piece_2_consigne_avant,
-        'utilisateur': piece_2_utilisateur,
-        'si_principal': piece_2_si_principal,
-        'local_actif': piece_2_local_actif
-      }] %}
-    {% endif %}
-    {% if piece_3_nom not in ['', 'none', None] %}
-      {% set result = result + [{
-        'nom': piece_3_nom,
-        'mode': piece_3_mode,
-        'mode_avant': piece_3_mode_avant,
-        'consigne': piece_3_consigne,
-        'consigne_avant': piece_3_consigne_avant,
-        'utilisateur': piece_3_utilisateur,
-        'si_principal': piece_3_si_principal,
-        'local_actif': piece_3_local_actif
-      }] %}
-    {% endif %}
-    {% if piece_4_nom not in ['', 'none', None] %}
-      {% set result = result + [{
-        'nom': piece_4_nom,
-        'mode': piece_4_mode,
-        'mode_avant': piece_4_mode_avant,
-        'consigne': piece_4_consigne,
-        'consigne_avant': piece_4_consigne_avant,
-        'utilisateur': piece_4_utilisateur,
-        'si_principal': piece_4_si_principal,
-        'local_actif': piece_4_local_actif
-      }] %}
-    {% endif %}
-    {% if piece_5_nom not in ['', 'none', None] %}
-      {% set result = result + [{
-        'nom': piece_5_nom,
-        'mode': piece_5_mode,
-        'mode_avant': piece_5_mode_avant,
-        'consigne': piece_5_consigne,
-        'consigne_avant': piece_5_consigne_avant,
-        'utilisateur': piece_5_utilisateur,
-        'si_principal': piece_5_si_principal,
-        'local_actif': piece_5_local_actif
-      }] %}
-    {% endif %}
-    {% if piece_6_nom not in ['', 'none', None] %}
-      {% set result = result + [{
-        'nom': piece_6_nom,
-        'mode': piece_6_mode,
-        'mode_avant': piece_6_mode_avant,
-        'consigne': piece_6_consigne,
-        'consigne_avant': piece_6_consigne_avant,
-        'utilisateur': piece_6_utilisateur,
-        'si_principal': piece_6_si_principal,
-        'local_actif': piece_6_local_actif
-      }] %}
-    {% endif %}
-    {% if piece_7_nom not in ['', 'none', None] %}
-      {% set result = result + [{
-        'nom': piece_7_nom,
-        'mode': piece_7_mode,
-        'mode_avant': piece_7_mode_avant,
-        'consigne': piece_7_consigne,
-        'consigne_avant': piece_7_consigne_avant,
-        'utilisateur': piece_7_utilisateur,
-        'si_principal': piece_7_si_principal,
-        'local_actif': piece_7_local_actif
-      }] %}
-    {% endif %}
-    {% if piece_8_nom not in ['', 'none', None] %}
-      {% set result = result + [{
-        'nom': piece_8_nom,
-        'mode': piece_8_mode,
-        'mode_avant': piece_8_mode_avant,
-        'consigne': piece_8_consigne,
-        'consigne_avant': piece_8_consigne_avant,
-        'utilisateur': piece_8_utilisateur,
-        'si_principal': piece_8_si_principal,
-        'local_actif': piece_8_local_actif
-      }] %}
-    {% endif %}
-    {% if piece_9_nom not in ['', 'none', None] %}
-      {% set result = result + [{
-        'nom': piece_9_nom,
-        'mode': piece_9_mode,
-        'mode_avant': piece_9_mode_avant,
-        'consigne': piece_9_consigne,
-        'consigne_avant': piece_9_consigne_avant,
-        'utilisateur': piece_9_utilisateur,
-        'si_principal': piece_9_si_principal,
-        'local_actif': piece_9_local_actif
-      }] %}
-    {% endif %}
-    {% if piece_10_nom not in ['', 'none', None] %}
-      {% set result = result + [{
-        'nom': piece_10_nom,
-        'mode': piece_10_mode,
-        'mode_avant': piece_10_mode_avant,
-        'consigne': piece_10_consigne,
-        'consigne_avant': piece_10_consigne_avant,
-        'utilisateur': piece_10_utilisateur,
-        'si_principal': piece_10_si_principal,
-        'local_actif': piece_10_local_actif
-      }] %}
-    {% endif %}
-    {% if piece_11_nom not in ['', 'none', None] %}
-      {% set result = result + [{
-        'nom': piece_11_nom,
-        'mode': piece_11_mode,
-        'mode_avant': piece_11_mode_avant,
-        'consigne': piece_11_consigne,
-        'consigne_avant': piece_11_consigne_avant,
-        'utilisateur': piece_11_utilisateur,
-        'si_principal': piece_11_si_principal,
-        'local_actif': piece_11_local_actif
-      }] %}
-    {% endif %}
-    {% if piece_12_nom not in ['', 'none', None] %}
-      {% set result = result + [{
-        'nom': piece_12_nom,
-        'mode': piece_12_mode,
-        'mode_avant': piece_12_mode_avant,
-        'consigne': piece_12_consigne,
-        'consigne_avant': piece_12_consigne_avant,
-        'utilisateur': piece_12_utilisateur,
-        'si_principal': piece_12_si_principal,
-        'local_actif': piece_12_local_actif
-      }] %}
-    {% endif %}
-    {% if piece_13_nom not in ['', 'none', None] %}
-      {% set result = result + [{
-        'nom': piece_13_nom,
-        'mode': piece_13_mode,
-        'mode_avant': piece_13_mode_avant,
-        'consigne': piece_13_consigne,
-        'consigne_avant': piece_13_consigne_avant,
-        'utilisateur': piece_13_utilisateur,
-        'si_principal': piece_13_si_principal,
-        'local_actif': piece_13_local_actif
-      }] %}
-    {% endif %}
-    {% if piece_14_nom not in ['', 'none', None] %}
-      {% set result = result + [{
-        'nom': piece_14_nom,
-        'mode': piece_14_mode,
-        'mode_avant': piece_14_mode_avant,
-        'consigne': piece_14_consigne,
-        'consigne_avant': piece_14_consigne_avant,
-        'utilisateur': piece_14_utilisateur,
-        'si_principal': piece_14_si_principal,
-        'local_actif': piece_14_local_actif
-      }] %}
-    {% endif %}
-    {% if piece_15_nom not in ['', 'none', None] %}
-      {% set result = result + [{
-        'nom': piece_15_nom,
-        'mode': piece_15_mode,
-        'mode_avant': piece_15_mode_avant,
-        'consigne': piece_15_consigne,
-        'consigne_avant': piece_15_consigne_avant,
-        'utilisateur': piece_15_utilisateur,
-        'si_principal': piece_15_si_principal,
-        'local_actif': piece_15_local_actif
-      }] %}
-    {% endif %}
-    {% if piece_16_nom not in ['', 'none', None] %}
-      {% set result = result + [{
-        'nom': piece_16_nom,
-        'mode': piece_16_mode,
-        'mode_avant': piece_16_mode_avant,
-        'consigne': piece_16_consigne,
-        'consigne_avant': piece_16_consigne_avant,
-        'utilisateur': piece_16_utilisateur,
-        'si_principal': piece_16_si_principal,
-        'local_actif': piece_16_local_actif
-      }] %}
-    {% endif %}
-    {% if piece_17_nom not in ['', 'none', None] %}
-      {% set result = result + [{
-        'nom': piece_17_nom,
-        'mode': piece_17_mode,
-        'mode_avant': piece_17_mode_avant,
-        'consigne': piece_17_consigne,
-        'consigne_avant': piece_17_consigne_avant,
-        'utilisateur': piece_17_utilisateur,
-        'si_principal': piece_17_si_principal,
-        'local_actif': piece_17_local_actif
-      }] %}
-    {% endif %}
-    {% if piece_18_nom not in ['', 'none', None] %}
-      {% set result = result + [{
-        'nom': piece_18_nom,
-        'mode': piece_18_mode,
-        'mode_avant': piece_18_mode_avant,
-        'consigne': piece_18_consigne,
-        'consigne_avant': piece_18_consigne_avant,
-        'utilisateur': piece_18_utilisateur,
-        'si_principal': piece_18_si_principal,
-        'local_actif': piece_18_local_actif
-      }] %}
-    {% endif %}
-    {% if piece_19_nom not in ['', 'none', None] %}
-      {% set result = result + [{
-        'nom': piece_19_nom,
-        'mode': piece_19_mode,
-        'mode_avant': piece_19_mode_avant,
-        'consigne': piece_19_consigne,
-        'consigne_avant': piece_19_consigne_avant,
-        'utilisateur': piece_19_utilisateur,
-        'si_principal': piece_19_si_principal,
-        'local_actif': piece_19_local_actif
-      }] %}
-    {% endif %}
-    {% if piece_20_nom not in ['', 'none', None] %}
-      {% set result = result + [{
-        'nom': piece_20_nom,
-        'mode': piece_20_mode,
-        'mode_avant': piece_20_mode_avant,
-        'consigne': piece_20_consigne,
-        'consigne_avant': piece_20_consigne_avant,
-        'utilisateur': piece_20_utilisateur,
-        'si_principal': piece_20_si_principal,
-        'local_actif': piece_20_local_actif
-      }] %}
-    {% endif %}
-    {{ result }}
+  pieces: 
+    - nom: !input piece_1_nom
+      mode: !input piece_1_mode
+      etait_presence: !input piece_1_etait_presence
+      utilisateur: !input piece_1_utilisateur
+      si_principal: !input piece_1_si_principal
+      local_actif: !input piece_1_local_actif
+
+    - nom: !input piece_2_nom
+      mode: !input piece_2_mode
+      etait_presence: !input piece_2_etait_presence
+      utilisateur: !input piece_2_utilisateur
+      si_principal: !input piece_2_si_principal
+      local_actif: !input piece_2_local_actif
+
+    - nom:  !input piece_3_nom
+      mode: !input piece_3_mode
+      etait_presence: !input piece_3_etait_presence
+      utilisateur:  !input piece_3_utilisateur
+      si_principal: !input piece_3_si_principal
+      local_actif: !input piece_3_local_actif
+
+    - nom: !input piece_4_nom
+      mode:  !input piece_4_mode
+      etait_presence: !input piece_4_etait_presence
+      utilisateur: !input piece_4_utilisateur
+      si_principal: !input piece_4_si_principal
+      local_actif: !input piece_4_local_actif
+
+    - nom: !input piece_5_nom
+      mode: !input piece_5_mode
+      etait_presence: !input piece_5_etait_presence
+      utilisateur: !input piece_5_utilisateur
+      si_principal:  !input piece_5_si_principal
+      local_actif:  !input piece_5_local_actif
+
+    - nom: !input piece_6_nom
+      mode: !input piece_6_mode
+      etait_presence:  !input piece_6_etait_presence
+      utilisateur: !input piece_6_utilisateur
+      si_principal: !input piece_6_si_principal
+      local_actif: !input piece_6_local_actif
+
+    - nom: !input piece_7_nom
+      mode: !input piece_7_mode
+      etait_presence: !input piece_7_etait_presence
+      utilisateur: !input piece_7_utilisateur
+      si_principal: !input piece_7_si_principal
+      local_actif: !input piece_7_local_actif
+
+    - nom: !input piece_8_nom
+      mode: !input piece_8_mode
+      etait_presence: !input piece_8_etait_presence
+      utilisateur: !input piece_8_utilisateur
+      si_principal: ! input piece_8_si_principal
+      local_actif: ! input piece_8_local_actif
+
+    - nom: !input piece_9_nom
+      mode: !input piece_9_mode
+      etait_presence: ! input piece_9_etait_presence
+      utilisateur: !input piece_9_utilisateur
+      si_principal: !input piece_9_si_principal
+      local_actif: !input piece_9_local_actif
+
+    - nom: !input piece_10_nom
+      mode: !input piece_10_mode
+      etait_presence: !input piece_10_etait_presence
+      utilisateur: !input piece_10_utilisateur
+      si_principal: !input piece_10_si_principal
+      local_actif: !input piece_10_local_actif
+
+    - nom:  !input piece_11_nom
+      mode: !input piece_11_mode
+      etait_presence: !input piece_11_etait_presence
+      utilisateur:  !input piece_11_utilisateur
+      si_principal: !input piece_11_si_principal
+      local_actif: !input piece_11_local_actif
+
+    - nom: !input piece_12_nom
+      mode:  !input piece_12_mode
+      etait_presence: !input piece_12_etait_presence
+      utilisateur: !input piece_12_utilisateur
+      si_principal: !input piece_12_si_principal
+      local_actif: !input piece_12_local_actif
+
+    - nom: !input piece_13_nom
+      mode: !input piece_13_mode
+      etait_presence: !input piece_13_etait_presence
+      utilisateur: !input piece_13_utilisateur
+      si_principal:  !input piece_13_si_principal
+      local_actif:  !input piece_13_local_actif
+
+    - nom: ! input piece_14_nom
+      mode: !input piece_14_mode
+      etait_presence:  !input piece_14_etait_presence
+      utilisateur: !input piece_14_utilisateur
+      si_principal: !input piece_14_si_principal
+      local_actif: !input piece_14_local_actif
+
+    - nom: !input piece_15_nom
+      mode: !input piece_15_mode
+      etait_presence: !input piece_15_etait_presence
+      utilisateur: !input piece_15_utilisateur
+      si_principal: !input piece_15_si_principal
+      local_actif: !input piece_15_local_actif
+
+    - nom: !input piece_16_nom
+      mode: !input piece_16_mode
+      etait_presence: !input piece_16_etait_presence
+      utilisateur: !input piece_16_utilisateur
+      si_principal: !input piece_16_si_principal
+      local_actif: !input piece_16_local_actif
+
+    - nom: !input piece_17_nom
+      mode: !input piece_17_mode
+      etait_presence: !input piece_17_etait_presence
+      utilisateur: !input piece_17_utilisateur
+      si_principal: !input piece_17_si_principal
+      local_actif: !input piece_17_local_actif
+
+    - nom: !input piece_18_nom
+      mode: !input piece_18_mode
+      etait_presence: !input piece_18_etait_presence
+      utilisateur: !input piece_18_utilisateur
+      si_principal: !input piece_18_si_principal
+      local_actif: !input piece_18_local_actif
+
+    - nom:  !input piece_19_nom
+      mode: !input piece_19_mode
+      etait_presence: !input piece_19_etait_presence
+      utilisateur:  !input piece_19_utilisateur
+      si_principal: !input piece_19_si_principal
+      local_actif: !input piece_19_local_actif
+
+    - nom: !input piece_20_nom
+      mode:  !input piece_20_mode
+      etait_presence: !input piece_20_etait_presence
+      utilisateur: !input piece_20_utilisateur
+      si_principal: !input piece_20_si_principal
+      local_actif: !input piece_20_local_actif
 
 
 
 
 # ========= DÉCLENCHEURS =========
-trigger:
-  # Tous les utilisateurs partent
+trigger: 
+
   - platform: state
     entity_id: !input binary_sensor_tous_absents
-    from: 'off'
     to: 'on'
     id: tous_partent
 
-  # Tous les utilisateurs reviennent
   - platform: state
     entity_id: !input binary_sensor_tous_absents
-    from: 'on'
     to: 'off'
     id: tous_reviennent
 
-  # Utilisateur 1 part
   - platform: state
     entity_id: !input binary_sensor_utilisateur_1_absent
-    from: 'off'
     to: 'on'
     id: utilisateur_1_part
 
-  # Utilisateur 1 revient
   - platform: state
     entity_id: !input binary_sensor_utilisateur_1_absent
-    from: 'on'
     to: 'off'
     id: utilisateur_1_revient
 
-  # Utilisateur 2 part
   - platform: state
     entity_id: !input binary_sensor_utilisateur_2_absent
-    from: 'off'
     to: 'on'
     id: utilisateur_2_part
 
-  # Utilisateur 2 revient
   - platform: state
     entity_id: !input binary_sensor_utilisateur_2_absent
-    from: 'on'
     to: 'off'
     id: utilisateur_2_revient
 
-  # Utilisateur 3 part
   - platform: state
     entity_id: !input binary_sensor_utilisateur_3_absent
-    from: 'off'
     to: 'on'
     id: utilisateur_3_part
 
-  # Utilisateur 3 revient
   - platform: state
-    entity_id: !input binary_sensor_utilisateur_3_absent
-    from: 'on'
-    to: 'off'
-    id: utilisateur_3_revient
+    entity_id:  !input binary_sensor_utilisateur_3_absent
+    to:  'off'
+    id:  utilisateur_3_revient
 
-  # Utilisateur 4 part
   - platform: state
     entity_id: !input binary_sensor_utilisateur_4_absent
-    from: 'off'
     to: 'on'
     id: utilisateur_4_part
 
-  # Utilisateur 4 revient
   - platform: state
     entity_id: !input binary_sensor_utilisateur_4_absent
-    from: 'on'
     to: 'off'
     id: utilisateur_4_revient
 
-  # Utilisateur 5 part
   - platform: state
-    entity_id: !input binary_sensor_utilisateur_5_absent
-    from: 'off'
-    to: 'on'
-    id: utilisateur_5_part
+    entity_id:  !input binary_sensor_utilisateur_5_absent
+    to:  'on'
+    id:  utilisateur_5_part
 
-  # Utilisateur 5 revient
   - platform: state
     entity_id: !input binary_sensor_utilisateur_5_absent
-    from: 'on'
     to: 'off'
     id: utilisateur_5_revient
 
+
+
+
+# ========= CONDITIONS =========
 condition:
   - condition: state
     entity_id: !input switch_global
@@ -1817,12 +1226,13 @@ condition:
 
 
 
+
     
 # ========= ACTIONS =========
+# ========= ACTIONS =========
 action:
+  - choose: 
 
-  - choose:
-  
       # === TOUS PARTENT ===
       - conditions: 
           - condition: trigger
@@ -1831,143 +1241,566 @@ action:
           - service: logbook.log
             data:
               name: "Absence Auto Globale"
-              message: "🏃 Tous les utilisateurs sont partis - traitement des pièces actives"
+              message: "🏃 Tous les utilisateurs sont partis - traitement des pièces communes"
+
+          - repeat:
+              for_each:  "{{ pieces }}"
+              sequence: 
+                - condition: template
+                  value_template: "{{ repeat.item.local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
+
+                # ✅ IGNORER les pièces avec utilisateur principal actif (gérées par UTILISATEUR X PART)
+                - condition: template
+                  value_template: "{{ repeat.item.si_principal in ['','none',None] or not is_state(repeat.item.si_principal,'on') }}"
+
+                # ✅ IGNORER si mode est Hors-gel ou Arret
+                - condition: template
+                  value_template: "{{ states(repeat.item.mode) in ['Presence','Absence','Manuel'] }}"
+
+                # Si mode était Presence, marquer le flag et basculer en Absence
+                - if:
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode) == 'Presence' }}"
+                  then:
+                    - service: input_boolean.turn_on
+                      target:
+                        entity_id:  "{{ repeat.item.etait_presence }}"
+
+                    - service: input_select.select_option
+                      target:
+                        entity_id:  "{{ repeat.item.mode }}"
+                      data:
+                        option: 'Absence'
+
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item.nom }}"
+                        message: "Mode Presence → Absence (Scheduler gère la consigne)"
+
+                - if:
+                    - condition:  template
+                      value_template:  "{{ states(repeat.item. mode) in ['Manuel','Absence'] }}"
+                  then: 
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item.nom }}"
+                        message: "Mode {{ states(repeat.item.mode) }} - état sauvegardé"
+
+      # === TOUS REVIENNENT ===
+      - conditions: 
+          - condition: trigger
+            id: tous_reviennent
+        sequence:
+          - service: logbook.log
+            data:
+              name: "Absence Auto Globale"
+              message: "🏠 Utilisateurs de retour - restauration des pièces communes"
 
           - repeat:
               for_each: "{{ pieces }}"
               sequence:
                 - condition:  template
-                  value_template: "{{ repeat.item.local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
-                            
-                - condition: template
-                  value_template: "{{ states(repeat.item.mode) in ['Presence','Absence','Manuel'] }}"
-                
-                - service: input_select.select_option
-                  target: 
-                    entity_id: "{{ repeat.item.mode_avant }}"
-                  data:
-                    option: "{{ states(repeat.item.mode) }}"
-                
-                - service: input_number.set_value
-                  target:
-                    entity_id: "{{ repeat.item.consigne_avant }}"
-                  data:
-                    value: "{{ states(repeat.item.consigne) | float(19) }}"
-                
-                - if: 
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode) == 'Presence' }}"
-                  then:
-                    - service: input_select.select_option
-                      target: 
-                        entity_id: "{{ repeat.item.mode }}"
-                      data:
-                        option: 'Absence'
-                    
-                    - service: logbook.log
-                      data:
-                        name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "Mode Presence → Absence (Scheduler gère la consigne)"
-                
-                - if:
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode) in ['Manuel','Absence'] }}"
-                  then: 
-                    - service: logbook.log
-                      data:
-                        name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "Mode {{ states(repeat.item.mode) }} - consigne {{ states(repeat.item.consigne) }}°C sauvegardée"
+                  value_template:  "{{ repeat.item.local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
 
-      # === TOUS REVIENNENT ===
-      - conditions:  
-          - condition: trigger
-            id: tous_reviennent
-        sequence: 
-          - service: logbook.log
-            data:
-              name: "Absence Auto Globale"
-              message: "🏠 Utilisateurs de retour - restauration des pièces"
-
-          - repeat:
-              for_each: "{{ pieces }}"
-              sequence: 
+                # ✅ IGNORER les pièces avec utilisateur principal actif
                 - condition: template
-                  value_template: "{{ repeat.item.local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
-                
+                  value_template: "{{ repeat. item.si_principal in ['','none',None] or not is_state(repeat.item.si_principal,'on') }}"
+
                 # ✅ IGNORER si le mode ACTUEL est Hors-gel ou Arret
                 - condition: template
                   value_template: "{{ states(repeat.item.mode) not in ['Hors-gel','Arret'] }}"
-                # ✅ IGNORER si mode_avant est invalide/obsolète
-                - condition: template
-                  value_template: "{{ states(repeat.item.mode_avant) in ['Presence','Absence','Manuel'] }}"
-                
-                # Si mode_avant était Manuel, restaurer la consigne uniquement
-                - if: 
+
+                # Si le flag etait_presence est actif, restaurer Presence
+                - if:
                     - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) == 'Manuel' }}"
+                      value_template: "{{ is_state(repeat.item.etait_presence,'on') }}"
                   then:
-                    - service: input_number.set_value
+                    - service: input_select.select_option
                       target:
-                        entity_id: "{{ repeat.item.consigne }}"
+                        entity_id:  "{{ repeat.item.mode }}"
                       data: 
-                        value: "{{ states(repeat.item.consigne_avant) | float(19) }}"
-                    
-                    - service: logbook.log
-                      data:
-                        name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "Utilisateurs de retour → Mode Manuel - consigne restaurée : {{ states(repeat.item.consigne_avant) }}°C"
-
-                # Si mode_avant était Absence, cycle Arret → Absence
-                - if:
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) == 'Absence' }}"
-                  then:
-                    - service: input_select.select_option
-                      target:
-                        entity_id: "{{ repeat.item.mode }}"
-                      data:
-                        option: 'Arret'
-                    - delay: 
-                        seconds: 1
-                    - service: input_select.select_option
-                      target:
-                        entity_id: "{{ repeat.item.mode }}"
-                      data:
-                        option: 'Absence'
-                    
-                    - service: logbook.log
-                      data:
-                        name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "Utilisateurs de retour → Mode Absence - resync Scheduler"
-
-                # Si mode_avant était Presence, restaurer Presence
-                - if:
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) == 'Presence' }}"
-                  then: 
-                    - service: input_select.select_option
-                      target:
-                        entity_id: "{{ repeat.item.mode }}"
-                      data:
                         option: 'Presence'
-                    
+
                     - service: logbook.log
                       data:
                         name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "Utilisateurs de retour → Mode Presence restauré"
+                        message: "Retour → Mode Presence restauré"
+
+                    - service: input_boolean.turn_off
+                      target: 
+                        entity_id: "{{ repeat.item.etait_presence }}"
 
       # === UTILISATEUR 1 PART ===
       - conditions:
-          - condition:  trigger
+          - condition: trigger
             id: utilisateur_1_part
+        sequence:
+          - variables:
+              nom_utilisateur: "{{ liste_utilisateurs[0] if liste_utilisateurs|length > 0 else 'Utilisateur1' }}"
+
+          - service: logbook.log
+            data:
+              name:  "Absence Auto Globale"
+              message: "🏃 {{ nom_utilisateur }} est parti - traitement de ses pièces"
+
+          - repeat:
+              for_each: "{{ pieces }}"
+              sequence:
+                - condition: and
+                  conditions:
+                    - condition: template
+                      value_template: "{{ repeat.item.local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
+                    - condition: template
+                      value_template: "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item. si_principal,'on') }}"
+                    - condition: template
+                      value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode) in ['Presence','Absence','Manuel'] }}"
+
+                - if:
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode) == 'Presence' }}"
+                  then:
+                    - service: input_boolean. turn_on
+                      target: 
+                        entity_id: "{{ repeat.item.etait_presence }}"
+
+                    - service: input_select.select_option
+                      target:
+                        entity_id: "{{ repeat. item.mode }}"
+                      data:
+                        option: 'Absence'
+
+                    - service: logbook.log
+                      data:
+                        name:  "Absence Auto {{ repeat.item.nom }}"
+                        message: "{{ nom_utilisateur }} absent → Mode Presence → Absence"
+
+                - if: 
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode) in ['Manuel','Absence'] }}"
+                  then:
+                    - service:  logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item.nom }}"
+                        message: "{{ nom_utilisateur }} absent → Mode {{ states(repeat.item. mode) }}"
+
+      # === UTILISATEUR 1 REVIENT ===
+      - conditions:
+          - condition:  trigger
+            id: utilisateur_1_revient
         sequence: 
           - variables:
               nom_utilisateur: "{{ liste_utilisateurs[0] if liste_utilisateurs|length > 0 else 'Utilisateur1' }}"
-          
+
+          - service: logbook.log
+            data:
+              name: "Absence Auto Globale"
+              message: "🏠 {{ nom_utilisateur }} est de retour - restauration de ses pièces"
+
+          - repeat: 
+              for_each: "{{ pieces }}"
+              sequence: 
+                - condition: and
+                  conditions:
+                    - condition:  template
+                      value_template:  "{{ repeat.item.local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
+                    - condition: template
+                      value_template: "{{ repeat.item. si_principal not in ['','none',None] and is_state(repeat.item.si_principal,'on') }}"
+                    - condition: template
+                      value_template: "{{ states(repeat. item.utilisateur) == nom_utilisateur }}"
+                    - condition: template
+                      value_template: "{{ states(repeat. item.mode) not in ['Hors-gel','Arret'] }}"
+
+                - if:
+                    - condition: template
+                      value_template: "{{ is_state(repeat.item.etait_presence,'on') }}"
+                  then:
+                    - service: input_select.select_option
+                      target:
+                        entity_id:  "{{ repeat.item.mode }}"
+                      data:
+                        option: 'Presence'
+
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item.nom }}"
+                        message: "{{ nom_utilisateur }} de retour → Mode Presence restauré"
+
+                    - service: input_boolean.turn_off
+                      target: 
+                        entity_id: "{{ repeat.item.etait_presence }}"
+
+      # === UTILISATEUR 2 PART ===
+      - conditions:
+          - condition: trigger
+            id: utilisateur_2_part
+        sequence:
+          - variables:
+              nom_utilisateur: "{{ liste_utilisateurs[1] if liste_utilisateurs|length > 1 else 'Utilisateur2' }}"
+
           - service:  logbook.log
             data:
               name: "Absence Auto Globale"
               message:  "🏃 {{ nom_utilisateur }} est parti - traitement de ses pièces"
+
+          - repeat:
+              for_each: "{{ pieces }}"
+              sequence:
+                - condition: and
+                  conditions:
+                    - condition: template
+                      value_template: "{{ repeat.item.local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
+                    - condition: template
+                      value_template: "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item.si_principal,'on') }}"
+                    - condition: template
+                      value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode) in ['Presence','Absence','Manuel'] }}"
+
+                - if: 
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode) == 'Presence' }}"
+                  then:
+                    - service: input_boolean.turn_on
+                      target: 
+                        entity_id: "{{ repeat.item.etait_presence }}"
+
+                    - service:  input_select.select_option
+                      target:
+                        entity_id: "{{ repeat.item.mode }}"
+                      data:
+                        option: 'Absence'
+
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item. nom }}"
+                        message:  "{{ nom_utilisateur }} absent → Mode Presence → Absence"
+
+                - if:
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode) in ['Manuel','Absence'] }}"
+                  then:
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item. nom }}"
+                        message:  "{{ nom_utilisateur }} absent → Mode {{ states(repeat.item.mode) }}"
+
+      # === UTILISATEUR 2 REVIENT ===
+      - conditions:
+          - condition: trigger
+            id: utilisateur_2_revient
+        sequence:
+          - variables:
+              nom_utilisateur: "{{ liste_utilisateurs[1] if liste_utilisateurs|length > 1 else 'Utilisateur2' }}"
+
+          - service: logbook. log
+            data:
+              name: "Absence Auto Globale"
+              message: "🏠 {{ nom_utilisateur }} est de retour - restauration de ses pièces"
+
+          - repeat:
+              for_each: "{{ pieces }}"
+              sequence: 
+                - condition: and
+                  conditions:
+                    - condition: template
+                      value_template: "{{ repeat.item.local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
+                    - condition: template
+                      value_template: "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item.si_principal,'on') }}"
+                    - condition: template
+                      value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode) not in ['Hors-gel','Arret'] }}"
+
+                - if:
+                    - condition: template
+                      value_template: "{{ is_state(repeat.item.etait_presence,'on') }}"
+                  then: 
+                    - service: input_select.select_option
+                      target:
+                        entity_id:  "{{ repeat.item.mode }}"
+                      data:
+                        option: 'Presence'
+
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item.nom }}"
+                        message: "{{ nom_utilisateur }} de retour → Mode Presence restauré"
+
+                    - service: input_boolean. turn_off
+                      target: 
+                        entity_id: "{{ repeat.item.etait_presence }}"
+
+      # === UTILISATEUR 3 PART ===
+      - conditions:
+          - condition: trigger
+            id:  utilisateur_3_part
+        sequence:
+          - variables: 
+              nom_utilisateur: "{{ liste_utilisateurs[2] if liste_utilisateurs|length > 2 else 'Utilisateur3' }}"
+
+          - service: logbook.log
+            data:
+              name: "Absence Auto Globale"
+              message: "🏃 {{ nom_utilisateur }} est parti - traitement de ses pièces"
+
+          - repeat:
+              for_each: "{{ pieces }}"
+              sequence:
+                - condition:  and
+                  conditions:
+                    - condition: template
+                      value_template: "{{ repeat. item.local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
+                    - condition: template
+                      value_template: "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item. si_principal,'on') }}"
+                    - condition: template
+                      value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode) in ['Presence','Absence','Manuel'] }}"
+
+                - if:
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode) == 'Presence' }}"
+                  then:
+                    - service: input_boolean. turn_on
+                      target: 
+                        entity_id: "{{ repeat.item.etait_presence }}"
+
+                    - service: input_select.select_option
+                      target:
+                        entity_id: "{{ repeat. item.mode }}"
+                      data:
+                        option: 'Absence'
+
+                    - service: logbook.log
+                      data:
+                        name:  "Absence Auto {{ repeat.item.nom }}"
+                        message: "{{ nom_utilisateur }} absent → Mode Presence → Absence"
+
+                - if:
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode) in ['Manuel','Absence'] }}"
+                  then:
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item. nom }}"
+                        message:  "{{ nom_utilisateur }} absent → Mode {{ states(repeat.item.mode) }}"
+
+      # === UTILISATEUR 3 REVIENT ===
+      - conditions:
+          - condition: trigger
+            id: utilisateur_3_revient
+        sequence:
+          - variables:
+              nom_utilisateur: "{{ liste_utilisateurs[2] if liste_utilisateurs|length > 2 else 'Utilisateur3' }}"
+
+          - service: logbook. log
+            data:
+              name: "Absence Auto Globale"
+              message: "🏠 {{ nom_utilisateur }} est de retour - restauration de ses pièces"
+
+          - repeat:
+              for_each:  "{{ pieces }}"
+              sequence:
+                - condition: and
+                  conditions:
+                    - condition: template
+                      value_template: "{{ repeat.item. local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
+                    - condition: template
+                      value_template: "{{ repeat. item.si_principal not in ['','none',None] and is_state(repeat.item.si_principal,'on') }}"
+                    - condition: template
+                      value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode) not in ['Hors-gel','Arret'] }}"
+
+                - if:
+                    - condition:  template
+                      value_template:  "{{ is_state(repeat. item.etait_presence,'on') }}"
+                  then: 
+                    - service: input_select.select_option
+                      target:
+                        entity_id: "{{ repeat.item.mode }}"
+                      data: 
+                        option: 'Presence'
+
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item.nom }}"
+                        message: "{{ nom_utilisateur }} de retour → Mode Presence restauré"
+
+                    - service: input_boolean.turn_off
+                      target:
+                        entity_id:  "{{ repeat.item.etait_presence }}"
+
+      # === UTILISATEUR 4 PART ===
+      - conditions: 
+          - condition: trigger
+            id: utilisateur_4_part
+        sequence:
+          - variables: 
+              nom_utilisateur: "{{ liste_utilisateurs[3] if liste_utilisateurs|length > 3 else 'Utilisateur4' }}"
+
+          - service: logbook.log
+            data:
+              name: "Absence Auto Globale"
+              message: "🏃 {{ nom_utilisateur }} est parti - traitement de ses pièces"
+
+          - repeat:
+              for_each: "{{ pieces }}"
+              sequence:
+                - condition: and
+                  conditions: 
+                    - condition: template
+                      value_template: "{{ repeat.item.local_actif not in ['','none',None] and is_state(repeat.item. local_actif,'on') }}"
+                    - condition: template
+                      value_template: "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item.si_principal,'on') }}"
+                    - condition: template
+                      value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode) in ['Presence','Absence','Manuel'] }}"
+
+                - if:
+                    - condition:  template
+                      value_template:  "{{ states(repeat.item. mode) == 'Presence' }}"
+                  then: 
+                    - service: input_boolean.turn_on
+                      target:
+                        entity_id:  "{{ repeat.item.etait_presence }}"
+
+                    - service: input_select.select_option
+                      target:
+                        entity_id: "{{ repeat.item.mode }}"
+                      data:
+                        option:  'Absence'
+
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat. item.nom }}"
+                        message: "{{ nom_utilisateur }} absent → Mode Presence → Absence"
+
+                - if: 
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode) in ['Manuel','Absence'] }}"
+                  then:
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat. item.nom }}"
+                        message: "{{ nom_utilisateur }} absent → Mode {{ states(repeat.item.mode) }}"
+
+      # === UTILISATEUR 4 REVIENT ===
+      - conditions:
+          - condition:  trigger
+            id: utilisateur_4_revient
+        sequence: 
+          - variables:
+              nom_utilisateur: "{{ liste_utilisateurs[3] if liste_utilisateurs|length > 3 else 'Utilisateur4' }}"
+
+          - service: logbook.log
+            data:
+              name: "Absence Auto Globale"
+              message: "🏠 {{ nom_utilisateur }} est de retour - restauration de ses pièces"
+
+          - repeat:
+              for_each: "{{ pieces }}"
+              sequence:
+                - condition:  and
+                  conditions:
+                    - condition: template
+                      value_template: "{{ repeat. item.local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
+                    - condition: template
+                      value_template: "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item. si_principal,'on') }}"
+                    - condition: template
+                      value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode) not in ['Hors-gel','Arret'] }}"
+
+                - if:
+                    - condition: template
+                      value_template: "{{ is_state(repeat.item.etait_presence,'on') }}"
+                  then:
+                    - service:  input_select.select_option
+                      target:
+                        entity_id: "{{ repeat.item.mode }}"
+                      data:
+                        option: 'Presence'
+
+                    - service: logbook.log
+                      data:
+                        name: "Absence Auto {{ repeat.item. nom }}"
+                        message:  "{{ nom_utilisateur }} de retour → Mode Presence restauré"
+
+                    - service: input_boolean.turn_off
+                      target:
+                        entity_id: "{{ repeat.item. etait_presence }}"
+
+      # === UTILISATEUR 5 PART ===
+      - conditions:
+          - condition: trigger
+            id: utilisateur_5_part
+        sequence:
+          - variables:
+              nom_utilisateur: "{{ liste_utilisateurs[4] if liste_utilisateurs|length > 4 else 'Utilisateur5' }}"
+
+          - service: logbook.log
+            data:
+              name:  "Absence Auto Globale"
+              message: "🏃 {{ nom_utilisateur }} est parti - traitement de ses pièces"
+
+          - repeat: 
+              for_each: "{{ pieces }}"
+              sequence:
+                - condition: and
+                  conditions:
+                    - condition: template
+                      value_template: "{{ repeat.item.local_actif not in ['','none',None] and is_state(repeat. item.local_actif,'on') }}"
+                    - condition: template
+                      value_template: "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item.si_principal,'on') }}"
+                    - condition: template
+                      value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode) in ['Presence','Absence','Manuel'] }}"
+
+                - if:
+                    - condition: template
+                      value_template: "{{ states(repeat. item.mode) == 'Presence' }}"
+                  then:
+                    - service: input_boolean.turn_on
+                      target:
+                        entity_id: "{{ repeat.item. etait_presence }}"
+
+                    - service: input_select. select_option
+                      target: 
+                        entity_id: "{{ repeat.item.mode }}"
+                      data:
+                        option: 'Absence'
+
+                    - service: logbook. log
+                      data:
+                        name: "Absence Auto {{ repeat.item.nom }}"
+                        message: "{{ nom_utilisateur }} absent → Mode Presence → Absence"
+
+                - if:
+                    - condition: template
+                      value_template: "{{ states(repeat.item.mode) in ['Manuel','Absence'] }}"
+                  then: 
+                    - service: logbook. log
+                      data:
+                        name: "Absence Auto {{ repeat.item.nom }}"
+                        message: "{{ nom_utilisateur }} absent → Mode {{ states(repeat.item.mode) }}"
+
+      # === UTILISATEUR 5 REVIENT ===
+      - conditions:
+          - condition: trigger
+            id: utilisateur_5_revient
+        sequence:
+          - variables: 
+              nom_utilisateur: "{{ liste_utilisateurs[4] if liste_utilisateurs|length > 4 else 'Utilisateur5' }}"
+
+          - service: logbook.log
+            data:
+              name: "Absence Auto Globale"
+              message: "🏠 {{ nom_utilisateur }} est de retour - restauration de ses pièces"
 
           - repeat:
               for_each: "{{ pieces }}"
@@ -1976,739 +1809,31 @@ action:
                   conditions: 
                     - condition: template
                       value_template: "{{ repeat.item.local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
-                    - condition: template
-                      value_template: "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item.si_principal,'on') }}"
-                    - condition: template
-                      value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode) in ['Presence','Absence','Manuel'] }}"
-                
-                - service: input_select.select_option
-                  target:
-                    entity_id: "{{ repeat.item.mode_avant }}"
-                  data:
-                    option: "{{ states(repeat.item.mode) }}"
-                
-                - service: input_number.set_value
-                  target:
-                    entity_id: "{{ repeat.item.consigne_avant }}"
-                  data:
-                    value: "{{ states(repeat.item.consigne) | float(19) }}"
-                
-                - if:
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode) == 'Presence' }}"
-                  then:
-                    - service: input_select.select_option
-                      target:
-                        entity_id: "{{ repeat.item.mode }}"
-                      data: 
-                        option: 'Absence'
-                    
-                    - service: logbook.log
-                      data:
-                        name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} absent → Mode Presence → Absence"
-                
-                - if: 
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode) in ['Manuel','Absence'] }}"
-                  then:
-                    - service: logbook.log
-                      data:
-                        name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} absent → Mode {{ states(repeat.item.mode) }} - consigne {{ states(repeat.item.consigne) }}°C sauvegardée"
-
-      # === UTILISATEUR 1 REVIENT ===
-      - conditions:
-          - condition: trigger
-            id: utilisateur_1_revient
-        sequence: 
-          - variables:
-              nom_utilisateur: "{{ liste_utilisateurs[0] if liste_utilisateurs|length > 0 else 'Utilisateur1' }}"
-          
-          - service: logbook.log
-            data:
-              name: "Absence Auto Globale"
-              message: "🏠 {{ nom_utilisateur }} est de retour - restauration de ses pièces"
-
-          - repeat:
-              for_each: "{{ pieces }}"
-              sequence: 
-                - condition: and
-                  conditions:
-                    - condition: template
-                      value_template: "{{ repeat.item.local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
-                    - condition: template
-                      value_template: "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item.si_principal,'on') }}"
-                    - condition: template
-                      value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
-                      
-                    # ✅ IGNORER si le mode ACTUEL est Hors-gel ou Arret
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode) not in ['Hors-gel','Arret'] }}"
-                    # ✅ IGNORER si mode_avant est invalide/obsolète
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) in ['Presence','Absence','Manuel'] }}"
-                
-                # Si mode_avant était Manuel, restaurer la consigne uniquement
-                - if: 
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) == 'Manuel' }}"
-                  then:
-                    - service: input_number.set_value
-                      target:
-                        entity_id: "{{ repeat.item.consigne }}"
-                      data: 
-                        value: "{{ states(repeat.item.consigne_avant) | float(19) }}"
-                    
-                    - service: logbook.log
-                      data:
-                        name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} de retour → Mode Manuel - consigne restaurée : {{ states(repeat.item.consigne_avant) }}°C"
-
-                # Si mode_avant était Absence, cycle Arret → Absence
-                - if:
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) == 'Absence' }}"
-                  then:
-                    - service: input_select.select_option
-                      target:
-                        entity_id: "{{ repeat.item.mode }}"
-                      data:
-                        option: 'Arret'
-                    - delay: 
-                        seconds: 1
-                    - service: input_select.select_option
-                      target:
-                        entity_id: "{{ repeat.item.mode }}"
-                      data:
-                        option: 'Absence'
-                    
-                    - service: logbook.log
-                      data:
-                        name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} de retour → Mode Absence - resync Scheduler"
-
-                # Si mode_avant était Presence, restaurer Presence
-                - if:
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) == 'Presence' }}"
-                  then: 
-                    - service: input_select.select_option
-                      target:
-                        entity_id: "{{ repeat.item.mode }}"
-                      data:
-                        option: 'Presence'
-                    
-                    - service: logbook.log
-                      data:
-                        name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} de retour → Mode Presence restauré"
-                            
-      # === UTILISATEUR 2 PART ===
-      - conditions:
-          - condition: trigger
-            id: utilisateur_2_part
-        sequence:
-          - variables:
-              nom_utilisateur: "{{ liste_utilisateurs[1] if liste_utilisateurs|length > 1 else 'Utilisateur2' }}"
-          
-          - service: logbook.log
-            data:
-              name: "Absence Auto Globale"
-              message: "🏃 {{ nom_utilisateur }} est parti - traitement de ses pièces"
-
-          - repeat:
-              for_each: "{{ pieces }}"
-              sequence: 
-                - condition: and
-                  conditions:
-                    - condition: template
-                      value_template: "{{ repeat.item.local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
-                    - condition: template
-                      value_template: "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item.si_principal,'on') }}"
-                    - condition: template
-                      value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode) in ['Presence','Absence','Manuel'] }}"
-                
-                - service: input_select.select_option
-                  target:
-                    entity_id: "{{ repeat.item.mode_avant }}"
-                  data:
-                    option: "{{ states(repeat.item.mode) }}"
-                
-                - service: input_number.set_value
-                  target: 
-                    entity_id: "{{ repeat.item.consigne_avant }}"
-                  data: 
-                    value: "{{ states(repeat.item.consigne) | float(19) }}"
-                
-                - if:
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode) == 'Presence' }}"
-                  then:
-                    - service:  input_select.select_option
-                      target:
-                        entity_id: "{{ repeat.item.mode }}"
-                      data:
-                        option: 'Absence'
-                    
-                    - service: logbook.log
-                      data:
-                        name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} absent → Mode Presence → Absence"
-                
-                - if:
                     - condition:  template
-                      value_template:  "{{ states(repeat.item.mode) in ['Manuel','Absence'] }}"
-                  then: 
-                    - service: logbook.log
-                      data:
-                        name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} absent → Mode {{ states(repeat.item.mode) }} - consigne {{ states(repeat.item.consigne) }}°C sauvegardée"
+                      value_template:  "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat. item.si_principal,'on') }}"
+                    - condition:  template
+                      value_template:  "{{ states(repeat.item. utilisateur) == nom_utilisateur }}"
+                    - condition:  template
+                      value_template:  "{{ states(repeat.item. mode) not in ['Hors-gel','Arret'] }}"
 
-      # === UTILISATEUR 2 REVIENT ===
-      - conditions:
-          - condition: trigger
-            id: utilisateur_2_revient
-        sequence: 
-          - variables:
-              nom_utilisateur: "{{ liste_utilisateurs[1] if liste_utilisateurs|length > 1 else 'Utilisateur2' }}"
-          
-          - service: logbook.log
-            data:
-              name: "Absence Auto Globale"
-              message: "🏠 {{ nom_utilisateur }} est de retour - restauration de ses pièces"
-
-          - repeat:
-              for_each: "{{ pieces }}"
-              sequence: 
-                - condition: and
-                  conditions:  
-                    - condition: template
-                      value_template: "{{ repeat.item.local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
-                    - condition: template
-                      value_template: "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item.si_principal,'on') }}"
-                    - condition: template
-                      value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
-                      
-                    # ✅ IGNORER si le mode ACTUEL est Hors-gel ou Arret
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode) not in ['Hors-gel','Arret'] }}"
-                    # ✅ IGNORER si mode_avant est invalide/obsolète
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) in ['Presence','Absence','Manuel'] }}"
-                
-                # Si mode_avant était Manuel, restaurer la consigne uniquement
-                - if: 
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) == 'Manuel' }}"
-                  then:
-                    - service: input_number.set_value
-                      target:
-                        entity_id: "{{ repeat.item.consigne }}"
-                      data: 
-                        value: "{{ states(repeat.item.consigne_avant) | float(19) }}"
-                    
-                    - service: logbook.log
-                      data:
-                        name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} de retour → Mode Manuel - consigne restaurée : {{ states(repeat.item.consigne_avant) }}°C"
-
-                # Si mode_avant était Absence, cycle Arret → Absence
                 - if:
                     - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) == 'Absence' }}"
+                      value_template: "{{ is_state(repeat.item.etait_presence,'on') }}"
                   then:
                     - service: input_select.select_option
                       target:
                         entity_id: "{{ repeat.item.mode }}"
                       data:
-                        option: 'Arret'
-                    - delay: 
-                        seconds: 1
-                    - service: input_select.select_option
-                      target:
-                        entity_id: "{{ repeat.item.mode }}"
-                      data:
-                        option: 'Absence'
-                    
-                    - service: logbook.log
-                      data:
-                        name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} de retour → Mode Absence - resync Scheduler"
+                        option:  'Presence'
 
-                # Si mode_avant était Presence, restaurer Presence
-                - if:
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) == 'Presence' }}"
-                  then: 
-                    - service: input_select.select_option
-                      target:
-                        entity_id: "{{ repeat.item.mode }}"
-                      data:
-                        option: 'Presence'
-                    
                     - service: logbook.log
                       data:
-                        name: "Absence Auto {{ repeat.item.nom }}"
+                        name: "Absence Auto {{ repeat. item.nom }}"
                         message: "{{ nom_utilisateur }} de retour → Mode Presence restauré"
 
-      # === UTILISATEURS 3-5 :  même logique ===
-      # (Je copie la structure pour User 3-5 avec la même correction)
-
-      # === UTILISATEUR 3 PART ===
-      - conditions:
-          - condition: trigger
-            id: utilisateur_3_part
-        sequence:
-          - variables:
-              nom_utilisateur: "{{ liste_utilisateurs[2] if liste_utilisateurs|length > 2 else 'Utilisateur3' }}"
-          
-          - service: logbook.log
-            data:
-              name: "Absence Auto Globale"
-              message: "🏃 {{ nom_utilisateur }} est parti - traitement de ses pièces"
-
-          - repeat:
-              for_each:  "{{ pieces }}"
-              sequence:
-                - condition: and
-                  conditions:
-                    - condition: template
-                      value_template: "{{ repeat.item.local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
-                    - condition: template
-                      value_template: "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item.si_principal,'on') }}"
-                    - condition: template
-                      value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode) in ['Presence','Absence','Manuel'] }}"
-                
-                - service: input_select.select_option
-                  target:
-                    entity_id: "{{ repeat.item.mode_avant }}"
-                  data:
-                    option: "{{ states(repeat.item.mode) }}"
-                
-                - service: input_number.set_value
-                  target: 
-                    entity_id: "{{ repeat.item.consigne_avant }}"
-                  data: 
-                    value: "{{ states(repeat.item.consigne) | float(19) }}"
-                
-                - if:
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode) == 'Presence' }}"
-                  then:
-                    - service: input_select.select_option
+                    - service: input_boolean.turn_off
                       target:
-                        entity_id: "{{ repeat.item.mode }}"
-                      data:
-                        option: 'Absence'
-                    
-                    - service: logbook.log
-                      data:
-                        name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} absent → Mode Presence → Absence"
-                
-                - if:
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode) in ['Manuel','Absence'] }}"
-                  then:
-                    - service: logbook.log
-                      data:
-                        name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} absent → Mode {{ states(repeat.item.mode) }} - consigne {{ states(repeat.item.consigne) }}°C sauvegardée"
-
-      # === UTILISATEUR 3 REVIENT ===
-      - conditions: 
-          - condition: trigger
-            id: utilisateur_3_revient
-        sequence: 
-          - variables:
-              nom_utilisateur: "{{ liste_utilisateurs[2] if liste_utilisateurs|length > 2 else 'Utilisateur3' }}"
-          
-          - service: logbook.log
-            data:
-              name: "Absence Auto Globale"
-              message: "🏠 {{ nom_utilisateur }} est de retour - restauration de ses pièces"
-
-          - repeat:
-              for_each: "{{ pieces }}"
-              sequence: 
-                - condition: and
-                  conditions:  
-                    - condition: template
-                      value_template: "{{ repeat.item.local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
-                    - condition: template
-                      value_template: "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item.si_principal,'on') }}"
-                    - condition: template
-                      value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
-                      
-                    # ✅ IGNORER si le mode ACTUEL est Hors-gel ou Arret
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode) not in ['Hors-gel','Arret'] }}"
-                    # ✅ IGNORER si mode_avant est invalide/obsolète
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) in ['Presence','Absence','Manuel'] }}"
-                
-                # Si mode_avant était Manuel, restaurer la consigne uniquement
-                - if: 
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) == 'Manuel' }}"
-                  then:
-                    - service: input_number.set_value
-                      target:
-                        entity_id: "{{ repeat.item.consigne }}"
-                      data: 
-                        value: "{{ states(repeat.item.consigne_avant) | float(19) }}"
-                    
-                    - service: logbook.log
-                      data:
-                        name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} de retour → Mode Manuel - consigne restaurée : {{ states(repeat.item.consigne_avant) }}°C"
-
-                # Si mode_avant était Absence, cycle Arret → Absence
-                - if:
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) == 'Absence' }}"
-                  then:
-                    - service: input_select.select_option
-                      target:
-                        entity_id: "{{ repeat.item.mode }}"
-                      data:
-                        option: 'Arret'
-                    - delay: 
-                        seconds: 1
-                    - service: input_select.select_option
-                      target:
-                        entity_id: "{{ repeat.item.mode }}"
-                      data:
-                        option: 'Absence'
-                    
-                    - service: logbook.log
-                      data:
-                        name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} de retour → Mode Absence - resync Scheduler"
-
-                # Si mode_avant était Presence, restaurer Presence
-                - if:
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) == 'Presence' }}"
-                  then: 
-                    - service: input_select.select_option
-                      target:
-                        entity_id: "{{ repeat.item.mode }}"
-                      data:
-                        option: 'Presence'
-                    
-                    - service: logbook.log
-                      data:
-                        name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} de retour → Mode Presence restauré"
-
-      # === UTILISATEUR 4 PART ===
-      - conditions:
-          - condition: trigger
-            id: utilisateur_4_part
-        sequence:
-          - variables:
-              nom_utilisateur: "{{ liste_utilisateurs[3] if liste_utilisateurs|length > 3 else 'Utilisateur4' }}"
-          
-          - service: logbook.log
-            data:
-              name: "Absence Auto Globale"
-              message: "🏃 {{ nom_utilisateur }} est parti - traitement de ses pièces"
-
-          - repeat:
-              for_each:  "{{ pieces }}"
-              sequence:
-                - condition: and
-                  conditions:
-                    - condition: template
-                      value_template: "{{ repeat.item.local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
-                    - condition: template
-                      value_template: "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item.si_principal,'on') }}"
-                    - condition: template
-                      value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode) in ['Presence','Absence','Manuel'] }}"
-                
-                - service: input_select.select_option
-                  target:
-                    entity_id: "{{ repeat.item.mode_avant }}"
-                  data:
-                    option: "{{ states(repeat.item.mode) }}"
-                
-                - service: input_number.set_value
-                  target: 
-                    entity_id: "{{ repeat.item.consigne_avant }}"
-                  data: 
-                    value: "{{ states(repeat.item.consigne) | float(19) }}"
-                
-                - if:
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode) == 'Presence' }}"
-                  then:
-                    - service: input_select.select_option
-                      target:
-                        entity_id: "{{ repeat.item.mode }}"
-                      data:
-                        option: 'Absence'
-                    
-                    - service: logbook.log
-                      data:
-                        name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} absent → Mode Presence → Absence"
-                
-                - if:
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode) in ['Manuel','Absence'] }}"
-                  then:
-                    - service: logbook.log
-                      data:
-                        name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} absent → Mode {{ states(repeat.item.mode) }} - consigne {{ states(repeat.item.consigne) }}°C sauvegardée"
-
-      # === UTILISATEUR 4 REVIENT ===
-      - conditions: 
-          - condition: trigger
-            id: utilisateur_4_revient
-        sequence: 
-          - variables:
-              nom_utilisateur: "{{ liste_utilisateurs[3] if liste_utilisateurs|length > 3 else 'Utilisateur4' }}"
-          
-          - service: logbook.log
-            data:
-              name: "Absence Auto Globale"
-              message: "🏠 {{ nom_utilisateur }} est de retour - restauration de ses pièces"
-
-          - repeat:
-              for_each: "{{ pieces }}"
-              sequence: 
-                - condition: and
-                  conditions:  
-                    - condition: template
-                      value_template:  "{{ repeat.item.local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
-                    - condition: template
-                      value_template: "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item.si_principal,'on') }}"
-                    - condition: template
-                      value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
-                      
-                    # ✅ IGNORER si le mode ACTUEL est Hors-gel ou Arret
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode) not in ['Hors-gel','Arret'] }}"
-                    # ✅ IGNORER si mode_avant est invalide/obsolète
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) in ['Presence','Absence','Manuel'] }}"
-                
-                # Si mode_avant était Manuel, restaurer la consigne uniquement
-                - if: 
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) == 'Manuel' }}"
-                  then:
-                    - service: input_number.set_value
-                      target:
-                        entity_id: "{{ repeat.item.consigne }}"
-                      data: 
-                        value: "{{ states(repeat.item.consigne_avant) | float(19) }}"
-                    
-                    - service: logbook.log
-                      data:
-                        name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} de retour → Mode Manuel - consigne restaurée : {{ states(repeat.item.consigne_avant) }}°C"
-
-                # Si mode_avant était Absence, cycle Arret → Absence
-                - if:
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) == 'Absence' }}"
-                  then:
-                    - service: input_select.select_option
-                      target:
-                        entity_id: "{{ repeat.item.mode }}"
-                      data:
-                        option: 'Arret'
-                    - delay: 
-                        seconds: 1
-                    - service: input_select.select_option
-                      target:
-                        entity_id: "{{ repeat.item.mode }}"
-                      data:
-                        option: 'Absence'
-                    
-                    - service: logbook.log
-                      data:
-                        name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} de retour → Mode Absence - resync Scheduler"
-
-                # Si mode_avant était Presence, restaurer Presence
-                - if:
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) == 'Presence' }}"
-                  then: 
-                    - service: input_select.select_option
-                      target:
-                        entity_id: "{{ repeat.item.mode }}"
-                      data:
-                        option: 'Presence'
-                    
-                    - service: logbook.log
-                      data:
-                        name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} de retour → Mode Presence restauré"
-
-      # === UTILISATEUR 5 PART ===
-      - conditions:
-          - condition:  trigger
-            id: utilisateur_5_part
-        sequence: 
-          - variables:
-              nom_utilisateur: "{{ liste_utilisateurs[4] if liste_utilisateurs|length > 4 else 'Utilisateur5' }}"
-          
-          - service:  logbook.log
-            data:
-              name: "Absence Auto Globale"
-              message:  "🏃 {{ nom_utilisateur }} est parti - traitement de ses pièces"
-
-          - repeat:
-              for_each: "{{ pieces }}"
-              sequence:
-                - condition: and
-                  conditions:
-                    - condition: template
-                      value_template: "{{ repeat.item.local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
-                    - condition: template
-                      value_template: "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item.si_principal,'on') }}"
-                    - condition: template
-                      value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode) in ['Presence','Absence','Manuel'] }}"
-                
-                - service: input_select.select_option
-                  target:
-                    entity_id: "{{ repeat.item.mode_avant }}"
-                  data:
-                    option: "{{ states(repeat.item.mode) }}"
-                
-                - service: input_number.set_value
-                  target:
-                    entity_id:  "{{ repeat.item.consigne_avant }}"
-                  data:
-                    value: "{{ states(repeat.item.consigne) | float(19) }}"
-                
-                - if: 
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode) == 'Presence' }}"
-                  then:
-                    - service: input_select.select_option
-                      target:
-                        entity_id: "{{ repeat.item.mode }}"
-                      data:
-                        option:  'Absence'
-                    
-                    - service: logbook.log
-                      data:
-                        name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} absent → Mode Presence → Absence"
-                
-                - if:
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode) in ['Manuel','Absence'] }}"
-                  then:
-                    - service:  logbook.log
-                      data:
-                        name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} absent → Mode {{ states(repeat.item.mode) }} - consigne {{ states(repeat.item.consigne) }}°C sauvegardée"
-
-      # === UTILISATEUR 5 REVIENT ===
-      - conditions: 
-          - condition: trigger
-            id: utilisateur_5_revient
-        sequence: 
-          - variables:
-              nom_utilisateur: "{{ liste_utilisateurs[4] if liste_utilisateurs|length > 4 else 'Utilisateur5' }}"
-          
-          - service: logbook.log
-            data:
-              name: "Absence Auto Globale"
-              message: "🏠 {{ nom_utilisateur }} est de retour - restauration de ses pièces"
-
-          - repeat:
-              for_each: "{{ pieces }}"
-              sequence: 
-                - condition: and
-                  conditions:  
-                    - condition: template
-                      value_template: "{{ repeat.item.local_actif not in ['','none',None] and is_state(repeat.item.local_actif,'on') }}"
-                    - condition: template
-                      value_template: "{{ repeat.item.si_principal not in ['','none',None] and is_state(repeat.item.si_principal,'on') }}"
-                    - condition: template
-                      value_template: "{{ states(repeat.item.utilisateur) == nom_utilisateur }}"
-                      
-                    # ✅ IGNORER si le mode ACTUEL est Hors-gel ou Arret
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode) not in ['Hors-gel','Arret'] }}"
-                    # ✅ IGNORER si mode_avant est invalide/obsolète
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) in ['Presence','Absence','Manuel'] }}"
-
-                
-                # Si mode_avant était Manuel, restaurer la consigne uniquement
-                - if: 
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) == 'Manuel' }}"
-                  then:
-                    - service: input_number.set_value
-                      target:
-                        entity_id: "{{ repeat.item.consigne }}"
-                      data: 
-                        value: "{{ states(repeat.item.consigne_avant) | float(19) }}"
-                    
-                    - service: logbook.log
-                      data:
-                        name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} de retour → Mode Manuel - consigne restaurée : {{ states(repeat.item.consigne_avant) }}°C"
-
-                # Si mode_avant était Absence, cycle Arret → Absence
-                - if:
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) == 'Absence' }}"
-                  then:
-                    - service: input_select.select_option
-                      target:
-                        entity_id: "{{ repeat.item.mode }}"
-                      data:
-                        option: 'Arret'
-                    - delay: 
-                        seconds: 1
-                    - service: input_select.select_option
-                      target:
-                        entity_id: "{{ repeat.item.mode }}"
-                      data:
-                        option: 'Absence'
-                    
-                    - service: logbook.log
-                      data:
-                        name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} de retour → Mode Absence - resync Scheduler"
-
-                # Si mode_avant était Presence, restaurer Presence
-                - if:
-                    - condition: template
-                      value_template: "{{ states(repeat.item.mode_avant) == 'Presence' }}"
-                  then: 
-                    - service: input_select.select_option
-                      target:
-                        entity_id: "{{ repeat.item.mode }}"
-                      data:
-                        option: 'Presence'
-                    
-                    - service: logbook.log
-                      data:
-                        name: "Absence Auto {{ repeat.item.nom }}"
-                        message: "{{ nom_utilisateur }} de retour → Mode Presence restauré"
+                        entity_id: "{{ repeat. item.etait_presence }}"
 
 mode: queued
-max: 10
+max:  10
