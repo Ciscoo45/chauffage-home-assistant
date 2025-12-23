@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Absence Auto - Globale
   description: "
 
-    version Absence Globale : v1.60 - 2025-12-23
+    version Absence Globale : v1.61 - 2025-12-23
     
     auteur : Ciscoo45
     
@@ -241,8 +241,8 @@ blueprint:
       selector:
         entity:
           domain: input_select
-    piece_2_etait_presence:
-      name:  💾 Pièce 2 - Était en Presence avant le départ de/des utilisateurs (pièce)
+    piece_3_etait_presence:
+      name:  💾 Pièce 3 - Était en Presence avant le départ de/des utilisateurs (pièce)
       description: |
         Input_boolean pour mémoriser si la pièce était en mode Presence
       selector:
