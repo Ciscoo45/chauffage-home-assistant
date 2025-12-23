@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Absence Auto - Par Pièce
   description: |
   
-    version Absence Auto – par Pièce : v1.75 – 2025-12-23
+    version Absence Auto – par Pièce : v1.76 – 2025-12-23
     
     auteur : Ciscoo45
     
@@ -421,36 +421,40 @@ variables:
 # ========= DÉCLENCHEURS =========
 trigger:
 
-  # Recalcul quand la consigne de base change
+  # ✅ Recalcul quand ETAIT_PRESENCE change
+  - platform: state
+    entity_id:  !input etait_presence
+
+  # Recalcul quand la consigne de BASE change
   - platform: state
     entity_id: !input consigne_base
 
-  # Recalcul quand la consigne Tempo change (si existe)
+  # Recalcul quand la consigne TEMPO change (si existe)
   - platform: state
     entity_id: !input consigne_tempo
 
-  # Recalcul quand la réduction change
+  # Recalcul quand la REDUCTION change
   - platform: state
     entity_id: !input reduction_degrees
 
-  # Recalcul quand les switches changent
+  # Recalcul quand les SWITCHES changent
   - platform: state
     entity_id:
       - !input switch_global
       - !input switch_local
       - !input switch_si_principal_absent
 
-  # Recalcul quand l'utilisateur principal change
+  # Recalcul quand l'utilisateur PRINCIPAL change
   - platform: state
     entity_id: !input utilisateur_principal
 
-  # Recalcul quand le mode change
+  # Recalcul quand le MODE change
   - platform: state
     entity_id:
       - !input mode_actuel
       - !input mode_avant_absence
 
-  # Recalcul quand la détection de présence change
+  # Recalcul quand la détection de PRESENCE change
   - platform: state
     entity_id:
       - !input binary_sensor_tous_absents
@@ -460,7 +464,7 @@ trigger:
       - !input binary_sensor_utilisateur_4_absent
       - !input binary_sensor_utilisateur_5_absent
 
-  # Recalcul quand le boost change (si fourni)
+  # Recalcul quand le BOOST change (si fourni)
   - platform: state
     entity_id: !input boost_actif
 
@@ -468,7 +472,7 @@ trigger:
   - platform: homeassistant
     event: start
 
-  # Au rechargement des automations
+  # Au RECHARGEMENT des automations
   - platform: event
     event_type: automation_reloaded
 
