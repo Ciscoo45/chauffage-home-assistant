@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Absence Auto - Par Pièce
   description: |
   
-    version Absence Auto – par Pièce : v1.72 – 2025-12-23
+    version Absence Auto – par Pièce : v1.73 – 2025-12-23
     
     auteur : Ciscoo45
     
@@ -491,7 +491,7 @@ action:
               - condition: and
                 conditions:
                   - condition: template
-                    value_template: {{ is_state(switch_si_principal_absent,'on') }}"
+                    value_template: "{{ is_state(switch_si_principal_absent,'on') }}"
                   - condition: template
                     value_template: "{{ principal_absent | bool }}"
         sequence:
