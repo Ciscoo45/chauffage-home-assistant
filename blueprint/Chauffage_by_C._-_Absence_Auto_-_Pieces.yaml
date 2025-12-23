@@ -319,7 +319,6 @@ variables:
   consigne_tempo_input: !input consigne_tempo
   consigne_absence: !input consigne_absence
   consigne_finale: !input consigne_finale
-  consigne_avant_absence: !input consigne_avant_absence
   reduction_degrees: !input reduction_degrees
   switch_global: !input switch_global
   switch_local: !input switch_local
