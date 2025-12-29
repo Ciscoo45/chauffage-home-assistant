@@ -2,7 +2,7 @@ blueprint:
   name:  Chauffage by C. - Absence Auto
   description: |
   
-    version Absence Auto – par Pièce :  v2.02 – 2025-12-29
+    version Absence Auto – par Pièce :  v2.10 – 2025-12-29
     
     auteur :  Ciscoo45
      
@@ -28,12 +28,12 @@ blueprint:
     **Tous absents** : 
     - Si mode = Presence → passe en Absence
     - Sauvegarde `etait_presence = ON`
-    - Scheduler baisse la consigne (19°C → 17,5°C)
+    - Scheduler baisse la consigne (ex. 19°C → 17°C)
     - Pas de réduction supplémentaire
     
     **Utilisateur principal absent** (autres présents) :
     - Si activé ET mode = Presence → passe en Absence
-    - Scheduler baisse la consigne (19°C → 17,5°C)
+    - Scheduler baisse la consigne (ex. 19°C → 17°C)
     - Pas de réduction supplémentaire
     - Si mode = Absence/Manuel → applique réduction -2°C (réduction paramétrée)
     
@@ -347,9 +347,7 @@ variables:
       0
     {% elif mode_just_changed %}
       0
-    {% elif everybody_absent and etait_en_presence %}
-      0
-    {% elif principal_rule and not everybody_absent %}
+    {% elif (everybody_absent or (principal_rule and not everybody_absent)) %}
       {% if mode_actuel_valeur in ['Absence','Manuel'] %}
         {{ states(reduction_degrees) | float(2) }}
       {% else %}
