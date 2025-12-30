@@ -27,13 +27,13 @@ blueprint:
     ### Départ (tous OU principal)
     
     - **Mode Presence** → passe en Absence (Scheduler gère consigne)
-    - **Mode Absence** → reste Absence, applique réduction -2°C
-    - **Mode Manuel** → reste Manuel, applique réduction -2°C
+    - **Mode Absence** → reste Absence, applique réduction (défaut -2°C)
+    - **Mode Manuel** → reste Manuel, applique réduction (défaut -2°C)
     - **Mode Arret/Hors-gel** → aucun changement
     
     ### Retour
     
-    - **Si mode changé automatiquement** → restaure mode précédent
+    - **Si mode changé automatiquement** → restaure mode précédent (Presence)
     - **Sinon** → supprime la réduction uniquement
     
     
@@ -45,10 +45,9 @@ blueprint:
     
     - Gestion Absence Auto globale **ON**
     - Gestion Absence Auto de la pièce **ON**
-    - Mode = Absence ou Manuel
     - Boost **OFF**
     - Mode n'a **pas** changé récemment (< 5s)
-    - Utilisateur(s) absent(s)
+    - Utilisateur(s) absent(s) (Tous dont/ou Principal)
     
     **PAS de réduction** si :
     - Mode vient de changer → transition gérée par Scheduler
@@ -59,9 +58,9 @@ blueprint:
     
     ## Ordre de priorité des consignes
     
-    1. **Boost actif** → consigne Boost
-    2. **Absence Auto** → consigne avec réduction
-    3. **Tempo** → consigne Tempo Eco
+    1. **Boost actif** → consigne Boost (on ignore la consigne de base, Tempo ou Absence)
+    2. **Absence Auto** → consigne avec réduction supplémentaire (réduit la consigne de base ou la consigne Tempo si active)
+    3. **Tempo** → réduction Tempo Eco appliquée à la consigne de base
     4. **Normal** → consigne de base
     
     
