@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Absence Auto
   description: |
 
-    version Absence Auto – par Pièce : v2.21 – 2025-12-30
+    version Absence Auto – par Pièce : v2.22 – 2025-12-30
 
     auteur : Ciscoo45
 
@@ -581,6 +581,8 @@ action:
   # === 4. MISE À JOUR DES CONSIGNES ===
 
   - choose:
+
+      # Cas Arret (consigne = 0)
       - conditions:
           - condition: template
             value_template: "{{ mode_actuel_valeur == 'Arret' }}"
@@ -591,6 +593,7 @@ action:
             data:
               value: 0
 
+      # Cas Hors-gel (consigne = consigne_base)
       - conditions:
           - condition: template
             value_template: "{{ mode_actuel_valeur == 'Hors-gel' }}"
@@ -601,9 +604,12 @@ action:
             data:
               value: "{{ states(consigne_base) | float }}"
 
+      # Cas réduction active (Absence/Manuel + utilisateurs absents)
       - conditions:
           - condition: template
             value_template: "{{ mode_actuel_valeur not in ['Hors-gel','Arret'] }}"
+          - condition: template
+            value_template: "{{ reduction | float > 0 }}"
         sequence:
           - service: input_number.set_value
             target:
@@ -611,23 +617,38 @@ action:
             data:
               value: "{{ consigne_finale_calc | float }}"
 
+      # Cas SANS réduction (Presence OU retour)
+      - conditions:
+          - condition: template
+            value_template: "{{ mode_actuel_valeur not in ['Hors-gel','Arret'] }}"
+          - condition: template
+            value_template: "{{ reduction | float == 0 }}"
+        sequence:
+          - service: input_number.set_value
+            target:
+              entity_id: !input consigne_finale
+            data:
+              value: "{{ consigne_source | float }}"
+
 
 
   # === 5. LOG DEBUG ===
 
   - service: logbook.log
     data:
-      name: "Absence Auto {{ piece_name }}"
-      message: >-
+      name:  "Absence Auto {{ piece_name }}"
+      message:  >-
         Mode: {{ mode_actuel_valeur }} (avant: {{ mode_avant_valeur }})
         | Consigne: {{ consigne_source }}°C → {{ consigne_finale_calc }}°C
         | Réduction: -{{ reduction }}°C
+        | ✅ Consigne finale appliquée:  {{ states(consigne_finale) }}°C
         {% if everybody_absent %}[Tous absents]{% endif %}
         {% if is_state(switch_si_principal_absent,'on') and (principal_absent | bool) %}[{{ principal }} absent]{% endif %}
         {% if etait_en_presence %}[Était Presence]{% endif %}
         {% if mode_just_changed %}[Mode changé < 5s]{% endif %}
         {% if not is_state(switch_global,'on') %}[Global OFF]{% endif %}
         {% if not is_state(switch_local,'on') %}[Local OFF]{% endif %}
+        {% if reduction | float > 0 %}[Réduction ACTIVE]{% else %}[Réduction OFF → consigne = source]{% endif %}
 
 
 
