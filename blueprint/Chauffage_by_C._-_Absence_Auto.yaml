@@ -1,92 +1,125 @@
 blueprint:
-  name:  Chauffage by C. - Absence Auto
+  name: Chauffage by C. - Absence Auto
   description: |
-  
-    version Absence Auto – par Pièce :  v2.12 – 2025-12-29
-    
-    auteur :  Ciscoo45
 
-     
+    version Absence Auto – par Pièce : v2.21 – 2025-12-30
+
+    auteur : Ciscoo45
+
     ___
-    
+
     ## Description
-    
-    Blueprint **par pièce** autonome gérant :  
-    
+
+    Blueprint **par pièce** autonome gérant :
+
     - Détection "tous absents" ET "utilisateur principal absent"
     - Changements de mode automatiques
     - Sauvegarde des états avant départ
     - Restauration au retour
     - Calcul de consigne finale avec réductions
-    
-    
+
     ___
-    
+
     ## Logique de changement de mode
-    
+
     ### Départ (tous OU principal)
-    
+
     - **Mode Presence** → passe en Absence (Scheduler gère consigne)
     - **Mode Absence** → reste Absence, applique réduction (défaut -2°C)
     - **Mode Manuel** → reste Manuel, applique réduction (défaut -2°C)
     - **Mode Arret/Hors-gel** → aucun changement
-    
+
     ### Retour
-    
+
     - **Si mode changé automatiquement** → restaure mode précédent (Presence)
     - **Sinon** → supprime la réduction uniquement
-    
-    
+
     ___
-    
+
     ## Logique de réduction
-    
+
     Réduction appliquée **UNIQUEMENT SI** :
-    
+
     - Gestion Absence Auto globale **ON**
     - Gestion Absence Auto de la pièce **ON**
     - Boost **OFF**
     - Mode n'a **pas** changé récemment (< 5s)
-    - Utilisateur(s) absent(s) (Tous dont/ou Principal)
-    
+    - Utilisateur(s) absent(s) (Tous OU Principal)
+
     **PAS de réduction** si :
     - Mode vient de changer → transition gérée par Scheduler
     - Mode = Arret ou Hors-gel → aucune action
-    
-    
+
     ___
-    
+
     ## Ordre de priorité des consignes
-    
-    1. **Boost actif** → consigne Boost (on ignore la consigne de base, Tempo ou Absence)
-    2. **Absence Auto** → consigne avec réduction supplémentaire (réduit la consigne de base ou la consigne Tempo si active)
-    3. **Tempo** → réduction Tempo Eco appliquée à la consigne de base
-    4. **Normal** → consigne de base
-    
-    
+
+    1. **Boost actif** → consigne Boost (ignore tout le reste)
+    2. **Absence Auto** → `consigne_finale = consigne_source - réduction`
+       - `consigne_source` = Tempo (si actif) OU consigne de base
+       - `réduction` = -2°C (défaut) si Absence/Manuel + utilisateur(s) absent(s)
+    3. **Tempo** → `consigne_tempo = consigne_base - réduction HP`
+    4. **Normal** → `consigne_finale = consigne_base`
+
+    **Note** : Ce blueprint calcule directement `consigne_finale` sans helper intermédiaire.
+
     ___
-    
+
     ## Avantages de la v2.0
-    
+
     ✅ Plus de problème de synchronisation (tout dans 1 blueprint)
     ✅ Logique claire et traçable
     ✅ Pas de conflit entre blueprints
     ✅ Plus besoin du blueprint Globale
-    
-    
+
+    ___
+
+    ## Helpers à créer par pièce
+
+    **input_number** :
+
+    - `radiateur_xxx_consigne` : consigne de base (existant)
+    - `radiateur_xxx_consigne_tempo` : consigne corrigée par Tempo (optionnel)
+    - `radiateur_xxx_consigne_finale` : consigne finale utilisée par Thermostat TPI ⭐ **NOUVEAU**
+
+    **input_boolean** :
+
+    - `chauffage_absence_auto_global_actif` : activation globale (commun)
+    - `radiateur_xxx_absence_auto_actif` : activation locale
+    - `radiateur_xxx_absence_si_principal_absent` : réduction si utilisateur principal absent
+    - `radiateur_xxx_etait_presence` : état avant départ ⭐ **NOUVEAU**
+    - `boost_xxx` : état du boost (optionnel)
+
+    **input_select** :
+
+    - `radiateur_xxx_mode` : mode actuel (existant)
+    - `radiateur_xxx_mode_avant_absence` : sauvegarde pour restauration ⭐ **NOUVEAU**
+    - `radiateur_xxx_utilisateur_principal` : choix de l'utilisateur ⭐ **NOUVEAU**
+
+    **Helpers dummy (OBLIGATOIRES si modules non utilisés)** :
+
+    - `input_number.dummy_tempo` : helper dummy Tempo (valeur fixe: 19°C)
+    - `input_boolean.dummy_boost` : helper dummy Boost (toujours OFF)
+
+    ⚠️ **IMPORTANT** : Si vous n'utilisez pas Tempo ou Boost, vous **DEVEZ** créer les helpers dummy
+    correspondants pour éviter les erreurs de validation YAML.
+
+    Voir `config_examples/` pour les définitions complètes.
+
+
+
+
   source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/main/blueprint/Chauffage_by_C._-_Absence_Auto.yaml
   domain: automation
 
 
-
-
-  input: 
+  input:
   
-    piece_name: 
+    piece_name:
       name: 🏠 Nom de la pièce
       description: "Nom affiché dans les logs (ex. : SdB, Salon, Bureau)"
       selector:
-        text: 
+        text: {}
 
     # === DETECTION PRESENCE ===
     binary_sensor_tous_absents:
@@ -103,8 +136,11 @@ blueprint:
       name: 👤 Utilisateur 1 Absent (obligatoire)
       description: |
         Binary sensor pour le premier utilisateur
-      
+
         (obligatoire, ex. Chauffage Michel Absent)
+
+        ⚠️ Ces sensors sont utilisés uniquement comme triggers pour recalculer les consignes.
+        La logique principale utilise `binary_sensor_tous_absents` et `utilisateur_principal`.
       default: binary_sensor.chauffage_utilisateur1_absent
       selector:
         entity:
@@ -114,7 +150,7 @@ blueprint:
       name: 👤 Utilisateur 2 Absent (optionnel, à modifier si utilisé)
       description: |
         Binary sensor pour le deuxième utilisateur
-      
+
         (optionnel, ex. Chauffage François Absent, laisser par défaut si non utilisé)
       default: binary_sensor.chauffage_utilisateur2_absent
       selector:
@@ -158,15 +194,12 @@ blueprint:
 
     consigne_tempo:
       name: 🎯 (pièce) Consigne Calculée Tempo Eco (optionnel)
-      description: "Consigne corrigée par Tempo Eco (laisser vide si Tempo non utilisé)"
-      default: ""
-      selector:
-        entity:
-          domain: input_number
+      description: |
+        Consigne corrigée par Tempo Eco
 
-    consigne_absence:
-      name: ❄️ (pièce) Consigne Absence
-      description: "Consigne corrigée selon Absence Auto (sortie, calculée par ce blueprint)"
+        ⚠️ Si le module Tempo Eco n'est pas utilisé, vous DEVEZ créer un helper dummy
+        (input_number.dummy_tempo = 19°C fixe) pour éviter les erreurs de validation
+      default: input_number.dummy_tempo
       selector:
         entity:
           domain: input_number
@@ -179,7 +212,7 @@ blueprint:
           domain: input_number
 
     # === STOCKAGE ÉTATS ===
-    etait_presence: 
+    etait_presence:
       name: 💾 (pièce) Était en Presence avant absence
       description: "Input_boolean pour détecter si on était en Presence avant tous absents"
       selector:
@@ -210,10 +243,10 @@ blueprint:
       selector:
         entity:
           domain: input_boolean
-          
+
     # === par PIECE - ACTIVATION ===
     switch_local:
-      name: 🏠 (pièce) Gestion Absence Auto 
+      name: 🏠 (pièce) Gestion Absence Auto
       description: "Désactive les corrections Absence Auto pour cette pièce si OFF"
       selector:
         entity:
@@ -225,7 +258,7 @@ blueprint:
       selector:
         entity:
           domain: input_boolean
-  
+
     utilisateur_principal:
       name: 👤 (pièce) Utilisateur Principal
       description: "Choix de l'utilisateur principal (utilise la liste définie dans chauffage_absence_auto_config_package.yaml)"
@@ -235,7 +268,7 @@ blueprint:
 
     # === par PIECE - MODE ===
     mode_actuel:
-      name: 🎚️ Radiateur (pièce) Mode 
+      name: 🎚️ Radiateur (pièce) Mode
       description: "Mode de chauffage, choisi via la carte Lovelace (Presence, Absence, Manuel, Hors-gel, Arret)"
       selector:
         entity:
@@ -243,8 +276,12 @@ blueprint:
 
     boost_actif:
       name: ⚡ Boost (pièce - optionnel)
-      description: "Si le boost est ON, ignore les corrections Absence Auto pour cette pièce"
-      default: ""
+      description: |
+        Si le boost est ON, ignore les corrections Absence Auto pour cette pièce
+
+        ⚠️ Si le module Boost n'est pas utilisé, vous DEVEZ créer un helper dummy
+        (input_boolean.dummy_boost = OFF) pour éviter les erreurs de validation
+      default: input_boolean.dummy_boost
       selector:
         entity:
           domain: input_boolean
@@ -254,12 +291,11 @@ blueprint:
 
 
 # ========= VARIABLES =========
-variables:  
+variables:
 
   piece_name: !input piece_name
   consigne_base: !input consigne_base
   consigne_tempo_input: !input consigne_tempo
-  consigne_absence: !input consigne_absence
   consigne_finale: !input consigne_finale
   reduction_degrees: !input reduction_degrees
   switch_global: !input switch_global
@@ -267,18 +303,14 @@ variables:
   switch_si_principal_absent: !input switch_si_principal_absent
   mode_actuel: !input mode_actuel
   mode_avant_absence: !input mode_avant_absence
-  binary_sensor_tous_absents:  !input binary_sensor_tous_absents
+  binary_sensor_tous_absents: !input binary_sensor_tous_absents
   boost_actif_input: !input boost_actif
   utilisateur_entity: !input utilisateur_principal
   etait_presence_input: !input etait_presence
 
-  liste_utilisateurs: >-
-    {% set opts = state_attr('input_select.chauffage_absence_auto_liste_utilisateurs','options') or [] %}
-    {{ opts[1: ] }}
-
   mode_actuel_valeur: "{{ states(mode_actuel) }}"
   mode_avant_valeur: "{{ states(mode_avant_absence) }}"
-  
+
   consigne_source: >-
     {% set tempo_input = consigne_tempo_input %}
     {% if mode_actuel_valeur in ['Hors-gel','Arret'] %}
@@ -289,31 +321,35 @@ variables:
       {{ states(consigne_base) | float(19) }}
     {% endif %}
 
-  principal:  "{{ states(utilisateur_entity) }}"
+  principal: "{{ states(utilisateur_entity) }}"
 
   principal_absent: >-
-    {% set entities = states('input_text.chauffage_absence_auto_utilisateurs_entities').split(',') %}
-    {% set noms = liste_utilisateurs %}
+    {% set opts = state_attr('input_select.chauffage_absence_auto_liste_utilisateurs','options') or [] %}
+    {% set noms = opts[1:] %}
+    {% set raw = states('input_text.chauffage_absence_auto_utilisateurs_entities') %}
+    {% set entities = (raw.split(',') if raw not in ['unknown','unavailable',''] else []) %}
     {% set principal_name = states(utilisateur_entity) %}
+
     {% if principal_name in noms %}
       {% set idx = noms.index(principal_name) %}
-      {% if idx < entities|length and entities[idx] not in ['','unknown','unavailable'] %}
-        {% if entities[idx].startswith('binary_sensor.') %}
-          {{ not is_state(entities[idx],'on') }}
-        {% elif entities[idx].startswith('person.') %}
-          {{ is_state(entities[idx],'not_home') }}
+      {% if idx < (entities|length) and (entities[idx]|trim) not in ['','unknown','unavailable'] %}
+        {% set ent = entities[idx] | trim %}
+        {% if ent.startswith('binary_sensor.') %}
+          {{ is_state(ent,'on') }}
+        {% elif ent.startswith('person.') %}
+          {{ is_state(ent,'not_home') }}
         {% else %}
-          {{ false }}
+          false
         {% endif %}
       {% else %}
-        {{ false }}
+        false
       {% endif %}
     {% else %}
-      {{ false }}
+      false
     {% endif %}
 
   everybody_absent: "{{ is_state(binary_sensor_tous_absents,'on') }}"
-  
+
   etait_en_presence: >-
     {{ etait_presence_input not in ['','none',None] and is_state(etait_presence_input,'on') }}
 
@@ -324,8 +360,8 @@ variables:
     {% set mode_actif = mode_actuel_valeur in ['Presence','Absence','Manuel'] %}
     {% set boost_on = boost_actif_input not in ['','none',None] and is_state(boost_actif_input,'on') %}
     {% set principal_rule = is_state(switch_si_principal_absent,'on') and (principal_absent | bool) %}
-    {% set everybody_absent = is_state(binary_sensor_tous_absents,'on') %}
-    {% set someone_absent = everybody_absent or (principal_rule and not everybody_absent) %}
+    {% set everybody_absent_val = is_state(binary_sensor_tous_absents,'on') %}
+    {% set someone_absent = everybody_absent_val or (principal_rule and not everybody_absent_val) %}
 
     {% if not is_state(switch_global,'on') %}
       0
@@ -349,8 +385,7 @@ variables:
       0
     {% endif %}
 
-  consigne_absence_calc: "{{ (consigne_source | float) - (reduction | float) }}"
-  consigne_finale_calc: "{{ consigne_absence_calc | float }}"
+  consigne_finale_calc: "{{ (consigne_source | float) - (reduction | float) }}"
 
 
 
@@ -358,8 +393,7 @@ variables:
 
 
 # ========= DÉCLENCHEURS =========
-trigger:  
-
+trigger:
   - platform: state
     entity_id: !input etait_presence
 
@@ -373,7 +407,7 @@ trigger:
     entity_id: !input reduction_degrees
 
   - platform: state
-    entity_id: 
+    entity_id:
       - !input switch_global
       - !input switch_local
       - !input switch_si_principal_absent
@@ -382,12 +416,12 @@ trigger:
     entity_id: !input utilisateur_principal
 
   - platform: state
-    entity_id: 
+    entity_id:
       - !input mode_actuel
       - !input mode_avant_absence
 
   - platform: state
-    entity_id: 
+    entity_id:
       - !input binary_sensor_tous_absents
       - !input binary_sensor_utilisateur_1_absent
       - !input binary_sensor_utilisateur_2_absent
@@ -407,6 +441,7 @@ trigger:
 
 
 
+
 condition: []
 
 
@@ -419,35 +454,32 @@ action:
 
 
   # === 1. SAUVEGARDE ÉTATS AVANT DÉPART ===
-  
-  # Sauvegarde etait_presence si tous absents + mode Presence
+
   - choose:
       - conditions:
           - condition: template
             value_template: "{{ everybody_absent and is_state(mode_actuel,'Presence') }}"
-        sequence: 
+        sequence:
           - service: input_boolean.turn_on
             target:
               entity_id: !input etait_presence
 
-  # Sauvegarde mode_avant UNIQUEMENT si pas déjà en absence auto
   - choose:
-      - conditions: 
+      - conditions:
           - condition: template
             value_template: "{{ mode_actuel_valeur not in ['Hors-gel','Arret'] }}"
           - condition: or
-            conditions: 
+            conditions:
               - condition: template
                 value_template: "{{ everybody_absent }}"
               - condition: template
                 value_template: "{{ is_state(switch_si_principal_absent,'on') and (principal_absent | bool) }}"
-          # ✅ Ne sauvegarder que si mode_avant vide ou égal au mode actuel
-          - condition:  or
+          - condition: or
             conditions:
               - condition: template
                 value_template: "{{ mode_avant_valeur in ['Aucun','','unknown','unavailable'] }}"
               - condition: template
-                value_template:  "{{ mode_avant_valeur == mode_actuel_valeur }}"
+                value_template: "{{ mode_avant_valeur == mode_actuel_valeur }}"
         sequence:
           - service: input_select.select_option
             target:
@@ -456,62 +488,59 @@ action:
               option: "{{ mode_actuel_valeur }}"
 
 
+
   # === 2. CHANGEMENTS DE MODE (DÉPART) ===
-  
-  # Tous absents :  Presence → Absence (SAUF Arret/Hors-gel)
-  - choose:  
-      - conditions: 
+
+  - choose:
+      - conditions:
           - condition: template
             value_template: "{{ everybody_absent and is_state(mode_actuel,'Presence') }}"
         sequence:
           - service: input_select.select_option
             target:
               entity_id: !input mode_actuel
-            data:  
+            data:
               option: "Absence"
 
-  # Principal absent (autres présents) : Presence → Absence (SAUF Arret/Hors-gel)
-  - choose: 
+  - choose:
       - conditions:
           - condition: template
-            value_template:  >-
-              {{ is_state(switch_si_principal_absent,'on') 
-                 and (principal_absent | bool) 
+            value_template: >-
+              {{ is_state(switch_si_principal_absent,'on')
+                 and (principal_absent | bool)
                  and not everybody_absent
                  and is_state(mode_actuel,'Presence') }}
-        sequence:  
+        sequence:
           - service: input_select.select_option
             target:
               entity_id: !input mode_actuel
-            data: 
+            data:
               option: "Absence"
+
 
 
   # === 3. RESTAURATION (RETOUR) ===
-  
-  # Tous reviennent + etait_presence ON → restaure Presence
+
   - choose:
-      - conditions: 
+      - conditions:
           - condition: template
             value_template: "{{ not everybody_absent and etait_en_presence and is_state(mode_actuel,'Absence') }}"
         sequence:
-          - service:  input_boolean.turn_off
+          - service: input_boolean.turn_off
             target:
               entity_id: !input etait_presence
           - service: input_select.select_option
-            target: 
+            target:
               entity_id: !input mode_actuel
-            data: 
+            data:
               option: "Presence"
-          # ✅ Vider mode_avant après restauration
           - service: input_select.select_option
             target:
               entity_id: !input mode_avant_absence
             data:
               option: "Aucun"
 
-  # Principal revient (mode changé par son absence) → restaure mode_avant
-  - choose: 
+  - choose:
       - conditions:
           - condition: template
             value_template: >-
@@ -527,19 +556,17 @@ action:
               entity_id: !input mode_actuel
             data:
               option: "{{ mode_avant_valeur }}"
-          # ✅ Vider mode_avant après restauration
-          - service:  input_select.select_option
+          - service: input_select.select_option
             target:
               entity_id: !input mode_avant_absence
             data:
               option: "Aucun"
 
-  # ✅ Vider mode_avant si tous présents (nettoyage)
   - choose:
       - conditions:
           - condition: template
             value_template: >-
-              {{ not everybody_absent 
+              {{ not everybody_absent
                  and not (is_state(switch_si_principal_absent,'on') and (principal_absent | bool))
                  and mode_avant_valeur not in ['Aucun','','unknown','unavailable'] }}
         sequence:
@@ -548,57 +575,36 @@ action:
               entity_id: !input mode_avant_absence
             data:
               option: "Aucun"
-              
+
 
 
   # === 4. MISE À JOUR DES CONSIGNES ===
-  
-  - choose:  
 
-      # Cas Arret (consigne = 0)
-      - conditions: 
+  - choose:
+      - conditions:
           - condition: template
             value_template: "{{ mode_actuel_valeur == 'Arret' }}"
         sequence:
           - service: input_number.set_value
             target:
-              entity_id: !input consigne_absence
-            data:
-              value:  0
-          - service: input_number.set_value
-            target: 
               entity_id: !input consigne_finale
-            data:  
+            data:
               value: 0
 
-      # Cas Hors-gel (consigne = consigne_base)
       - conditions:
           - condition: template
             value_template: "{{ mode_actuel_valeur == 'Hors-gel' }}"
-        sequence:  
-          - delay: 
-              seconds: 1
+        sequence:
           - service: input_number.set_value
             target:
-              entity_id: !input consigne_absence
-            data:  
-              value: "{{ states(consigne_base) | float }}"
-          - service: input_number.set_value
-            target: 
               entity_id: !input consigne_finale
-            data: 
+            data:
               value: "{{ states(consigne_base) | float }}"
 
-      # Autres modes (Presence, Absence, Manuel)
       - conditions:
           - condition: template
             value_template: "{{ mode_actuel_valeur not in ['Hors-gel','Arret'] }}"
         sequence:
-          - service: input_number.set_value
-            target:
-              entity_id: !input consigne_absence
-            data:  
-              value: "{{ consigne_absence_calc | float }}"
           - service: input_number.set_value
             target:
               entity_id: !input consigne_finale
@@ -606,13 +612,14 @@ action:
               value: "{{ consigne_finale_calc | float }}"
 
 
+
   # === 5. LOG DEBUG ===
-  
+
   - service: logbook.log
     data:
       name: "Absence Auto {{ piece_name }}"
-      message:  >-
-        Mode:  {{ mode_actuel_valeur }} (avant: {{ mode_avant_valeur }})
+      message: >-
+        Mode: {{ mode_actuel_valeur }} (avant: {{ mode_avant_valeur }})
         | Consigne: {{ consigne_source }}°C → {{ consigne_finale_calc }}°C
         | Réduction: -{{ reduction }}°C
         {% if everybody_absent %}[Tous absents]{% endif %}
@@ -623,5 +630,6 @@ action:
         {% if not is_state(switch_local,'on') %}[Local OFF]{% endif %}
 
 
+
 mode: queued
-max:  5
+max: 5
