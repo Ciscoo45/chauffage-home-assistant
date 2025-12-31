@@ -2,7 +2,7 @@ blueprint:
   name:  Chauffage by C.  - Absence Auto
   description: |
 
-    version Absence Auto – par Pièce :  v2.41 – 2025-12-31
+    version Absence Auto – par Pièce :  v2.42 – 2025-12-31
 
     auteur :  Ciscoo45
 
@@ -304,8 +304,10 @@ blueprint:
     # === GLOBAL - REDUCTION ===
     reduction_degrees:
       name: ➖ Réduction de température en absence (global)
-      description: "Nombre de degrés à retirer en mode Absence ou Manuel"
-      default: input_number.chauffage_absence_auto_reduction_degrees
+      description: |
+        Nombre de degrés à retirer en mode Absence ou Manuel
+        
+        Ex. : input_number.chauffage_absence_auto_reduction_degrees
       selector:
         entity:
           domain: input_number
@@ -313,8 +315,10 @@ blueprint:
     # === GLOBAL - ACTIVATION ===
     switch_global: 
       name: 🌐 Gestion Absence Auto Globale (global)
-      description: "Désactive toutes les corrections Absence (toutes pièces) si OFF"
-      default: input_boolean.chauffage_absence_auto_global_actif
+      description: |
+        Désactive toutes les corrections Absence (toutes pièces) si OFF
+        
+        Ex. : input_boolean.chauffage_absence_auto_global_actif
       selector:
         entity:
           domain: input_boolean
