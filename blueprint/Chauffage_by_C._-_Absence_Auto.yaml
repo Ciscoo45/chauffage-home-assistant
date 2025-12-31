@@ -2,7 +2,7 @@ blueprint:
   name:  Chauffage by C.  - Absence Auto
   description: |
 
-    version Absence Auto – par Pièce :  v2.42 – 2025-12-31
+    version Absence Auto – par Pièce :  v2.43 – 2025-12-31
 
     auteur :  Ciscoo45
 
@@ -49,7 +49,7 @@ blueprint:
     input_text:
       chauffage_absence_auto_utilisateurs_entities:
         name: "Utilisateurs - Entités"
-        initial: "person.michel,person.francois,person. sophie"
+        initial: "person.michel,person.francois,person.sophie"
         # Format : liste séparée par des virgules, dans le MÊME ORDRE que la liste ci-dessus
         # Vous pouvez utiliser des entités person.xxx OU binary_sensor.xxx_absent
         icon: mdi:link-variant
@@ -85,7 +85,7 @@ blueprint:
 
           chauffage_utilisateur2_absent:
             friendly_name: "Chauffage François Absent"
-            value_template:  "{{ is_state('person. francois', 'not_home') }}"
+            value_template:  "{{ is_state('person.francois', 'not_home') }}"
 
           chauffage_utilisateur3_absent: 
             friendly_name: "Chauffage Sophie Absent"
@@ -396,23 +396,33 @@ variables:
     {% set raw = states('input_text.chauffage_absence_auto_utilisateurs_entities') %}
     {% set entities = (raw.split(',') if raw not in ['unknown','unavailable',''] else []) %}
     {% set principal_name = states(utilisateur_entity) %}
+    
+    {% set principal_absent = namespace(value=false, ent='') %}
+    
     {% if principal_name in noms %}
       {% set idx = noms.index(principal_name) %}
-      {% if idx < (entities|length) and (entities[idx]|trim) not in ['','unknown','unavailable'] %}
-        {% set ent = entities[idx] | trim %}
-        {% if ent.startswith('binary_sensor.') %}
-          {{ is_state(ent,'on') }}
-        {% elif ent.startswith('person.') %}
-          {{ is_state(ent,'not_home') }}
-        {% else %}
-          false
+      {% if idx < entities|length and (entities[idx]|trim) not in ['','unknown','unavailable'] %}
+        {% set ent = (entities[idx] | trim) | replace(' ','') %}
+        {% set principal_absent.ent = ent %}
+    
+        {% if ent.startswith('person.') %}
+          {# person.xxx : not_home = absent #}
+          {% set principal_absent.value = is_state(ent, 'not_home') %}
+    
+        {% elif ent.startswith('binary_sensor.') %}
+          {# binary_sensor :
+             - si capteur de PRESENCE → on = présent → absent = off
+             - sinon (capteur d'ABSENCE) → on = absent
+          #}
+          {% if 'presence' in ent %}
+            {% set principal_absent.value = not is_state(ent, 'on') %}
+          {% else %}
+            {% set principal_absent.value = is_state(ent, 'on') %}
+          {% endif %}
         {% endif %}
-      {% else %}
-        false
       {% endif %}
-    {% else %}
-      false
     {% endif %}
+
 
   # ⭐ Variable centrale :  Absence Auto active ? 
   auto_absence_active: >-
