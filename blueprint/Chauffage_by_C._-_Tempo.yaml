@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Gestion Tempo EDF
   description: |
 
-    version Tempo : v1.30 - 2026-01-01
+    version Tempo : v1.31 - 2026-01-01
     
     auteur : Ciscoo45
     
@@ -292,6 +292,7 @@ trigger:
 
   - platform: state
     entity_id: !input consigne_base
+    # for: "00:00:01"  # pour attendre la MàJ par le Sheduler, si on voit des valeurs transitoires s'afficher
 
   - platform: state
     entity_id: !input sensor_couleur
