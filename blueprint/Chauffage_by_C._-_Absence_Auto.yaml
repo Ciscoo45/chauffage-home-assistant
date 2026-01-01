@@ -2,7 +2,7 @@ blueprint:
   name:  Chauffage by C.  - Absence Auto
   description: |
 
-    version Absence Auto – par Pièce :  v2.44 – 2026-01-01
+    version Absence Auto – par Pièce :  v2.45 – 2026-01-01
 
     auteur :  Ciscoo45
 
@@ -399,36 +399,19 @@ variables:
 
     {% set ns = namespace(value=false) %}
 
-    {# si pas de principal sélectionné #}
     {% if principal_name in ['Aucun','unknown','unavailable',''] %}
       {% set ns.value = false %}
-
     {% elif principal_name in noms %}
       {% set idx = noms.index(principal_name) %}
       {% if idx < entities|length %}
         {% set ent = (entities[idx] | trim) | replace(' ','') %}
-
         {% if ent in ['', 'unknown', 'unavailable'] %}
           {% set ns.value = false %}
-
         {% elif ent.startswith('person.') %}
-          {# person.xxx : absent si not_home #}
           {% set ns.value = is_state(ent, 'not_home') %}
-
         {% elif ent.startswith('binary_sensor.') %}
-          {# Convention:
-             - si capteur d'absence => on = absent
-             - sinon capteur de présence => on = présent (donc absent = off)
-          #}
-          {% if ent.endswith('_absent') or ent.endswith('_away') or 'absent' in ent %}
-            {% set ns.value = is_state(ent, 'on') %}
-          {% else %}
-            {% set ns.value = not is_state(ent, 'on') %}
-          {% endif %}
-
-        {% else %}
-          {# entité non supportée #}
-          {% set ns.value = false %}
+          {# binary_sensor = capteur de PRESENCE (on=présent) #}
+          {% set ns.value = not is_state(ent, 'on') %}
         {% endif %}
       {% endif %}
     {% endif %}
@@ -473,7 +456,15 @@ trigger:
   # Utilisateur principal
   - platform: state
     entity_id:  !input utilisateur_principal
+    
+  # Détection absence (calculée)
+  - platform: template
+    value_template: "{{ auto_absence_active }}"
 
+  # Détection absence principal (calculée)
+  - platform: template
+    value_template: "{{ principal_absent | bool }}"
+    
   # Switches
   - platform: state
     entity_id: 
