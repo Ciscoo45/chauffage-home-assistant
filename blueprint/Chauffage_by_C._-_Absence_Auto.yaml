@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Absence Auto
   description: |
 
-    version Absence Auto – par Pièce : v2.51 – 2026-01-01
+    version Absence Auto – par Pièce : v2.52 – 2026-01-01
     auteur : Ciscoo45
 
     ___
@@ -78,7 +78,7 @@ blueprint:
       description: |
         Binary_sensor indiquant si tous les utilisateurs sont absents. 
 
-        Ex. : binary_sensor.chauffage_tous_utilisateurs_absents
+        Ex. : `binary_sensor.chauffage_tous_utilisateurs_absents`
       selector:
         entity: 
           domain: binary_sensor
@@ -88,7 +88,7 @@ blueprint:
       description: |
         Binary sensor pour le premier utilisateur
 
-        (obligatoire, ex. Chauffage Michel Absent ou binary_sensor.chauffage_utilisateur1_absent)
+        (obligatoire, ex. `Chauffage Michel Absent` ou `binary_sensor.chauffage_utilisateur1_absent`)
       selector:
         entity:
           domain: binary_sensor
@@ -98,7 +98,7 @@ blueprint:
       description: |
         Binary sensor pour le deuxième utilisateur
 
-        Ex. : chauffage François Absent ou binary_sensor.chauffage_utilisateur2_absent, même si non utilisé)
+        Ex. : `chauffage François Absent` ou `binary_sensor.chauffage_utilisateur2_absent`, même si non utilisé)
       selector:
         entity: 
           domain: binary_sensor
@@ -106,7 +106,7 @@ blueprint:
     binary_sensor_utilisateur_3_absent:
       name:  👤 Utilisateur 3 Absent
       description: |
-        Binary sensor pour le troisième utilisateur (ex. : binary_sensor.chauffage_utilisateur3_absent, même si non utilisé)
+        Binary sensor pour le troisième utilisateur (ex. : `binary_sensor.chauffage_utilisateur3_absent`, même si non utilisé)
       selector:
         entity: 
           domain: binary_sensor
@@ -114,7 +114,7 @@ blueprint:
     binary_sensor_utilisateur_4_absent:
       name: 👤 Utilisateur 4 Absent
       description: |
-        Binary sensor pour le quatrième utilisateur (ex. binary_sensor.chauffage_utilisateur4_absent, même si non utilisé)
+        Binary sensor pour le quatrième utilisateur (ex. `binary_sensor.chauffage_utilisateur4_absent`, même si non utilisé)
       selector:
         entity:
           domain: binary_sensor
@@ -122,7 +122,7 @@ blueprint:
     binary_sensor_utilisateur_5_absent:
       name: 👤 Utilisateur 5 Absent (optionnel, à modifier si utilisé)
       description: |
-        Binary sensor pour le quatrième utilisateur (ex. binary_sensor.chauffage_utilisateur5_absent, même si non utilisé)
+        Binary sensor pour le quatrième utilisateur (ex. `binary_sensor.chauffage_utilisateur5_absent`, même si non utilisé)
       selector:
         entity:
           domain: binary_sensor
@@ -161,7 +161,7 @@ blueprint:
       description: |
         Nombre de degrés à retirer en mode Absence ou Manuel
         
-        Ex. : input_number.chauffage_absence_auto_reduction_degrees
+        Ex. : `input_number.chauffage_absence_auto_reduction_degrees`
       selector:
         entity:
           domain: input_number
@@ -172,7 +172,7 @@ blueprint:
       description: |
         Désactive toutes les corrections Absence (toutes pièces) si OFF
         
-        Ex. : input_boolean.chauffage_absence_auto_global_actif
+        Ex. : `input_boolean.chauffage_absence_auto_global_actif`
       selector:
         entity:
           domain: input_boolean
@@ -214,7 +214,7 @@ blueprint:
       
         Si ON, ignore les corrections Absence Auto pour cette pièce."
 
-        ⚠️ **Si vous N'utilisez PAS Boost** :  créer une automatisation dummy permettant consigne_dummy = consigne de base (utile si le module optionnel EDF Tempo n'est pas utilisé non plus)
+        ⚠️ **Si vous N'utilisez PAS Boost** :  créer une automatisation dummy permettant consigne_dummy = consigne_base (utile si le module optionnel EDF Tempo n'est pas utilisé non plus)
       selector:
         entity:
           domain: input_boolean
