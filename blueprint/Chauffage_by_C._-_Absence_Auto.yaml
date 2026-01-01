@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Absence Auto
   description: |
 
-    version Absence Auto – par Pièce : v2.52 – 2026-01-01
+    version Absence Auto – par Pièce : v2.53 – 2026-01-01
     auteur : Ciscoo45
 
     ___
@@ -312,14 +312,6 @@ trigger:
   - platform: state
     entity_id: !input utilisateur_principal
 
-  # Détection absence (calculée)
-  - platform: template
-    value_template: "{{ auto_absence_active }}"
-
-  # Détection absence principal (calculée)
-  - platform: template
-    value_template: "{{ principal_absent | bool }}"
-
   # Switches
   - platform: state
     entity_id:
@@ -374,6 +366,58 @@ action:
 
 
 
+  # === 5. RETOUR + ETAIT_PRESENCE = ON (restauration Presence) ===
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: "{{ (not auto_absence_active) and etait_en_presence }}"
+        sequence:
+          - service: input_boolean.turn_off
+            target:
+              entity_id: !input etait_presence
+
+          - service: input_select.select_option
+            target:
+              entity_id: !input mode_actuel
+            data:
+              option: "Presence"
+
+          # Attendre que Scheduler/Tempo ait appliqué la consigne du mode Presence
+          - wait_for_trigger:
+              - platform: state
+                entity_id: !input consigne_tempo
+            timeout: "00:00:10"
+            continue_on_timeout: true
+
+          - service: input_number.set_value
+            target:
+              entity_id: !input consigne_finale
+            data:
+              value: "{{ states(consigne_tempo_input) | float(19) }}"
+
+          - stop: "Retour → Restauration Presence"
+
+
+
+  # === 6. RETOUR + ETAIT_PRESENCE = OFF (suppression réduction) ===
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: >-
+              {{ (not auto_absence_active)
+                 and (not etait_en_presence)
+                 and mode_actuel_valeur in ['Absence','Manuel'] }}
+        sequence:
+          - service: input_number.set_value
+            target:
+              entity_id: !input consigne_finale
+            data:
+              value: "{{ states(consigne_tempo_input) | float(19) }}"
+          - stop: "Retour → Suppression réduction"
+
+
+
+          
   # === 2. MODULE DÉSACTIVÉ / PAS D'ABSENCE / ARRET / HORS-GEL ===
   - choose:
       - conditions:
@@ -394,6 +438,9 @@ action:
             data:
               value: "{{ states(consigne_tempo_input) | float(19) }}"
           - stop: "Module désactivé, pas d'absence, ou mode inactif"
+
+
+
 
   # === 3. DÉPART EN MODE PRESENCE (Presence -> Absence) ===
   - choose:
@@ -443,57 +490,6 @@ action:
             data:
               value: "{{ (states(consigne_tempo_input) | float(19)) - (states(reduction_degrees) | float(2)) }}"
           - stop: "Absence/Manuel avec réduction"
-
-
-
-  # === 5. RETOUR + ETAIT_PRESENCE = ON (restauration Presence) ===
-  - choose:
-      - conditions:
-          - condition: template
-            value_template: "{{ (not auto_absence_active) and etait_en_presence }}"
-        sequence:
-          - service: input_boolean.turn_off
-            target:
-              entity_id: !input etait_presence
-
-          - service: input_select.select_option
-            target:
-              entity_id: !input mode_actuel
-            data:
-              option: "Presence"
-
-          # Attendre que Scheduler/Tempo ait appliqué la consigne du mode Presence
-          - wait_for_trigger:
-              - platform: state
-                entity_id: !input consigne_tempo
-            timeout: "00:00:10"
-            continue_on_timeout: true
-
-          - service: input_number.set_value
-            target:
-              entity_id: !input consigne_finale
-            data:
-              value: "{{ states(consigne_tempo_input) | float(19) }}"
-
-          - stop: "Retour → Restauration Presence"
-
-
-
-  # === 6. RETOUR + ETAIT_PRESENCE = OFF (suppression réduction) ===
-  - choose:
-      - conditions:
-          - condition: template
-            value_template: >-
-              {{ (not auto_absence_active)
-                 and (not etait_en_presence)
-                 and mode_actuel_valeur in ['Absence','Manuel'] }}
-        sequence:
-          - service: input_number.set_value
-            target:
-              entity_id: !input consigne_finale
-            data:
-              value: "{{ states(consigne_tempo_input) | float(19) }}"
-          - stop: "Retour → Suppression réduction"
 
 
 
