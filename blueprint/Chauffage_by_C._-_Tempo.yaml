@@ -2,131 +2,134 @@ blueprint:
   name: Chauffage by C. - Gestion Tempo EDF
   description: |
 
-    version Tempo : v1.20 - 2025-12-20
+    version Tempo : v1.30 - 2026-01-01
     
     auteur : Ciscoo45
     
-    
     ___
-    
+
     ## Description
-    
+
     Blueprint **optionnel** pour les abonnés **Tempo EDF** permettant d'adapter automatiquement la consigne de chauffage, selon :
-    
+
     - La couleur du jour (Bleu / Blanc / Rouge)
-    
+
     - La période tarifaire (Heures Creuses / Heures Pleines)
-    
+
     - Un switch global d'activation/désactivation (toutes pièces)
-    
+
     - Un switch local d'activation/désactivation (par pièce)
-    
-    - L'état du boost (prioritaire sur Tempo)
-    
-    
+
+    - L'état de la fonction Boost de dérogation temporaire (prioritaire sur Tempo)
+
+
     **Fonctionnement** :
-    
+
     - Calcule en temps réel une **consigne corrigée** à partir de la consigne de base
-    
+
     - Applique des réductions paramétrables en HP des jours Blanc et Rouge
-    
+
     - N'applique **aucune réduction** si :
-    
+
       • le switch **global** Tempo est désactivé
-      
+
       • le switch **local** Tempo (de la pièce) est désactivé
-      
+
       • le jour est **Bleu** (tarif avantageux)
-      
+
       • on est en **Heures Creuses** (tous les jours)
-      
-      • le **boost** est actif (confort prioritaire)
-    
-    
+
+      • le **Boost** est actif (confort prioritaire)
+
+    - **Modes Arret / Hors-gel** :
+      Tempo est ignoré (aucune réduction), MAIS la consigne calculée est maintenue
+      à jour en copiant la consigne de base (0° pour Arret, 8° par défaut pour Hors-gel, etc.)
+
+
     **Important** : Ce blueprint est **totalement indépendant** des autres blueprints du module de chauffage.
-    
+
     Vous pouvez l'utiliser ou non selon votre abonnement.
-    
-    
+
+
     ___
-    
+
     ## Pré-requis
-    
+
     Vous devez disposer de sensors indiquant :
-    
+
     - La couleur Tempo du jour actuel (valeurs : 'Bleu', 'Blanc', 'Rouge')
-    
+
     - La période tarifaire actuelle (valeurs : 'Heures Creuses', 'Heures Pleines')
-    
-    
-    Ces sensors peuvent être créés via l'API gratuite https://www.api-couleur-tempo.fr
-    
-    
-    
+
+
+    Ces sensors peuvent être créés via l'API web gratuite https://www.api-couleur-tempo.fr
+
+
+
     ___
-    
+
     ## Helpers à créer
-    
+
     Pour chaque pièce équipée, créer les helpers suivants (exemple pour SdB) :
-    
-    
+
+
     **input_number** :
-    
+
     - `radiateur_sdb_consigne` : consigne de base (existant)
-    
-    - `radiateur_sdb_consigne_calculee` : consigne corrigée par Tempo (nouveau)
-    
+
+    - `radiateur_sdb_consigne_calculee` : consigne corrigée par Tempo (nouvelle consigne de chauffe calculée)
+
     - `radiateur_sdb_reduction_tempo_blanc` : réduction en HP des jours blancs (0 à 3°C)
-    
+
     - `radiateur_sdb_reduction_tempo_rouge` : réduction en HP des jours rouges (0 à 15°C)
-    
-    
+
+
     **input_boolean** :
-    
+
     - `tempo_global_actif` : activation/désactivation globale (commun à toutes les pièces)
-    
-    - `radiateur_sdb_tempo_actif` : activation/désactivation pour cette pièce (nouveau)
-    
+
+    - `radiateur_sdb_tempo_actif` : activation/désactivation pour cette pièce
+
     - `radiateur_sdb_show_tempo_config` : afficher/masquer la config Tempo dans la carte
-    
+
     - `boost_sdb` : état du boost (existant si vous utilisez le blueprint Boost)
-    
-    
+
+
     Voir `config_examples/` pour les définitions complètes.
-    
-    
+
+
     ___
-    
+
     ## Utilisation dans les autres blueprints
-    
+
     **Dans le blueprint Thermostat TPI** :
-    
+
     - Utiliser `input_number.radiateur_sdb_consigne_calculee` au lieu de `radiateur_sdb_consigne`
-    
-    
+
+    - Si vous utilisez également le module Absence Auto, utiliser alors dans le Terhmsotat TPI la consigne finale : `input_number.radiateur_sdb_consigne_finale` (tient compte de la réduction Tempo)
+
+
     **Dans le blueprint Pilotage** :
-    
-    - Garder l'input_number pou la consigne de base, ne pas modifier.
-    
-    
+
+    - Garder l'input_number pour la consigne de base, ne pas modifier : `radiateur_sdb_consigne`
+
+
     **Dans le blueprint Boost** :
-    
+
     - Continuer à utiliser `radiateur_sdb_boost_consigne` (pas de changement)
-    
-    
-    Si vous n'utilisez **pas** ce blueprint Tempo :
-    
-    - Continuez à utiliser `radiateur_sdb_consigne` partout (fonctionnement classique)
-    
-    
+
+
     ___
-    
+
     ## Paramétrage du Blueprint
-    
+
   source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/main/blueprint/Chauffage_by_C._-_Tempo.yaml
   domain: automation
 
+
+
   input:
+  
     piece_name:
       name: 🏠 Nom de la pièce
       description: "Nom affiché dans les logs (ex: SdB, Salon, Chambre)"
@@ -136,18 +139,20 @@ blueprint:
     # === GLOBAL - SENSORS TEMPO ===
     sensor_couleur:
       name: 🎨 Tempo Couleur Actuelle Texte (global)
-      description: "Sensor indiquant la couleur du jour actuel (Bleu / Blanc / Rouge)
-      
-      Ex. : sensor.tempo_couleur_actuelle_texte"
+      description: |
+        Sensor indiquant la couleur du jour actuel (Bleu / Blanc / Rouge)
+
+        Ex. : `sensor.tempo_couleur_actuelle_texte`
       selector:
         entity:
           domain: sensor
 
     sensor_periode:
       name: ⚡ Tempo Période Actuelle (global)
-      description: "Sensor indiquant la période actuelle (Heures Creuses / Heures Pleines)
-      
-      Ex. : sensor.tempo_periode_actuelle"
+      description: |
+        Sensor indiquant la période actuelle (Heures Creuses / Heures Pleines)
+
+      Ex. : `sensor.tempo_periode_actuelle`
       selector:
         entity:
           domain: sensor
@@ -185,9 +190,10 @@ blueprint:
     # === GLOBAL - ACTIVATION ===
     switch_global:
       name: 🌐 Tempo Global Actif (global)
-      description: "Désactive toutes les corrections Tempo (TOUTES LES PIECES) si OFF (input_boolean)
-     
-      Ex. : input_boolean.tempo_global_actif"
+      description: |
+        Désactive toutes les corrections Tempo (TOUTES LES PIECES) si OFF (input_boolean)
+
+        Ex. : `input_boolean.tempo_global_actif`
       selector:
         entity:
           domain: input_boolean
@@ -202,26 +208,33 @@ blueprint:
 
     mode_actuel:
       name: 🎚️ Radiateur (pièce) Mode
-      description: "Liste des modes Presence / Absence / Manuel / Hors-gel / Arret
-      
-      pour ignorer Tempo quand on est sur les modes Arret ou Hors-gel."
+      description: |
+        Liste des modes Presence / Absence / Manuel / Hors-gel / Arret
+
+        pour ignorer Tempo quand on est sur les modes Arret ou Hors-gel.
       selector:
         entity:
           domain: input_select
-
+          
     boost_actif:
-      name: ⚡ Boost pièce (optionnel)
-      description: "Si le boost est ON, ignore les corrections Tempo pour cette pièce"
-      default: ""
+      name: ⚡ Boost (pièce)
+      description: |
+        Module de dérogation temporaire (boost timé), optionnel.
+      
+        Si ON, ignore les corrections Absence Auto pour cette pièce."
+
+        ⚠️ **Si vous N'utilisez PAS Boost** :  créer une automatisation dummy permettant consigne_dummy = consigne_base (utile si le module optionnel EDF Tempo n'est pas utilisé non plus)
       selector:
         entity:
           domain: input_boolean
 
 
 
+          
 
 # ========= VARIABLES =========
 variables:
+
   piece_name: !input piece_name
   consigne_base: !input consigne_base
   consigne_calculee: !input consigne_calculee
@@ -247,7 +260,7 @@ variables:
   boost_on: >-
     {{ boost_actif_input != '' and is_state(boost_actif_input, 'on') }}
 
-  # Calcul de la réduction
+  # Calcul de la réduction (inchangé)
   reduction: >-
     {% if not tempo_global_on %}
       {{ 0.0 }}
@@ -266,51 +279,50 @@ variables:
     {% else %}
       {{ 0.0 }}
     {% endif %}
-  
+
+  # Consigne finale calculée par Tempo (hors modes Arret/Hors-gel)
   consigne_finale: "{{ consigne_valeur - reduction }}"
+
+
 
 
 
 # ========= DÉCLENCHEURS =========
 trigger:
 
-  # Recalcul quand la consigne de base change
   - platform: state
     entity_id: !input consigne_base
 
-  # Recalcul quand la couleur Tempo change
   - platform: state
     entity_id: !input sensor_couleur
 
-  # Recalcul quand on passe HP/HC
   - platform: state
     entity_id: !input sensor_periode
 
-  # Recalcul quand les réductions sont modifiées
   - platform: state
     entity_id:
       - !input reduction_blanc
       - !input reduction_rouge
 
-  # Recalcul quand on active/désactive Tempo global
   - platform: state
     entity_id: !input switch_global
 
-  # Recalcul quand on active/désactive Tempo local
   - platform: state
     entity_id: !input switch_local
 
-  # Recalcul quand le boost change (si fourni)
   - platform: state
     entity_id: !input boost_actif
 
-  # Au démarrage de HA
+  # IMPORTANT : il faut déclencher aussi quand le mode change (Arret/Hors-gel)
+  # - platform: state
+  #   entity_id: !input mode_actuel
+
   - platform: homeassistant
     event: start
 
-  # Au rechargement des automations
   - platform: event
     event_type: automation_reloaded
+
 
 
 
@@ -319,31 +331,57 @@ condition: []
 
 
 
+
 # ========= ACTIONS =========
 action:
 
-  # pas d'actio nde Tempo si on est en mode Arret ou Hors-gel
-  - condition: template
-    value_template: "{{ not skip_tempo }}"
+  - choose:
 
-  # Mise à jour de la consigne calculée
-  - service: input_number.set_value
-    target:
-      entity_id: !input consigne_calculee
-    data:
-      value: "{{ consigne_finale }}"
+  
+      # Modes Arret / Hors-gel : copier la base vers la calculée
+      - conditions:
+          - condition: template
+            value_template: "{{ skip_tempo }}"
+        sequence:
+        
+          - service: input_number.set_value
+            target:
+              entity_id: !input consigne_calculee
+            data:
+              value: "{{ consigne_valeur }}"
 
-  # Log pour débogage
-  - service: logbook.log
-    data:
-      name: "Tempo {{ piece_name }}"
-      message: >-
-        Consigne: {{ consigne_valeur }}°C → {{ consigne_finale }}°C
-        ({{ couleur }} {{ periode }}, réduction: -{{ reduction }}°C
-        {% if not tempo_global_on %}[Global OFF]{% endif %}
-        {% if not tempo_local_on %}[Local OFF]{% endif %}
-        {% if boost_on %}[Boost actif]{% endif %})
-      entity_id: !input consigne_calculee
+          - service: logbook.log
+            data:
+              name: "Tempo {{ piece_name }}"
+              entity_id: !input consigne_calculee
+              message: >-
+                Mode: {{ mode_val }} → Tempo ignoré (copie base)
+                Consigne: {{ consigne_valeur }}°C → {{ consigne_valeur }}°C
+
+
+      # Modes normaux : appliquer le calcul Tempo
+      - conditions:
+          - condition: template
+            value_template: "{{ not skip_tempo }}"
+        sequence:
+        
+          - service: input_number.set_value
+            target:
+              entity_id: !input consigne_calculee
+            data:
+              value: "{{ consigne_finale }}"
+
+          - service: logbook.log
+            data:
+              name: "Tempo {{ piece_name }}"
+              message: >-
+                Consigne: {{ consigne_valeur }}°C → {{ consigne_finale }}°C
+                ({{ couleur }} {{ periode }}, réduction: -{{ reduction }}°C
+                {% if not tempo_global_on %}[Global OFF]{% endif %}
+                {% if not tempo_local_on %}[Local OFF]{% endif %}
+                {% if boost_on %}[Boost actif]{% endif %})
+              entity_id: !input consigne_calculee
+
 
 mode: queued
 max: 5
