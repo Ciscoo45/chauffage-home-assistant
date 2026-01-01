@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Gestion Tempo EDF
   description: |
 
-    version Tempo : v1.31 - 2026-01-01
+    version Tempo : v1.32 - 2026-01-01
     
     auteur : Ciscoo45
     
@@ -152,7 +152,7 @@ blueprint:
       description: |
         Sensor indiquant la période actuelle (Heures Creuses / Heures Pleines)
 
-      Ex. : `sensor.tempo_periode_actuelle`
+        Ex. : `sensor.tempo_periode_actuelle`
       selector:
         entity:
           domain: sensor
