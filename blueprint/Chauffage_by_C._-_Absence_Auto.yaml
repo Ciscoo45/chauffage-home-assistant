@@ -567,6 +567,15 @@ action:
               entity_id: !input mode_actuel
             data:
               option: "Absence"
+              
+          # Attendre que Scheduler component ait appliqué la consigne du mode Absence
+          - wait_for_trigger:
+              - platform: state
+                entity_id: !input consigne_base
+              - platform: state
+                entity_id: !input consigne_tempo
+            timeout: "00:00:05"
+            continue_on_timeout: true
 
           - service: input_number.set_value
             target:
