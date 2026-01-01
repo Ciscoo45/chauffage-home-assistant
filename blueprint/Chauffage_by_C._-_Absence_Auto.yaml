@@ -2,7 +2,7 @@ blueprint:
   name:  Chauffage by C.  - Absence Auto
   description: |
 
-    version Absence Auto – par Pièce :  v2.43 – 2025-12-31
+    version Absence Auto – par Pièce :  v2.44 – 2026-01-01
 
     auteur :  Ciscoo45
 
@@ -396,37 +396,53 @@ variables:
     {% set raw = states('input_text.chauffage_absence_auto_utilisateurs_entities') %}
     {% set entities = (raw.split(',') if raw not in ['unknown','unavailable',''] else []) %}
     {% set principal_name = states(utilisateur_entity) %}
-    
-    {% set principal_absent = namespace(value=false, ent='') %}
-    
-    {% if principal_name in noms %}
+
+    {% set ns = namespace(value=false) %}
+
+    {# si pas de principal sélectionné #}
+    {% if principal_name in ['Aucun','unknown','unavailable',''] %}
+      {% set ns.value = false %}
+
+    {% elif principal_name in noms %}
       {% set idx = noms.index(principal_name) %}
-      {% if idx < entities|length and (entities[idx]|trim) not in ['','unknown','unavailable'] %}
+      {% if idx < entities|length %}
         {% set ent = (entities[idx] | trim) | replace(' ','') %}
-        {% set principal_absent.ent = ent %}
-    
-        {% if ent.startswith('person.') %}
-          {# person.xxx : not_home = absent #}
-          {% set principal_absent.value = is_state(ent, 'not_home') %}
-    
+
+        {% if ent in ['', 'unknown', 'unavailable'] %}
+          {% set ns.value = false %}
+
+        {% elif ent.startswith('person.') %}
+          {# person.xxx : absent si not_home #}
+          {% set ns.value = is_state(ent, 'not_home') %}
+
         {% elif ent.startswith('binary_sensor.') %}
-          {# binary_sensor :
-             - si capteur de PRESENCE → on = présent → absent = off
-             - sinon (capteur d'ABSENCE) → on = absent
+          {# Convention:
+             - si capteur d'absence => on = absent
+             - sinon capteur de présence => on = présent (donc absent = off)
           #}
-          {% if 'presence' in ent %}
-            {% set principal_absent.value = not is_state(ent, 'on') %}
+          {% if ent.endswith('_absent') or ent.endswith('_away') or 'absent' in ent %}
+            {% set ns.value = is_state(ent, 'on') %}
           {% else %}
-            {% set principal_absent.value = is_state(ent, 'on') %}
+            {% set ns.value = not is_state(ent, 'on') %}
           {% endif %}
+
+        {% else %}
+          {# entité non supportée #}
+          {% set ns.value = false %}
         {% endif %}
       {% endif %}
     {% endif %}
 
+    {{ ns.value }}
+
 
   # ⭐ Variable centrale :  Absence Auto active ? 
+  principal_feature_enabled: >-
+    {{ is_state(switch_si_principal_absent,'on') and states(utilisateur_entity) not in ['Aucun','unknown','unavailable',''] }}
+
   auto_absence_active: >-
-    {{ everybody_absent or (is_state(switch_si_principal_absent,'on') and (principal_absent | bool)) }}
+    {{ everybody_absent or (principal_feature_enabled and (principal_absent | bool)) }}
+    
 
   # Consigne source (Tempo si actif, sinon base)
   consigne_source: >-
@@ -474,10 +490,6 @@ trigger:
   # Réduction
   - platform: state
     entity_id: !input reduction_degrees
-
-  # Mode
-  - platform: state
-    entity_id: !input mode_actuel
 
   # Boost
   - platform: state
@@ -582,7 +594,8 @@ action:
           - condition: template
             value_template:  >-
               {{ auto_absence_active
-                 and mode_actuel_valeur in ['Absence','Manuel'] }}
+                 and mode_actuel_valeur in ['Absence','Manuel']
+                 and not etait_en_presence }}
         sequence:
           - service: input_number.set_value
             target:
@@ -650,7 +663,7 @@ action:
         Mode:  {{ mode_actuel_valeur }}
         | Auto Absence: {{ 'ACTIVE' if auto_absence_active else 'OFF' }}
         | Consigne: {{ consigne_source }}°C → {{ states(consigne_finale) }}°C
-        | Réduction: {{ states(reduction_degrees) if (auto_absence_active and mode_actuel_valeur in ['Absence','Manuel']) else 0 }}°C
+        | Réduction: {{ states(reduction_degrees) if (auto_absence_active and mode_actuel_valeur in ['Absence','Manuel'] and not etait_en_presence) else 0 }}°C
         {% if everybody_absent %}[Tous absents]{% endif %}
         {% if is_state(switch_si_principal_absent,'on') and (principal_absent | bool) %}[Principal absent]{% endif %}
         {% if etait_en_presence %}[Était Presence]{% endif %}
