@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Absence Auto
   description: |
 
-    version Absence Auto – par Pièce : v2.55 – 2026-01-02
+    version Absence Auto – par Pièce : v2.56 – 2026-01-02
     auteur : Ciscoo45
 
     ___
@@ -140,6 +140,8 @@ blueprint:
         Consigne de température de chauffe, corrigée par le module Tempo Eco. 
 
         **Si vous utilisez Tempo** : sélectionnez `input_number.radiateur_xxx_consigne_tempo`
+
+        ou `input_number.radiateur_xxx_consigne_calculee`
 
         ⚠️ **Si vous N'utilisez PAS EDF Tempo** :  créer une automatisation dummy permettant consigne_dummy = consigne de base (utile si le module optionnel Boost n'est pas utilisé non plus)
       selector:
