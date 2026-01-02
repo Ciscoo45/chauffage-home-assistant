@@ -2,12 +2,21 @@ blueprint:
   name: Chauffage by C. - Absence Auto
   description: |
 
-    version Absence Auto – par Pièce : v2.54 – 2026-01-01
+    version Absence Auto – par Pièce : v2.55 – 2026-01-02
     auteur : Ciscoo45
 
     ___
 
-    ## But (version simplifiée "Tempo only")
+    ## Gestion Auto de l'Absence
+
+    Le but : 
+
+    - effectuer une modification lors de l'absence : de Tous les utilisateurs, ou de l'Utilisateur principal de la pièce
+
+    - passer automatiquement les pièces qui était en programmation Presence vers le mode Absence
+
+    - pour les pièces en Manuel ou déjà sur le mode Absence (Eco), on diminue la consigne
+    
 
     Blueprint **par pièce** autonome gérant :
 
@@ -26,9 +35,6 @@ blueprint:
     - Si tu utilises Tempo : `consigne_tempo` = consigne calculée par Tempo
     - Si tu n’utilises pas Tempo : tu dois fournir un mécanisme externe pour que `consigne_tempo` reflète la consigne attendue
       (par ex. une automation "dummy" qui copie la base vers tempo).
-
-    👉 Ce blueprint **ne déclenche plus** sur `consigne_base` et ne fait plus de fallback.
-    Il ne se base que sur `consigne_tempo`.
 
     ___
 
