@@ -1,8 +1,8 @@
 blueprint:
-  name: Chauffage by C. - Gestion Tempo EDF
+  name: Chauffage by C. - EDF Tempo
   description: |
 
-    version Tempo : v1.33 - 2026-01-01
+    version Tempo : v1.34 - 2026-01-01
     
     auteur : Ciscoo45
     
