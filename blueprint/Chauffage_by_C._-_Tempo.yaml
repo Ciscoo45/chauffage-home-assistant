@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Gestion Tempo EDF
   description: |
 
-    version Tempo : v1.32 - 2026-01-01
+    version Tempo : v1.33 - 2026-01-01
     
     auteur : Ciscoo45
     
@@ -191,7 +191,7 @@ blueprint:
     switch_global:
       name: 🌐 Tempo Global Actif (global)
       description: |
-        Désactive toutes les corrections Tempo (TOUTES LES PIECES) si OFF (input_boolean)
+        Désactive toutes les corrections Tempo (TOUTES les pièces) si OFF (input_boolean)
 
         Ex. : `input_boolean.tempo_global_actif`
       selector:
@@ -201,7 +201,7 @@ blueprint:
     # === par PIECE - ACTIVATION ===
     switch_local:
       name: 🏠 (pièce) Gestion Tempo
-      description: "Désactive les corrections Tempo pour CETTE PIECE si OFF"
+      description: "Désactive les corrections Tempo pour CETTE pièce si OFF"
       selector:
         entity:
           domain: input_boolean
