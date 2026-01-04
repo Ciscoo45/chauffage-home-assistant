@@ -3,7 +3,7 @@ blueprint:
   description: >
 
     
-    version Boost : v1.13 - 2025-12-18
+    version Boost : v1.14 - 2026-01-04
 
     auteur : Ciscoo45
     
@@ -431,8 +431,20 @@ action:
       # ======= ARRÊT (UI / télécommande / timer.finished) =======
       - conditions: "{{ trigger.id in ['boost_stop_remote','boost_stop_ui','boost_expired_timer'] }}"
         sequence:
-          # CORRECTION v1.02 : Désactiver le switch boost POUR TOUS LES TYPES D'ARRÊT
+
+        # Ignorer "OFF télécommande" si boost déjà terminé (correction v1.14)
+          - if:
+              - condition: trigger
+                id: boost_stop_remote
+              - condition: state
+                entity_id: !input boost_switch
+                state: "off"
+            then:
+              - stop: "Off télécommande ignoré : boost déjà inactif."
+        
+          # Désactiver le switch boost POUR TOUS LES TYPES D'ARRÊT (correction v1.02)
           - choose:
+          
               # Si arrêt par télécommande
               - conditions: "{{ trigger.id == 'boost_stop_remote' }}"
                 sequence:
@@ -464,8 +476,12 @@ action:
                       {{ states(mode_entity) == 'Manuel' }}
             default: []
 
+
+
           # ===== MODIFICATION POINT 1 : RESTAURATION INTELLIGENTE =====
           - choose:
+
+          
               # Option 1 : Restaurer l'état précédent
               - conditions: >-
                   {{ 'état précédent' in states(restore_choice)|lower or 'etat precedent' in states(restore_choice)|lower }}
@@ -493,6 +509,7 @@ action:
                         target: { entity_id: "{{ consigne_entity }}" }
                         data: 
                           value: "{{ previous_consigne }}"
+
 
               # Option 2 : Mode personnalisé
               - conditions: >-
