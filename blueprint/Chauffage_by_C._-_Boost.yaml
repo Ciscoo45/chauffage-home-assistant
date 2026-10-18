@@ -144,8 +144,419 @@ blueprint:
       default: false
       selector: { boolean: {} }
 
+
+
 # ========= Déclencheurs =========
+
 trigger:
   - platform: event
     event_type: zha_event
     event_data:
+      device_id: !input remote_button
+      command: "on"
+      cluster_id: 6
+    id: boost_start_remote
+
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_id: !input remote_button
+      command: "off"
+      cluster_id: 6
+    id: boost_stop_remote
+
+  - platform: state
+    entity_id: !input boost_switch
+    from: "off"
+    to: "on"
+    id: boost_start_ui
+
+  - platform: state
+    entity_id: !input boost_switch
+    from: "on"
+    to: "off"
+    id: boost_stop_ui
+
+  - platform: event
+    event_type: mobile_app_notification_action
+    id: boost_notif_action
+
+  - platform: event
+    event_type: timer.finished
+    event_data:
+      entity_id: !input boost_timer
+    id: boost_expired_timer
+
+  - platform: homeassistant
+    event: start
+    id: init_on_start
+
+  - platform: event
+    event_type: automation_reloaded
+    id: init_on_reload
+
+  # Permet de terminer un Boost dont timer.finished aurait été manqué
+  # pendant une indisponibilité / un redémarrage de HA.
+  - platform: time_pattern
+    minutes: "/1"
+    id: boost_watchdog
+
+condition: []
+
+# ========= Traitement séquentiel des commandes =========
+action:
+  - variables:
+      area_id: !input piece
+      users_group_entity: !input users_group
+      boost_switch_id: !input boost_switch
+      mode_id: !input mode_entity
+      consigne_id: !input consigne_entity
+      duration_helper: !input boost_duration_helper
+      temp_helper: !input boost_temp_helper
+      boost_timer_id: !input boost_timer
+      timer_id: !input timer_entity
+      sync_reload: !input sync_helpers_on_reload
+      default_minutes: !input duree_boost_valeur_de_depart
+      default_temp: !input consigne_boost_valeur_de_depart
+      extend_step: !input boost_extend_step_minutes
+      restore_choice: !input restore_behavior
+      custom_mode_entity: !input restore_mode_custom
+      override_consigne_switch: !input restore_override_consigne
+      custom_consigne_entity: !input restore_consigne_custom
+      prev_mode_storage: !input previous_mode_storage
+      prev_consigne_storage: !input previous_consigne_storage
+
+      area_label: >-
+        {{ area_name(area_id) if area_name(area_id) is not none else area_id }}
+      notif_tag: "{{ 'boost_' ~ area_id }}"
+      stop_action_id: "{{ ('boost_stop_' ~ area_id) | lower }}"
+      extend_action_id: "{{ ('boost_extend_' ~ area_id) | lower }}"
+
+      boost_minutes: >-
+        {{ [[states(duration_helper) | int(default_minutes), 1] | max, 600] | min }}
+      boost_target_temp: >-
+        {{ [[states(temp_helper) | float(default_temp), 15] | max, 30] | min }}
+
+      present_notify_entities: >-
+        {{
+          expand(state_attr(users_group_entity, 'entity_id') | default([], true))
+          | selectattr('entity_id', 'match', '^person\\.')
+          | selectattr('state', 'equalto', 'home')
+          | map(attribute='entity_id')
+          | map('regex_replace', '^person\\.', 'notify.user_')
+          | list
+        }}
+
+      # Pour nettoyer aussi les téléphones des personnes sorties de la maison
+      # depuis la réception du message initial.
+      all_notify_entities: >-
+        {{
+          expand(state_attr(users_group_entity, 'entity_id') | default([], true))
+          | selectattr('entity_id', 'match', '^person\\.')
+          | map(attribute='entity_id')
+          | map('regex_replace', '^person\\.', 'notify.user_')
+          | list
+        }}
+
+      notification_action: >-
+        {% if trigger.id == 'boost_notif_action' %}
+          {{ trigger.event.data.get('action', '') }}
+        {% else %}
+          {{ '' }}
+        {% endif %}
+
+  - choose:
+      # ===== INITIALISATION / RATTRAPAGE APRÈS REBOOT =====
+      - conditions: "{{ trigger.id in ['init_on_start', 'init_on_reload'] }}"
+        sequence:
+          - if:
+              - condition: template
+                value_template: "{{ sync_reload }}"
+            then:
+              - service: input_number.set_value
+                target: { entity_id: !input boost_duration_helper }
+                data: { value: "{{ default_minutes | int }}" }
+              - service: input_number.set_value
+                target: { entity_id: !input boost_temp_helper }
+                data: { value: "{{ default_temp | float }}" }
+          - if:
+              - condition: template
+                value_template: >-
+                  {{ is_state(boost_switch_id, 'on')
+                     and is_state(boost_timer_id, 'idle')
+                     and as_timestamp(states(timer_id), 0) > 0
+                     and as_timestamp(states(timer_id), 0) <= now().timestamp() }}
+            then:
+              # Ne restaure pas ici : le déclenchement boost_stop_ui
+              # exécutera l'unique procédure de sortie.
+              - service: input_boolean.turn_off
+                target: { entity_id: !input boost_switch }
+
+      # ===== PREMIER APPUI PHYSIQUE ON : DEMANDE DE DÉMARRAGE =====
+      # NE PAS modifier le mode ni mémoriser ici.
+      - conditions: >-
+          {{ trigger.id == 'boost_start_remote'
+             and is_state(boost_switch_id, 'off') }}
+        sequence:
+          - service: input_boolean.turn_on
+            target: { entity_id: !input boost_switch }
+
+      # ===== NOUVEL APPUI ON OU ACTION NOTIF +X : PROLONGER =====
+      - conditions: >-
+          {{ is_state(boost_switch_id, 'on')
+             and is_state(boost_timer_id, 'active')
+             and (trigger.id == 'boost_start_remote'
+                  or (trigger.id == 'boost_notif_action'
+                      and notification_action == extend_action_id)) }}
+        sequence:
+          - variables:
+              current_end_ts: >-
+                {{ as_timestamp(state_attr(boost_timer_id, 'finishes_at'), 0) | int(0) }}
+              new_end_ts: >-
+                {{ ([current_end_ts | int(0), now().timestamp() | int] | max)
+                   + (extend_step | int(5)) * 60 }}
+              remaining_seconds: >-
+                {{ [(new_end_ts | int(0)) - (now().timestamp() | int), 1] | max }}
+
+          # timer.change ne permet pas de dépasser la durée de départ.
+          # timer.start remplace la durée RESTANTE, pas la session Boost.
+          - service: timer.start
+            target: { entity_id: !input boost_timer }
+            data:
+              duration: "{{ remaining_seconds | int }}"
+
+          - service: input_datetime.set_datetime
+            target: { entity_id: !input timer_entity }
+            data:
+              timestamp: "{{ new_end_ts | int }}"
+
+          - if:
+              - condition: template
+                value_template: "{{ present_notify_entities | count > 0 }}"
+            then:
+              - repeat:
+                  for_each: "{{ present_notify_entities }}"
+                  sequence:
+                    - service: "{{ repeat.item }}"
+                      continue_on_error: true
+                      data:
+                        title: "🔆 Boost chauffage {{ area_label }} prolongé"
+                        message: >-
+                          Consigne {{ states(consigne_id) | float(boost_target_temp) | round(1) }}°
+                          • Fin {{ (new_end_ts | int) | timestamp_custom('%H:%M', true) }}
+                        data:
+                          tag: "{{ notif_tag }}"
+                          persistent: true
+                          sticky: true
+                          actions:
+                            - action: "{{ stop_action_id }}"
+                              title: "Arrêter"
+                            - action: "{{ extend_action_id }}"
+                              title: "+{{ extend_step }} min"
+
+      # ===== DÉMARRAGE RÉEL : UNIQUEMENT SUR SWITCH OFF -> ON =====
+      - conditions: "{{ trigger.id == 'boost_start_ui' }}"
+        sequence:
+          # Une éventuelle répétition ne doit JAMAIS écraser la sauvegarde.
+          - if:
+              - condition: template
+                value_template: >-
+                  {{ not is_state(boost_switch_id, 'on')
+                     or is_state(boost_timer_id, 'active') }}
+            then:
+              - stop: "Démarrage redondant ignoré."
+
+          # Sécurité : ne pas mémoriser un mode inconnu.
+          - if:
+              - condition: template
+                value_template: >-
+                  {{ states(mode_id) in ['unknown', 'unavailable', 'none', ''] }}
+            then:
+              - service: input_boolean.turn_off
+                target: { entity_id: !input boost_switch }
+              - stop: "Mode initial indisponible : démarrage refusé."
+
+          # Snapshot effectué UNE fois, avant mode Manuel/consigne Boost.
+          - service: input_text.set_value
+            target: { entity_id: !input previous_mode_storage }
+            data:
+              value: "{{ states(mode_id) }}"
+          - service: input_number.set_value
+            target: { entity_id: !input previous_consigne_storage }
+            data:
+              value: "{{ states(consigne_id) | float(14) }}"
+
+          # Début de session avant tout délai : les nouveaux ON pourront prolonger.
+          - variables:
+              start_end_ts: "{{ (now() + timedelta(minutes=boost_minutes | int)).timestamp() | int }}"
+          - service: timer.start
+            target: { entity_id: !input boost_timer }
+            data:
+              duration: "{{ (boost_minutes | int) * 60 }}"
+          - service: input_datetime.set_datetime
+            target: { entity_id: !input timer_entity }
+            data:
+              timestamp: "{{ start_end_ts | int }}"
+
+          # Ordre conservé : Manuel active le TPI, puis consigne du Boost.
+          - service: input_select.select_option
+            target: { entity_id: !input mode_entity }
+            data: { option: "Manuel" }
+          - delay:
+              milliseconds: 500
+          - service: input_number.set_value
+            target: { entity_id: !input consigne_entity }
+            data: { value: "{{ boost_target_temp | float }}" }
+          - delay:
+              seconds: 2
+
+          - if:
+              - condition: template
+                value_template: "{{ present_notify_entities | count > 0 }}"
+            then:
+              - repeat:
+                  for_each: "{{ present_notify_entities }}"
+                  sequence:
+                    - service: "{{ repeat.item }}"
+                      continue_on_error: true
+                      data:
+                        title: "🔆 Boost chauffage {{ area_label }} activé"
+                        message: >-
+                          Consigne {{ boost_target_temp | float | round(1) }}°
+                          • Fin {{ (start_end_ts | int) | timestamp_custom('%H:%M', true) }}
+                          ({{ boost_minutes }} min)
+                        data:
+                          tag: "{{ notif_tag }}"
+                          persistent: true
+                          sticky: true
+                          actions:
+                            - action: "{{ stop_action_id }}"
+                              title: "Arrêter"
+                            - action: "{{ extend_action_id }}"
+                              title: "+{{ extend_step }} min"
+
+      # ===== ARRÊT PHYSIQUE OU NOTIFICATION : DEMANDE UNIQUEMENT =====
+      - conditions: >-
+          {{ trigger.id == 'boost_stop_remote'
+             or (trigger.id == 'boost_notif_action'
+                 and notification_action == stop_action_id) }}
+        sequence:
+          - if:
+              - condition: template
+                value_template: "{{ is_state(boost_switch_id, 'on') }}"
+            then:
+              - service: input_boolean.turn_off
+                target: { entity_id: !input boost_switch }
+
+      # ===== FIN TIMER : DEMANDE UNIQUEMENT =====
+      - conditions: "{{ trigger.id == 'boost_expired_timer' }}"
+        sequence:
+          - if:
+              - condition: template
+                value_template: "{{ is_state(boost_switch_id, 'on') }}"
+            then:
+              - service: input_boolean.turn_off
+                target: { entity_id: !input boost_switch }
+
+      # ===== WATCHDOG : EXPIRATION MANQUÉE =====
+      - conditions: "{{ trigger.id == 'boost_watchdog' }}"
+        sequence:
+          - if:
+              - condition: template
+                value_template: >-
+                  {{ is_state(boost_switch_id, 'on')
+                     and is_state(boost_timer_id, 'idle')
+                     and as_timestamp(states(timer_id), 0) > 0
+                     and as_timestamp(states(timer_id), 0) <= now().timestamp() }}
+            then:
+              - service: input_boolean.turn_off
+                target: { entity_id: !input boost_switch }
+
+      # ===== SORTIE UNIQUE : SWITCH ON -> OFF =====
+      - conditions: "{{ trigger.id == 'boost_stop_ui' }}"
+        sequence:
+          # Le timer est annulé même si la porte/fenêtre reste ouverte.
+          - service: timer.cancel
+            target: { entity_id: !input boost_timer }
+
+          - choose:
+              # Restaurer l'état précédent.
+              - conditions: >-
+                  {{ 'état précédent' in states(restore_choice) | lower
+                     or 'etat precedent' in states(restore_choice) | lower }}
+                sequence:
+                  - variables:
+                      previous_mode: "{{ states(prev_mode_storage) }}"
+                      previous_consigne: "{{ states(prev_consigne_storage) | float(14) }}"
+                  - if:
+                      - condition: template
+                        value_template: >-
+                          {{ previous_mode in state_attr(mode_id, 'options') | default([], true) }}
+                    then:
+                      - service: input_select.select_option
+                        target: { entity_id: !input mode_entity }
+                        data:
+                          option: "{{ previous_mode }}"
+                    else:
+                      # Repli prudent en cas de mode précédent invalide.
+                      - service: input_select.select_option
+                        target: { entity_id: !input mode_entity }
+                        data:
+                          option: "Arret"
+                  - delay:
+                      milliseconds: 200
+                  # Comme en v1.14, restaurer la consigne si l'ancien mode était Manuel.
+                  - if:
+                      - condition: template
+                        value_template: "{{ previous_mode == 'Manuel' }}"
+                    then:
+                      - service: input_number.set_value
+                        target: { entity_id: !input consigne_entity }
+                        data:
+                          value: "{{ previous_consigne }}"
+
+              # Mode de restauration personnalisé.
+              - conditions: "{{ 'personnalis' in states(restore_choice) | lower }}"
+                sequence:
+                  - variables:
+                      target_mode: "{{ states(custom_mode_entity) }}"
+                      override_active: "{{ is_state(override_consigne_switch, 'on') }}"
+                      target_consigne: "{{ states(custom_consigne_entity) | float(14) }}"
+                  - service: input_select.select_option
+                    target: { entity_id: !input mode_entity }
+                    data:
+                      option: "{{ target_mode }}"
+                  - delay:
+                      milliseconds: 200
+                  - if:
+                      - condition: template
+                        value_template: "{{ override_active }}"
+                    then:
+                      - service: input_number.set_value
+                        target: { entity_id: !input consigne_entity }
+                        data:
+                          value: "{{ target_consigne }}"
+            default:
+              - service: input_select.select_option
+                target: { entity_id: !input mode_entity }
+                data: { option: "Presence" }
+
+          # Faire disparaître la notification (et non la remplacer par une
+          # notification « terminé » qui resterait affichée).
+          - if:
+              - condition: template
+                value_template: "{{ all_notify_entities | count > 0 }}"
+            then:
+              - repeat:
+                  for_each: "{{ all_notify_entities }}"
+                  sequence:
+                    - service: "{{ repeat.item }}"
+                      continue_on_error: true
+                      data:
+                        message: "clear_notification"
+                        data:
+                          tag: "{{ notif_tag }}"
+
+mode: queued
+max: 20
+max_exceeded: warning
