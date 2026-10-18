@@ -2,7 +2,7 @@ blueprint:
   name: Chauffage by C. - Thermostat TPI
   description: "
 
-    version TPI : v.1.15 - 2025-12-19
+    version TPI : v.1.16 - 2026-10-18
     
     auteur : Ciscoo45
     
@@ -381,6 +381,8 @@ variables:
   entity_temp_int: !input entity_temp_int
   entity_temp_ext: !input entity_temp_ext
   entity_fenetres: !input entity_fenetres
+  entity_etat_ouverture: !input entity_etat_ouverture
+  entity_puissance: !input entity_puissance
   entity_mode_climate: !input entity_mode_climate
   entity_mode_inverse: !input entity_mode_inverse
 
@@ -467,6 +469,33 @@ trigger:
   - platform: state
     entity_id: !input entity_fenetres
     to: "off"
+    
+  # Rattrapage si une porte était déjà ouverte
+  # lors de la réactivation du TPI
+  - platform: time_pattern
+    seconds: "/10"
+    id: rattrapage_ouverture
+
+
+
+
+
+# ========= CONDITIONS =========
+condition:
+  - condition: template
+    value_template: >-
+      {% if trigger.id == 'rattrapage_ouverture' %}
+        {{
+          (fenetre_ouverte | bool(false))
+          and (
+            not is_state(entity_etat_ouverture, 'chauffage_coupe')
+            or (states(entity_puissance) | float(0)) > 0
+          )
+        }}
+      {% else %}
+        true
+      {% endif %}
+
 
 
 
