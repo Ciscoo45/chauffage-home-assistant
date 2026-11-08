@@ -1,0 +1,184 @@
+
+################################################################################
+### GESTION ABSENCE AUTO - CONTRÔLE MANUEL PRÉSENCE/ABSENCE
+################################################################################
+### Remplacez person.michel par binary_sensor.michel_presence_effective pour prendre en compte l'override manuel.
+
+
+## ========== ANCRES ==========
+
+presence_override_defaults: &presence_override_defaults
+  options:
+    - Auto (GPS)
+    - Forcer Présent
+    - Forcer Absent
+  initial: Auto (GPS)
+
+
+## ========== par PERSONNE/GROUPE ==========
+
+presence_override_michel:
+  <<: *presence_override_defaults
+  name: "Michel - Mode Présence"
+  icon: mdi:account-arrow-right
+
+presence_override_francois:
+  <<: *presence_override_defaults
+  name: "François - Mode Présence"
+  icon: mdi:account-arrow-right
+
+presence_override_groupe:
+  <<: *presence_override_defaults
+  name: "Groupe Mell - Mode Présence"
+  icon: mdi:home-account
+
+
+
+
+################################################################################
+### GESTION ABSENCE AUTO - SÉLECTION UTILISATEUR PRINCIPAL
+################################################################################
+
+## NOTE : Pour ajouter un utilisateur, modifiez la liste 
+## Liste actuelle : Aucun, Michel, François
+
+
+
+## ========== ANCRES ==========
+
+# Liste des utilisateurs (à modifier ici uniquement)
+utilisateur_defaults: &utilisateur_defaults
+  options:
+    - Aucun
+    - Michel
+    - François
+  icon: mdi:account
+
+# Liste des modes de chauffage (à modifier ici uniquement)
+mode_avant_absence_defaults: &mode_avant_absence_defaults
+  options:
+    - Presence
+    - Absence
+    - Manuel
+    - Hors-gel
+    - Arret
+  icon: mdi:restore
+
+
+
+## ========== par PIÈCE ==========
+
+
+# pour Chambre Ss-Sol
+radiateur_chambre_sssol_utilisateur_principal:
+  <<: *utilisateur_defaults
+  name: "Chambre Ss-Sol - Utilisateur Principal"
+radiateur_chambre_sssol_mode_avant_absence:
+  <<: *mode_avant_absence_defaults
+  name: "Chambre Ss-Sol - Mode Avant Absence"
+
+
+# pour Bureau
+radiateur_bureau_utilisateur_principal:
+  <<: *utilisateur_defaults
+  name: "Bureau - Utilisateur Principal"
+radiateur_bureau_mode_avant_absence:
+  <<: *mode_avant_absence_defaults
+  name: "Bureau - Mode Avant Absence"
+
+# pour Cuisine
+radiateur_cuisine_utilisateur_principal:
+  <<: *utilisateur_defaults
+  name: "Cuisine - Utilisateur Principal"
+radiateur_cuisine_mode_avant_absence:
+  <<: *mode_avant_absence_defaults
+  name: "Cuisine - Mode Avant Absence"
+
+# pour Salon
+radiateur_salon_utilisateur_principal:
+  <<: *utilisateur_defaults
+  name: "Salon - Utilisateur Principal"
+radiateur_salon_mode_avant_absence:
+  <<: *mode_avant_absence_defaults
+  name: "Salon - Mode Avant Absence"
+
+# pour SdB
+radiateur_sdb_utilisateur_principal:
+  <<: *utilisateur_defaults
+  name: "SdB - Utilisateur Principal"
+radiateur_sdb_mode_avant_absence:
+  <<: *mode_avant_absence_defaults
+  name: "SdB - Mode Avant Absence"
+
+# pour Michel
+radiateur_michel_utilisateur_principal:
+  <<: *utilisateur_defaults
+  name: "Michel - Utilisateur Principal"
+radiateur_michel_mode_avant_absence:
+  <<: *mode_avant_absence_defaults
+  name: "Michel - Mode Avant Absence"
+
+# pour Voitures
+radiateur_voitures_utilisateur_principal:
+  <<: *utilisateur_defaults
+  name: "Voitures - Utilisateur Principal"
+radiateur_voitures_mode_avant_absence:
+  <<: *mode_avant_absence_defaults
+  name: "Voitures - Mode Avant Absence"
+
+# pour Couloir
+radiateur_couloir_utilisateur_principal:
+  <<: *utilisateur_defaults
+  name: "Couloir - Utilisateur Principal"
+radiateur_couloir_mode_avant_absence:
+  <<: *mode_avant_absence_defaults
+  name: "Couloir - Mode Avant Absence"
+
+
+# pour Atelier
+radiateur_atelier_utilisateur_principal:
+  <<: *utilisateur_defaults
+  name: "Atelier - Utilisateur Principal"
+radiateur_atelier_mode_avant_absence:
+  <<: *mode_avant_absence_defaults
+  name: "Atelier - Mode Avant Absence"
+
+# pour Garçonnière
+radiateur_garconniere_utilisateur_principal:
+  <<: *utilisateur_defaults
+  name: "Garçonnière - Utilisateur Principal"
+radiateur_garconniere_mode_avant_absence:
+  <<: *mode_avant_absence_defaults
+  name: "Garçonnière - Mode Avant Absence"
+
+# pour Telmo
+radiateur_telmo_utilisateur_principal:
+  <<: *utilisateur_defaults
+  name: "Telmo - Utilisateur Principal"
+radiateur_telmo_mode_avant_absence:
+  <<: *mode_avant_absence_defaults
+  name: "Telmo - Mode Avant Absence"
+
+# pour SdB Etg
+radiateur_sdb_etg_utilisateur_principal:
+  <<: *utilisateur_defaults
+  name: "SdB Etg - Utilisateur Principal"
+radiateur_sdb_etg_mode_avant_absence:
+  <<: *mode_avant_absence_defaults
+  name: "SdB Etg - Mode Avant Absence"
+
+# pour Boîtes
+radiateur_boites_utilisateur_principal:
+  <<: *utilisateur_defaults
+  name: "Boîtes - Utilisateur Principal"
+radiateur_boites_mode_avant_absence:
+  <<: *mode_avant_absence_defaults
+  name: "Boîtes - Mode Avant Absence"
+
+# pour Couloir Etg
+radiateur_couloir_etg_utilisateur_principal:
+  <<: *utilisateur_defaults
+  name: "Couloir Etg - Utilisateur Principal"
+radiateur_couloir_etg_mode_avant_absence:
+  <<: *mode_avant_absence_defaults
+  name: "Couloir Etg - Mode Avant Absence"

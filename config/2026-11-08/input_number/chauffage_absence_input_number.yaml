@@ -1,0 +1,231 @@
+
+################################################################################
+### GESTION ABSENCE AUTO - CONSIGNES ET RÉDUCTIONS
+################################################################################
+
+
+## =============================== 
+## ========== au GLOBAL ==========
+
+chauffage_absence_auto_reduction_degrees:
+  name: "Réduction de température en absence"
+  min: 0
+  max: 5
+  step: 0.5
+  unit_of_measurement: "°C"
+  icon: mdi:thermometer-minus
+  initial: 2.0
+
+
+
+## ===============================
+## ========== PAR PIÈCE ==========
+
+
+## ========== ANCRES ==========
+
+consigne_defaults: &consigne_defaults
+  min: 0
+  max: 30
+  step: 0.5
+  unit_of_measurement: "°C"
+
+consigne_absence_defaults: &consigne_absence_defaults
+  <<: *consigne_defaults
+  icon: mdi:thermometer-chevron-down
+
+consigne_finale_defaults: &consigne_finale_defaults
+  <<: *consigne_defaults
+  icon: mdi:thermometer-check
+
+consigne_avant_absence_defaults: &consigne_avant_absence_defaults
+  <<: *consigne_defaults
+  icon: mdi:restore
+
+
+## ========== par PIÈCE ==========
+
+
+# pour Chambre Ss-Sol
+radiateur_chambre_sssol_consigne_absence:
+  <<: *consigne_absence_defaults
+  name: "Chambre Ss-Sol - Consigne Absence"
+
+radiateur_chambre_sssol_consigne_finale:
+  <<: *consigne_finale_defaults
+  name: "Chambre Ss-Sol - Consigne Finale"
+
+radiateur_chambre_sssol_consigne_avant_absence:
+  <<: *consigne_avant_absence_defaults
+  name: "Chambre Ss-Sol - Consigne Avant Absence"
+
+
+# pour Bureau
+radiateur_bureau_consigne_absence:
+  <<: *consigne_absence_defaults
+  name: "Bureau - Consigne Absence"
+
+radiateur_bureau_consigne_finale:
+  <<: *consigne_finale_defaults
+  name: "Bureau - Consigne Finale"
+
+radiateur_bureau_consigne_avant_absence:
+  <<: *consigne_avant_absence_defaults
+  name: "Bureau - Consigne Avant Absence"
+
+# pour Cuisine
+radiateur_cuisine_consigne_absence:
+  <<: *consigne_absence_defaults
+  name: "Cuisine - Consigne Absence"
+
+radiateur_cuisine_consigne_finale:
+  <<: *consigne_finale_defaults
+  name: "Cuisine - Consigne Finale"
+
+radiateur_cuisine_consigne_avant_absence:
+  <<: *consigne_avant_absence_defaults
+  name: "Cuisine - Consigne Avant Absence"
+
+# pour Salon
+radiateur_salon_consigne_absence:
+  <<: *consigne_absence_defaults
+  name: "Salon - Consigne Absence"
+
+radiateur_salon_consigne_finale:
+  <<: *consigne_finale_defaults
+  name: "Salon - Consigne Finale"
+
+radiateur_salon_consigne_avant_absence:
+  <<: *consigne_avant_absence_defaults
+  name: "Salon - Consigne Avant Absence"
+
+# pour SdB
+radiateur_sdb_consigne_absence:
+  <<: *consigne_absence_defaults
+  name: "SdB - Consigne Absence"
+
+radiateur_sdb_consigne_finale:
+  <<: *consigne_finale_defaults
+  name: "SdB - Consigne Finale"
+
+radiateur_sdb_consigne_avant_absence:
+  <<: *consigne_avant_absence_defaults
+  name: "SdB - Consigne Avant Absence"
+
+# pour Michel
+radiateur_michel_consigne_absence:
+  <<: *consigne_absence_defaults
+  name: "Michel - Consigne Absence"
+
+radiateur_michel_consigne_finale:
+  <<: *consigne_finale_defaults
+  name: "Michel - Consigne Finale"
+
+radiateur_michel_consigne_avant_absence:
+  <<: *consigne_avant_absence_defaults
+  name: "Michel - Consigne Avant Absence"
+
+# pour Voitures
+radiateur_voitures_consigne_absence:
+  <<: *consigne_absence_defaults
+  name: "Voitures - Consigne Absence"
+
+radiateur_voitures_consigne_finale:
+  <<: *consigne_finale_defaults
+  name: "Voitures - Consigne Finale"
+
+radiateur_voitures_consigne_avant_absence:
+  <<: *consigne_avant_absence_defaults
+  name: "Voitures - Consigne Avant Absence"
+
+# pour Couloir
+radiateur_couloir_consigne_absence:
+  <<: *consigne_absence_defaults
+  name: "Couloir - Consigne Absence"
+
+radiateur_couloir_consigne_finale:
+  <<: *consigne_finale_defaults
+  name: "Couloir - Consigne Finale"
+
+radiateur_couloir_consigne_avant_absence:
+  <<: *consigne_avant_absence_defaults
+  name: "Couloir - Consigne Avant Absence"
+
+
+# pour Atelier
+radiateur_atelier_consigne_absence:
+  <<: *consigne_absence_defaults
+  name: "Atelier - Consigne Absence"
+
+radiateur_atelier_consigne_finale:
+  <<: *consigne_finale_defaults
+  name: "Atelier - Consigne Finale"
+
+radiateur_atelier_consigne_avant_absence:
+  <<: *consigne_avant_absence_defaults
+  name: "Atelier - Consigne Avant Absence"
+
+# pour Garçonnière
+radiateur_garconniere_consigne_absence:
+  <<: *consigne_absence_defaults
+  name: "Garçonnière - Consigne Absence"
+
+radiateur_garconniere_consigne_finale:
+  <<: *consigne_finale_defaults
+  name: "Garçonnière - Consigne Finale"
+
+radiateur_garconniere_consigne_avant_absence:
+  <<: *consigne_avant_absence_defaults
+  name: "Garçonnière - Consigne Avant Absence"
+
+# pour Telmo
+radiateur_telmo_consigne_absence:
+  <<: *consigne_absence_defaults
+  name: "Telmo - Consigne Absence"
+
+radiateur_telmo_consigne_finale:
+  <<: *consigne_finale_defaults
+  name: "Telmo - Consigne Finale"
+
+radiateur_telmo_consigne_avant_absence:
+  <<: *consigne_avant_absence_defaults
+  name: "Telmo - Consigne Avant Absence"
+
+# pour SdB Etg
+radiateur_sdb_etg_consigne_absence:
+  <<: *consigne_absence_defaults
+  name: "SdB Etg - Consigne Absence"
+
+radiateur_sdb_etg_consigne_finale:
+  <<: *consigne_finale_defaults
+  name: "SdB Etg - Consigne Finale"
+
+radiateur_sdb_etg_consigne_avant_absence:
+  <<: *consigne_avant_absence_defaults
+  name: "SdB Etg - Consigne Avant Absence"
+
+# pour Boîtes
+radiateur_boites_consigne_absence:
+  <<: *consigne_absence_defaults
+  name: "Boîtes - Consigne Absence"
+
+radiateur_boites_consigne_finale:
+  <<: *consigne_finale_defaults
+  name: "Boîtes - Consigne Finale"
+
+radiateur_boites_consigne_avant_absence:
+  <<: *consigne_avant_absence_defaults
+  name: "Boîtes - Consigne Avant Absence"
+
+# pour Couloir Etg
+radiateur_couloir_etg_consigne_absence:
+  <<: *consigne_absence_defaults
+  name: "Couloir Etg - Consigne Absence"
+
+radiateur_couloir_etg_consigne_finale:
+  <<: *consigne_finale_defaults
+  name: "Couloir Etg - Consigne Finale"
+
+radiateur_couloir_etg_consigne_avant_absence:
+  <<: *consigne_avant_absence_defaults
+  name: "Couloir Etg - Consigne Avant Absence"

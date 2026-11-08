@@ -1,0 +1,163 @@
+
+################################################################################
+### GESTION TEMPO - ACTIVATION/DÉSACTIVATION
+################################################################################
+
+
+## =============================== 
+## ========== au GLOBAL ==========
+
+## input_boolean.tempo_global_actif
+tempo_global_actif:
+  name: "Gestion Tempo Globale"
+  icon: mdi:calendar-clock
+  initial: true
+
+
+
+## =============================== 
+## ========== par PIÈCE ==========
+
+
+# pour Chambre Ss-Sol
+radiateur_chambre_sssol_tempo_actif:
+  name: "Chambre Ss-Sol - Gestion Tempo"
+  icon: mdi:home-thermometer
+  initial: true
+radiateur_chambre_sssol_show_tempo_config:
+  name: "Chambre Ss-Sol - Afficher Config Tempo"
+  icon: mdi:tune
+  initial: false
+
+
+# pour Bureau
+radiateur_bureau_tempo_actif:
+  name: "Bureau - Gestion Tempo"
+  icon: mdi:home-thermometer
+  initial: true
+radiateur_bureau_show_tempo_config:
+  name: "Bureau - Afficher Config Tempo"
+  icon: mdi:tune
+  initial: false
+
+# pour Cuisine
+radiateur_cuisine_tempo_actif:
+  name: "Cuisine - Gestion Tempo"
+  icon: mdi:home-thermometer
+  initial: true
+radiateur_cuisine_show_tempo_config:
+  name: "Cuisine - Afficher Config Tempo"
+  icon: mdi:tune
+  initial: false
+
+# pour Salon
+radiateur_salon_tempo_actif:
+  name: "Salon - Gestion Tempo"
+  icon: mdi:home-thermometer
+  initial: true
+radiateur_salon_show_tempo_config:
+  name: "Salon - Afficher Config Tempo"
+  icon: mdi:tune
+  initial: false
+
+# pour SdB
+radiateur_sdb_tempo_actif:
+  name: "SdB - Gestion Tempo"
+  icon: mdi:home-thermometer
+  initial: true
+radiateur_sdb_show_tempo_config:
+  name: "SdB - Afficher Config Tempo"
+  icon: mdi:tune
+  initial: false
+
+# pour Michel
+radiateur_michel_tempo_actif:
+  name: "Michel - Gestion Tempo"
+  icon: mdi:home-thermometer
+  initial: true
+radiateur_michel_show_tempo_config:
+  name: "Michel - Afficher Config Tempo"
+  icon: mdi:tune
+  initial: false
+
+# pour Voitures
+radiateur_voitures_tempo_actif:
+  name: "Voitures - Gestion Tempo"
+  icon: mdi:home-thermometer
+  initial: true
+radiateur_voitures_show_tempo_config:
+  name: "Voitures - Afficher Config Tempo"
+  icon: mdi:tune
+  initial: false
+
+# pour Couloir
+radiateur_couloir_tempo_actif:
+  name: "Couloir - Gestion Tempo"
+  icon: mdi:home-thermometer
+  initial: true
+radiateur_couloir_show_tempo_config:
+  name: "Couloir - Afficher Config Tempo"
+  icon: mdi:tune
+  initial: false
+
+
+# pour Atelier
+radiateur_atelier_tempo_actif:
+  name: "Atelier - Gestion Tempo"
+  icon: mdi:home-thermometer
+  initial: true
+radiateur_atelier_show_tempo_config:
+  name: "Atelier - Afficher Config Tempo"
+  icon: mdi:tune
+  initial: false
+
+# pour Garçonnière
+radiateur_garconniere_tempo_actif:
+  name: "Garçonnière - Gestion Tempo"
+  icon: mdi:home-thermometer
+  initial: true
+
+radiateur_garconniere_show_tempo_config:
+  name: "Garçonnière - Afficher Config Tempo"
+  icon: mdi:tune
+  initial: false
+
+# pour Telmo
+radiateur_telmo_tempo_actif:
+  name: "Telmo - Gestion Tempo"
+  icon: mdi:home-thermometer
+  initial: true
+radiateur_telmo_show_tempo_config:
+  name: "Telmo - Afficher Config Tempo"
+  icon: mdi:tune
+  initial: false
+
+# pour SdB Etg
+radiateur_sdb_etg_tempo_actif:
+  name: "SdB Etg - Gestion Tempo"
+  icon: mdi:home-thermometer
+  initial: true
+radiateur_sdb_etg_show_tempo_config:
+  name: "SdB Etg - Afficher Config Tempo"
+  icon: mdi:tune
+  initial: false
+
+# pour Boîtes
+radiateur_boites_tempo_actif:
+  name: "Boîtes - Gestion Tempo"
+  icon: mdi:home-thermometer
+  initial: true
+radiateur_boites_show_tempo_config:
+  name: "Boîtes - Afficher Config Tempo"
+  icon: mdi:tune
+  initial: false
+
+# pour Couloir Etg
+radiateur_couloir_etg_tempo_actif:
+  name: "Couloir Etg - Gestion Tempo"
+  icon: mdi:home-thermometer
+  initial: true
+radiateur_couloir_etg_show_tempo_config:
+  name: "Couloir Etg - Afficher Config Tempo"
+  icon: mdi:tune
+  initial: false

@@ -1,0 +1,369 @@
+
+###########################################################################################################################
+### Définition des Helpers BINARY_SENSOR pour le Blueprint Chauffage by C. et le suivi de consommation :
+### pour faire correspondre un binary_sensor à l'état de effectif (chauffe en cours, ou chauffe stoppée)
+### **** Attention : config différente si switch via relai ou si radiateur piloté par radio et donc thermostat/climate ****
+###########################################################################################################################
+# https://www.home-assistant.io/docs/energy/faq
+
+
+
+## ========== par PIÈCE ==========
+
+- binary_sensor:
+
+
+## Pour les radiateurs pilotés par SWITCH INVERSE
+
+
+  # pour Chambre Ss-Sol : binary_sensor.radiateur_chambre_sssol_etat
+  - default_entity_id: binary_sensor.radiateur_chambre_sssol_etat
+    unique_id: radiateur_chambre_sssol_etat
+    name: Radiateur Chambre Ss-Sol Etat
+    state: >-
+      {{ is_state('switch.radiateur_inv_chambre_sssol', 'off') }}
+    icon: >-
+      {{ 'mdi:thermostat'
+        if is_state('switch.radiateur_inv_chambre_sssol', 'off')
+        else 'mdi:thermostat-off' }}
+
+
+  # pour Bureau : binary_sensor.radiateur_bureau_etat
+  - default_entity_id: binary_sensor.radiateur_bureau_etat
+    unique_id: radiateur_bureau_etat
+    name: Radiateur Bureau Etat
+    state: >-
+      {{ is_state('switch.radiateur_inv_bureau', 'off') }}
+    icon: >-
+      {{ 'mdi:thermostat'
+        if is_state('switch.radiateur_inv_bureau', 'off')
+        else 'mdi:thermostat-off' }}
+
+  # pour Cuisine : voir plus bas ceux en Climate
+
+  # pour Salon : voir plus bas ceux en Climate
+
+  # pour SdB : binary_sensor.radiateur_sdb_etat
+  - default_entity_id: binary_sensor.radiateur_sdb_etat
+    unique_id: radiateur_sdb_etat
+    name: Radiateur SdB Etat
+    state: >-
+      {{ is_state('switch.radiateur_inv_sdb', 'off') }}
+    icon: >-
+      {{ 'mdi:thermostat'
+        if is_state('switch.radiateur_inv_sdb', 'off')
+        else 'mdi:thermostat-off' }}
+
+  # pour Michel : binary_sensor.radiateur_michel_etat
+  - default_entity_id: binary_sensor.radiateur_michel_etat
+    unique_id: radiateur_michel_etat
+    name: Radiateur Michel Etat
+    state: >-
+      {{ is_state('switch.radiateur_inv_michel', 'off') }}
+    icon: >-
+      {{ 'mdi:thermostat'
+        if is_state('switch.radiateur_inv_michel', 'off')
+        else 'mdi:thermostat-off' }}
+
+  # pour Voitures : binary_sensor.radiateur_voitures_etat
+  - default_entity_id: binary_sensor.radiateur_voitures_etat
+    unique_id: radiateur_voitures_etat
+    name: Radiateur Voitures Etat
+    state: >-
+      {{ is_state('switch.radiateur_inv_voitures', 'off') }}
+    icon: >-
+      {{ 'mdi:thermostat'
+        if is_state('switch.radiateur_inv_voitures', 'off')
+        else 'mdi:thermostat-off' }}
+
+  # pour Salon : voir plus bas ceux en Climate
+
+
+  # pour Atelier : binary_sensor.radiateur_atelier_etat
+  - default_entity_id: binary_sensor.radiateur_atelier_etat
+    unique_id: radiateur_atelier_etat
+    name: Radiateur Atelier Etat
+    state: >-
+      {{ is_state('switch.radiateur_inv_atelier', 'off') }}
+    icon: >-
+      {{ 'mdi:thermostat'
+        if is_state('switch.radiateur_inv_atelier', 'off')
+        else 'mdi:thermostat-off' }}
+
+  # pour Garçonnière : binary_sensor.radiateur_garconniere_etat
+  - default_entity_id: binary_sensor.radiateur_garconniere_etat
+    unique_id: radiateur_garconniere_etat
+    name: Radiateur Garçonnière Etat
+    state: >-
+      {{ is_state('switch.radiateur_inv_garconniere', 'off') }}
+    icon: >-
+      {{ 'mdi:thermostat'
+        if is_state('switch.radiateur_inv_garconniere', 'off')
+        else 'mdi:thermostat-off' }}
+
+  # pour Telmo : binary_sensor.radiateur_telmo_etat
+  - default_entity_id: binary_sensor.radiateur_telmo_etat
+    unique_id: radiateur_telmo_etat
+    name: Radiateur Telmo Etat
+    state: >-
+      {{ is_state('switch.radiateur_inv_telmo', 'off') }}
+    icon: >-
+      {{ 'mdi:thermostat'
+        if is_state('switch.radiateur_inv_telmo', 'off')
+        else 'mdi:thermostat-off' }}
+
+  # pour SdB Etg : binary_sensor.radiateur_sdb_etg_etat
+  - default_entity_id: binary_sensor.radiateur_sdb_etg_etat
+    unique_id: radiateur_sdb_etg_etat
+    name: Radiateur SdB Etg Etat
+    state: >-
+      {{ is_state('switch.radiateur_inv_sdb_etg', 'off') }}
+    icon: >-
+      {{ 'mdi:thermostat'
+        if is_state('switch.radiateur_inv_sdb_etg', 'off')
+        else 'mdi:thermostat-off' }}
+
+  # pour Boîtes : binary_sensor.radiateur_boites_etat
+  - default_entity_id: binary_sensor.radiateur_boites_etat
+    unique_id: radiateur_boites_etat
+    name: Radiateur Boîtes Etat
+    state: >-
+      {{ is_state('switch.radiateur_inv_boites', 'off') }}
+    icon: >-
+      {{ 'mdi:thermostat'
+        if is_state('switch.radiateur_inv_boites', 'off')
+        else 'mdi:thermostat-off' }}
+
+  # pour Couloir Etg : binary_sensor.radiateur_couloir_etg_etat
+  - default_entity_id: binary_sensor.radiateur_couloir_etg_etat
+    unique_id: radiateur_couloir_etg_etat
+    name: Radiateur Couloir Etg Etat
+    state: >-
+      {{ is_state('switch.radiateur_inv_couloir_etg', 'off') }}
+    icon: >-
+      {{ 'mdi:thermostat'
+        if is_state('switch.radiateur_inv_couloir_etg', 'off')
+        else 'mdi:thermostat-off' }}
+
+
+
+
+## Pour les radiateurs pilotés par CLIMATE / THERMOSTAT (notamment ceux en radio X2D)
+
+
+  # pour Cuisine : binary_sensor.radiateur_cuisine_etat
+  - default_entity_id: binary_sensor.radiateur_cuisine_etat
+    unique_id: radiateur_cuisine_etat
+    name: Radiateur Cuisine Etat
+    state: >-
+      {{ is_state_attr('climate.x2d_elec_thermostat_a6_cuisine', 'preset_mode', 'Comfort') }}
+    icon: >-
+      {{ 'mdi:thermostat' if is_state_attr('climate.x2d_elec_thermostat_a6_cuisine', 'preset_mode', 'Comfort')
+        else 'mdi:thermostat-off' }}
+
+
+  # pour Salon : binary_sensor.radiateur_salon_etat
+  - default_entity_id: binary_sensor.radiateur_salon_etat
+    unique_id: radiateur_salon_etat
+    name: Radiateur Salon Etat
+    state: >-
+      {{ is_state_attr('climate.x2d_elec_thermostat_a2_salon_est', 'preset_mode', 'Comfort') }}
+    icon: >-
+      {{ 'mdi:thermostat' if is_state_attr('climate.x2d_elec_thermostat_a2_salon_est', 'preset_mode', 'Comfort')
+        else 'mdi:thermostat-off' }}
+
+
+  # pour Couloir : binary_sensor.radiateur_couloir_etat
+  - default_entity_id: binary_sensor.radiateur_couloir_etat
+    unique_id: radiateur_couloir_etat
+    name: Radiateur Couloir Etat
+    state: >-
+      {{ is_state_attr('climate.x2d_elec_thermostat_a5_couloir', 'preset_mode', 'Comfort') }}
+    icon: >-
+      {{ 'mdi:thermostat' if is_state_attr('climate.x2d_elec_thermostat_a5_couloir', 'preset_mode', 'Comfort')
+        else 'mdi:thermostat-off' }}
+
+
+
+
+
+
+
+- sensor:
+
+
+##################################################################################
+### Définition des Helpers SENSOR pour le Blueprint Chauffage by C. : compteurs de kWh
+### **** penser à changer la puissance de chauffe pour chacune des pièces ****
+##################################################################################
+# https://www.home-assistant.io/docs/energy/faq
+
+  # pour Chauffage TOTAL : sensor.chauffage_total_kwh
+  - name: "Chauffage Total kWh"
+    unique_id: chauffage_total_kwh
+    unit_of_measurement: "kWh"
+    device_class: energy
+    state_class: total_increasing
+    icon: mdi:flash
+    state: >-
+      {{
+        states('sensor.radiateur_chambre_sssol_kwh_total') | float(0) +
+        states('sensor.radiateur_bureau_kwh_total') | float(0) +
+        states('sensor.radiateur_cuisine_kwh_total') | float(0) +
+        states('sensor.radiateur_salon_kwh_total') | float(0) +
+        states('sensor.radiateur_sdb_kwh_total') | float(0) +
+        states('sensor.radiateur_michel_kwh_total') | float(0) +
+        states('sensor.radiateur_voitures_kwh_total') | float(0) +
+        states('sensor.radiateur_couloir_kwh_total') | float(0) +
+        states('sensor.radiateur_atelier_kwh_total') | float(0) +
+        states('sensor.radiateur_garconniere_kwh_total') | float(0) +
+        states('sensor.radiateur_telmo_kwh_total') | float(0) +
+        states('sensor.radiateur_sdb_etg_kwh_total') | float(0) +
+        states('sensor.radiateur_boites_kwh_total') | float(0) +
+        states('sensor.radiateur_couloir_etg_kwh_total') | float(0)
+      }}
+
+
+
+
+#################################################################
+### PUISSANCE RADIATEURS (W) – BASE POUR ENERGY
+#################################################################
+
+## ========== par PIÈCE ==========
+
+
+  # pour Chambre Ss-Sol : sensor.radiateur_chambre_sssol_puissance_w
+  - name: "Radiateur Chambre Ss-Sol Puissance W"
+    unique_id: radiateur_chambre_sssol_puissance_w
+    unit_of_measurement: "W"
+    device_class: power
+    state_class: measurement
+    state: "{{ 1500 if is_state('binary_sensor.radiateur_chambre_sssol_etat', 'on') else 0 }}"
+
+
+  # pour Bureau : sensor.radiateur_bureau_puissance_w
+  - name: "Radiateur Bureau Puissance W"
+    unique_id: radiateur_bureau_puissance_w
+    unit_of_measurement: "W"
+    device_class: power
+    state_class: measurement
+    state: "{{ 750 if is_state('binary_sensor.radiateur_bureau_etat', 'on') else 0 }}"
+
+  # pour Cuisine : sensor.radiateur_cuisine_puissance_w
+  - name: "Radiateur Cuisine Puissance W"
+    unique_id: radiateur_cuisine_puissance_w
+    unit_of_measurement: "W"
+    device_class: power
+    state_class: measurement
+    state: "{{ 1500 if is_state('binary_sensor.radiateur_cuisine_etat', 'on') else 0 }}"
+
+  # pour Salon : sensor.radiateur_salon_puissance_w
+  - name: "Radiateur Salon Puissance W"
+    unique_id: radiateur_salon_puissance_w
+    unit_of_measurement: "W"
+    device_class: power
+    state_class: measurement
+    state: "{{ 3000 if is_state('binary_sensor.radiateur_salon_etat', 'on') else 0 }}"
+
+  # pour SdB : sensor.radiateur_sdb_puissance_w
+  - name: "Radiateur SdB Puissance W"
+    unique_id: radiateur_sdb_puissance_w
+    unit_of_measurement: "W"
+    device_class: power
+    state_class: measurement
+    state: "{{ 1250 if is_state('binary_sensor.radiateur_sdb_etat', 'on') else 0 }}"
+
+  # pour Michel : sensor.radiateur_michel_puissance_w
+  - name: "Radiateur Michel Puissance W"
+    unique_id: radiateur_michel_puissance_w
+    unit_of_measurement: "W"
+    device_class: power
+    state_class: measurement
+    state: "{{ 1250 if is_state('binary_sensor.radiateur_michel_etat', 'on') else 0 }}"
+
+  # pour Voitures : sensor.radiateur_voitures_puissance_w
+  - name: "Radiateur Voitures Puissance W"
+    unique_id: radiateur_voitures_puissance_w
+    unit_of_measurement: "W"
+    device_class: power
+    state_class: measurement
+    state: "{{ 1000 if is_state('binary_sensor.radiateur_voitures_etat', 'on') else 0 }}"
+
+  # pour Couloir : sensor.radiateur_couloir_puissance_w
+  - name: "Radiateur Couloir Puissance W"
+    unique_id: radiateur_couloir_puissance_w
+    unit_of_measurement: "W"
+    device_class: power
+    state_class: measurement
+    state: "{{ 1500 if is_state('binary_sensor.radiateur_couloir_etat', 'on') else 0 }}"
+
+
+  # pour Atelier : sensor.radiateur_atelier_puissance_w
+  - name: "Radiateur Atelier Puissance W"
+    unique_id: radiateur_atelier_puissance_w
+    unit_of_measurement: "W"
+    device_class: power
+    state_class: measurement
+    state: "{{ 1600 if is_state('binary_sensor.radiateur_atelier_etat', 'on') else 0 }}"
+
+  # pour Garçonnière : sensor.radiateur_garconniere_puissance_w
+  - name: "Radiateur Garçonnière Puissance W"
+    unique_id: radiateur_garconniere_puissance_w
+    unit_of_measurement: "W"
+    device_class: power
+    state_class: measurement
+    state: "{{ 1000 if is_state('binary_sensor.radiateur_garconniere_etat', 'on') else 0 }}"
+
+  # pour Telmo : sensor.radiateur_telmo_puissance_w
+  - name: "Radiateur Telmo Puissance W"
+    unique_id: radiateur_telmo_puissance_w
+    unit_of_measurement: "W"
+    device_class: power
+    state_class: measurement
+    state: "{{ 2000 if is_state('binary_sensor.radiateur_telmo_etat', 'on') else 0 }}"
+
+  # pour SdB Etg : sensor.radiateur_sdb_etg_puissance_w
+  - name: "Radiateur SdB Etg Puissance W"
+    unique_id: radiateur_sdb_etg_puissance_w
+    unit_of_measurement: "W"
+    device_class: power
+    state_class: measurement
+    state: "{{ 1500 if is_state('binary_sensor.radiateur_sdb_etg_etat', 'on') else 0 }}"
+
+  # pour Boîtes : sensor.radiateur_boites_puissance_w
+  - name: "Radiateur Boîtes Puissance W"
+    unique_id: radiateur_boites_puissance_w
+    unit_of_measurement: "W"
+    device_class: power
+    state_class: measurement
+    state: "{{ 1000 if is_state('binary_sensor.radiateur_boites_etat', 'on') else 0 }}"
+
+  # pour Couloir Etg : sensor.radiateur_couloir_etg_puissance_w
+  - name: "Radiateur Couloir Etg Puissance W"
+    unique_id: radiateur_couloir_etg_puissance_w
+    unit_of_measurement: "W"
+    device_class: power
+    state_class: measurement
+    state: "{{ 1000 if is_state('binary_sensor.radiateur_couloir_etg_etat', 'on') else 0 }}"
+
+
+
+
+#####################################################################################################################
+### Sensor viruel pour le suivi sur le tableau Energie de la consommation de l'onduleur informatique SEUL (100W 24/7)
+
+# - sensor:
+
+  # pour l'onduleur SEUL : sensor.onduleur_kwh_total
+  - name: Onduleur seul kWh consommés
+    # default_entity_id: sensor.onduleur_kwh_total
+    unique_id: onduleur_kwh_total  # pour pouvoir gérer les paramètres via l'UI, dont le choix de la pièce
+    device_class: energy
+    state_class: total_increasing
+    unit_of_measurement: 'kWh'
+    state: >
+      {{
+        (now() - '2025-11-24 00:00:00'|as_datetime|as_local).total_seconds() / 3600 * 0.1
+      }}
+      

@@ -1,0 +1,142 @@
+# yaml-language-server: $schema=null
+
+################################################################################################
+### Définition des Helpers SENSOR pour le Blueprint Chauffage by C. : Compteurs temps de chauffe
+### Calcul des temps de chauffe totaux (pour calcul via template d'un compteur de kWh)
+### **** PEUT NECESSITER DE REBOOTER POUR APPLIQUER LES CHANGEMENTS ****
+### **** tous avec la même config, peu importe le type de radiateur piloté ****
+################################################################################
+# https://www.home-assistant.io/docs/energy/faq
+
+
+
+## ========== par PIÈCE ==========
+
+
+# pour Chambre Ss-Sol : sensor.radiateur_chambre_sssol_kwh_total
+- platform: integration
+  name: "Radiateur Chambre Ss-Sol kWh Total"
+  unique_id: radiateur_chambre_sssol_kwh_total
+  source: sensor.radiateur_chambre_sssol_puissance_w
+  unit_prefix: k
+  round: 3
+  method: left
+  
+
+# pour Bureau : sensor.radiateur_bureau_kwh_total
+- platform: integration
+  name: "Radiateur Bureau kWh Total"
+  unique_id: radiateur_bureau_kwh_total
+  source: sensor.radiateur_bureau_puissance_w
+  unit_prefix: k
+  round: 3
+  method: left
+
+# pour Cuisine : sensor.radiateur_cuisine_kwh_total
+- platform: integration
+  name: "Radiateur Cuisine kWh Total"
+  unique_id: radiateur_cuisine_kwh_total
+  source: sensor.radiateur_cuisine_puissance_w
+  unit_prefix: k
+  round: 3
+  method: left
+
+# pour Salon : sensor.radiateur_salon_kwh_total
+- platform: integration
+  name: "Radiateur Salon kWh Total"
+  unique_id: radiateur_salon_kwh_total
+  source: sensor.radiateur_salon_puissance_w
+  unit_prefix: k
+  round: 3
+  method: left
+
+# pour SdB : sensor.radiateur_sdb_kwh_total
+- platform: integration
+  name: "Radiateur SdB kWh Total"
+  unique_id: radiateur_sdb_kwh_total
+  source: sensor.radiateur_sdb_puissance_w
+  unit_prefix: k
+  round: 3
+  method: left
+
+# pour Michel : sensor.radiateur_michel_kwh_total
+- platform: integration
+  name: "Radiateur Michel kWh Total"
+  unique_id: radiateur_michel_kwh_total
+  source: sensor.radiateur_michel_puissance_w
+  unit_prefix: k
+  round: 3
+  method: left
+
+# pour Voitures : sensor.radiateur_voitures_kwh_total
+- platform: integration
+  name: "Radiateur Voitures kWh Total"
+  unique_id: radiateur_voitures_kwh_total
+  source: sensor.radiateur_voitures_puissance_w
+  unit_prefix: k
+  round: 3
+  method: left
+
+# pour Couloir : sensor.radiateur_couloir_kwh_total
+- platform: integration
+  name: "Radiateur Couloir kWh Total"
+  unique_id: radiateur_couloir_kwh_total
+  source: sensor.radiateur_couloir_puissance_w
+  unit_prefix: k
+  round: 3
+  method: left
+
+
+# pour Atelier : sensor.radiateur_atelier_kwh_total
+- platform: integration
+  name: "Radiateur Atelier kWh Total"
+  unique_id: radiateur_atelier_kwh_total
+  source: sensor.radiateur_atelier_puissance_w
+  unit_prefix: k
+  round: 3
+  method: left
+
+# pour Garçonnière : sensor.radiateur_garconniere_kwh_total
+- platform: integration
+  name: "Radiateur Garçonnière kWh Total"
+  unique_id: radiateur_garconniere_kwh_total
+  source: sensor.radiateur_garconniere_puissance_w
+  unit_prefix: k
+  round: 3
+  method: left
+
+# pour Telmo : sensor.radiateur_telmo_kwh_total
+- platform: integration
+  name: "Radiateur Telmo kWh Total"
+  unique_id: radiateur_telmo_kwh_total
+  source: sensor.radiateur_telmo_puissance_w
+  unit_prefix: k
+  round: 3
+  method: left
+
+# pour SdB Etg : sensor.radiateur_sdb_etg_kwh_total
+- platform: integration
+  name: "Radiateur SdB Etg kWh Total"
+  unique_id: radiateur_sdb_etg_kwh_total
+  source: sensor.radiateur_sdb_etg_puissance_w
+  unit_prefix: k
+  round: 3
+  method: left
+
+# pour Boîtes : sensor.radiateur_boites_kwh_total
+- platform: integration
+  name: "Radiateur Boîtes kWh Total"
+  unique_id: radiateur_boites_kwh_total
+  source: sensor.radiateur_boites_puissance_w
+  unit_prefix: k
+  round: 3
+  method: left
+
+# pour Couloir Etg : sensor.radiateur_couloir_etg_kwh_total
+- platform: integration
+  name: "Radiateur Couloir Etg kWh Total"
+  unique_id: radiateur_couloir_etg_kwh_total
+  source: sensor.radiateur_couloir_etg_puissance_w
+  unit_prefix: k
+  round: 3
+  method: left

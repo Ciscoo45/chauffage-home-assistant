@@ -1,0 +1,108 @@
+
+######################################
+### CONFIGURATION GESTION ABSENCE AUTO
+######################################
+### Ce fichier centralise la configuration des utilisateurs
+### pour la gestion automatique de l'absence
+######################################
+
+
+## =============================== 
+## ========== au GLOBAL ==========
+
+chauffage_absence_auto:
+
+  input_select:
+
+    # Liste globale des utilisateurs (jusqu'à 5 utilisateurs)
+    chauffage_absence_auto_liste_utilisateurs:
+      name: "Liste des utilisateurs pour Absence Auto"
+      options:
+        - Aucun
+        - Michel
+        - François
+      initial: Aucun
+      icon: mdi:account-group
+
+  input_text:
+
+    # Stockage des IDs des utilisateurs (séparés par virgule)
+    # Exemple : "michel,francois,paul,marie,julie"
+    chauffage_absence_auto_utilisateurs_ids:
+      name: "IDs des utilisateurs (séparés par virgule)"
+      initial: "michel,francois"
+      icon: mdi:account-multiple
+      max: 255
+
+    # MODIFIÉ : Stockage des entités presence_effective (au lieu de person.x ci-dessus, au choix - le blueprint accepte les deux)
+    chauffage_absence_auto_utilisateurs_entities:
+      name: "Entités presence_effective des utilisateurs (séparées par virgule)"
+      initial: "binary_sensor.michel_presence_effective,binary_sensor.francois_presence_effective"
+      icon: mdi:account-details
+      max: 255
+
+    # Nom du groupe de présence
+    chauffage_absence_auto_group_presence:
+      name: "Groupe de détection de présence"
+      initial: "group.mell_utilisateurs"
+      icon: mdi:home-group
+
+# ========================================
+# INSTRUCTIONS D'UTILISATION
+# ========================================
+# 
+# Pour configurer vos utilisateurs :
+# 
+# 1. Modifiez `chauffage_absence_auto_liste_utilisateurs` :
+#    - Remplacez Utilisateur1, Utilisateur2, etc. par vos vrais noms
+#    - Exemple : Aucun, Michel, François, Paul
+# 
+# 2. Modifiez `chauffage_absence_auto_utilisateurs_ids` :
+#    - Mettez les IDs en minuscules sans accents
+#    - Exemple : "michel,francois,paul"
+# 
+# 3.  Modifiez `chauffage_absence_auto_utilisateurs_entities` :
+#    - Mettez les entités person correspondantes, avec une virgule au début
+# #   - Exemple : "person.michel,person.francois,person.paul"
+#    - Exemple : "binary_sensor.michel_presence_effective,binary_sensor.francois_presence_effective"  
+# 
+# 4. Modifiez `chauffage_absence_auto_group_presence` :
+#    - Nom de votre groupe de présence (doit déjà exister dans groups.yaml)
+#    - Exemple : "group.mell_utilisateurs"
+# 
+# 5. Rechargez : Outils dev → YAML → Recharger tout
+# 
+# ========================================
+# EXEMPLE CONCRET (Michel + François)
+# ========================================
+# 
+# chauffage_absence_auto:
+#
+#   input_select:
+#
+#     chauffage_absence_auto_liste_utilisateurs:
+#       name: "Liste des utilisateurs pour Absence Auto"
+#       options:
+#         - Aucun
+#         - Michel
+#         - François
+#
+#   input_text:
+#
+#     chauffage_absence_auto_utilisateurs_ids:
+#       name: "IDs des utilisateurs (séparés par virgule)"
+#       initial: "michel,francois"
+#
+#   #  chauffage_absence_auto_utilisateurs_entities:
+#   #    name: "Entités person des utilisateurs (séparées par virgule)"
+#   #    initial: "person.michel,person.francois"
+#   #  MODIFIÉ : Stockage des entités presence_effective (au lieu de person) :
+#       chauffage_absence_auto_utilisateurs_entities:
+#       name: "Entités presence_effective des utilisateurs (séparées par virgule)"
+#       initial: "binary_sensor.michel_presence_effective,binary_sensor.francois_presence_effective"
+#
+#     chauffage_absence_auto_group_presence:
+#       name: "Groupe de détection de présence"
+#       initial: "group.mell_utilisateurs"
+# 
+# ========================================

@@ -1,0 +1,91 @@
+
+### ========================================
+### TIMERS BOOST PAR PIÈCE
+### ========================================
+### Helpers timer pour le Blueprint Chauffage Boost
+
+
+
+## ========== ANCRES ==========
+
+boost_timer_defaults: &boost_timer_defaults
+  duration: "00:00:00"  # Durée par défaut (0 = désarmé au démarrage)
+  restore: true         # Restaure l'état après redémarrage
+  icon: mdi:timer-sand
+
+
+
+## ==========  PAR PIÈCE ==========
+
+
+# pour Chambre Ss-Sol
+boost_chambre_sssol:
+  <<: *boost_timer_defaults
+  name: "Timer Boost Chambre Ss-Sol"
+
+
+# pour Bureau
+boost_bureau:
+  <<: *boost_timer_defaults
+  name: "Timer Boost Bureau"
+
+# pour Cuisine
+boost_cuisine:
+  <<: *boost_timer_defaults
+  name: "Timer Boost Cuisine"
+
+# pour Salon
+boost_salon:
+  <<: *boost_timer_defaults
+  name: "Timer Boost Salon"
+
+# pour SdB
+boost_sdb:
+  <<: *boost_timer_defaults
+  name: "Timer Boost SdB"
+
+# pour Michel
+boost_michel:
+  <<: *boost_timer_defaults
+  name: "Timer Boost Michel"
+
+# pour Voitures
+boost_voitures:
+  <<: *boost_timer_defaults
+  name: "Timer Boost Voitures"
+
+# pour Couloir
+boost_couloir:
+  <<: *boost_timer_defaults
+  name: "Timer Boost Couloir"
+
+
+# pour Atelier
+boost_atelier:
+  <<: *boost_timer_defaults
+  name: "Timer Boost Atelier"
+
+# pour Garçonnière
+boost_garconniere:
+  <<: *boost_timer_defaults
+  name: "Timer Boost Garçonnière"
+
+# pour Telmo
+boost_telmo:
+  <<: *boost_timer_defaults
+  name: "Timer Boost Telmo"
+
+# pour SdB Etg
+boost_sdb_etg:
+  <<: *boost_timer_defaults
+  name: "Timer Boost SdB Etg"
+
+# pour Boîtes
+boost_boites:
+  <<: *boost_timer_defaults
+  name: "Timer Boost Boîtes"
+
+# pour Couloir Etg
+boost_couloir_etg:
+  <<: *boost_timer_defaults
+  name: "Timer Boost Couloir Etg"

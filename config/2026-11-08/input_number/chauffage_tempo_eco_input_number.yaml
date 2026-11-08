@@ -1,0 +1,191 @@
+
+################################################################################
+### GESTION TEMPO - CONSIGNES ET RÉDUCTIONS
+################################################################################
+
+
+## ========== ANCRES ==========
+
+tempo_consigne_calculee_defaults: &tempo_consigne_calculee_defaults
+  min: 0
+  max: 30
+  step: 0.5
+  unit_of_measurement: "°C"
+  icon: mdi:target
+
+tempo_reduction_blanc_defaults: &tempo_reduction_blanc_defaults
+  min: 0
+  max: 3
+  step: 0.5
+  unit_of_measurement: "°C"
+  icon: mdi:thermometer-minus
+  # initial: 0.5
+
+tempo_reduction_rouge_defaults: &tempo_reduction_rouge_defaults
+  min: 0
+  max: 15
+  step: 0.5
+  unit_of_measurement: "°C"
+  icon: mdi:thermometer-alert
+  # initial: 2.0
+
+
+
+## ========== par PIÈCE ==========
+
+
+# pour Chambre Ss-Sol
+radiateur_chambre_sssol_consigne_calculee:
+  <<: *tempo_consigne_calculee_defaults
+  name: "Chambre Ss-Sol - Consigne Calculée Tempo Eco"
+radiateur_chambre_sssol_reduction_tempo_blanc:
+  <<: *tempo_reduction_blanc_defaults
+  name: "Chambre Ss-Sol - Réduction Tempo Blanc"
+radiateur_chambre_sssol_reduction_tempo_rouge:
+  <<: *tempo_reduction_rouge_defaults
+  name: "Chambre Ss-Sol - Réduction Tempo Rouge"
+
+
+# pour Bureau
+radiateur_bureau_consigne_calculee:
+  <<: *tempo_consigne_calculee_defaults
+  name: "Bureau - Consigne Calculée Tempo Eco"
+radiateur_bureau_reduction_tempo_blanc:
+  <<: *tempo_reduction_blanc_defaults
+  name: "Bureau - Réduction Tempo Blanc"
+radiateur_bureau_reduction_tempo_rouge:
+  <<: *tempo_reduction_rouge_defaults
+  name: "Bureau - Réduction Tempo Rouge"
+
+# pour Cuisine
+radiateur_cuisine_consigne_calculee:
+  <<: *tempo_consigne_calculee_defaults
+  name: "Cuisine - Consigne Calculée Tempo Eco"
+radiateur_cuisine_reduction_tempo_blanc:
+  <<: *tempo_reduction_blanc_defaults
+  name: "Cuisine - Réduction Tempo Blanc"
+radiateur_cuisine_reduction_tempo_rouge:
+  <<: *tempo_reduction_rouge_defaults
+  name: "Cuisine - Réduction Tempo Rouge"
+
+# pour Salon
+radiateur_salon_consigne_calculee:
+  <<: *tempo_consigne_calculee_defaults
+  name: "Salon - Consigne Calculée Tempo Eco"
+radiateur_salon_reduction_tempo_blanc:
+  <<: *tempo_reduction_blanc_defaults
+  name: "Salon - Réduction Tempo Blanc"
+radiateur_salon_reduction_tempo_rouge:
+  <<: *tempo_reduction_rouge_defaults
+  name: "Salon - Réduction Tempo Rouge"
+
+# pour SdB
+radiateur_sdb_consigne_calculee:
+  <<: *tempo_consigne_calculee_defaults
+  name: "SdB - Consigne Calculée Tempo Eco"
+radiateur_sdb_reduction_tempo_blanc:
+  <<: *tempo_reduction_blanc_defaults
+  name: "SdB - Réduction Tempo Blanc"
+radiateur_sdb_reduction_tempo_rouge:
+  <<: *tempo_reduction_rouge_defaults
+  name: "SdB - Réduction Tempo Rouge"
+
+# pour Michel
+radiateur_michel_consigne_calculee:
+  <<: *tempo_consigne_calculee_defaults
+  name: "Michel - Consigne Calculée Tempo Eco"
+radiateur_michel_reduction_tempo_blanc:
+  <<: *tempo_reduction_blanc_defaults
+  name: "Michel - Réduction Tempo Blanc"
+radiateur_michel_reduction_tempo_rouge:
+  <<: *tempo_reduction_rouge_defaults
+  name: "Michel - Réduction Tempo Rouge"
+
+# pour Voitures
+radiateur_voitures_consigne_calculee:
+  <<: *tempo_consigne_calculee_defaults
+  name: "Voitures - Consigne Calculée Tempo Eco"
+radiateur_voitures_reduction_tempo_blanc:
+  <<: *tempo_reduction_blanc_defaults
+  name: "Voitures - Réduction Tempo Blanc"
+radiateur_voitures_reduction_tempo_rouge:
+  <<: *tempo_reduction_rouge_defaults
+  name: "Voitures - Réduction Tempo Rouge"
+
+# pour Couloir
+radiateur_couloir_consigne_calculee:
+  <<: *tempo_consigne_calculee_defaults
+  name: "Couloir - Consigne Calculée Tempo Eco"
+radiateur_couloir_reduction_tempo_blanc:
+  <<: *tempo_reduction_blanc_defaults
+  name: "Couloir - Réduction Tempo Blanc"
+radiateur_couloir_reduction_tempo_rouge:
+  <<: *tempo_reduction_rouge_defaults
+  name: "Couloir - Réduction Tempo Rouge"
+
+
+# pour Atelier
+radiateur_atelier_consigne_calculee:
+  <<: *tempo_consigne_calculee_defaults
+  name: "Atelier - Consigne Calculée Tempo Eco"
+radiateur_atelier_reduction_tempo_blanc:
+  <<: *tempo_reduction_blanc_defaults
+  name: "Atelier - Réduction Tempo Blanc"
+radiateur_atelier_reduction_tempo_rouge:
+  <<: *tempo_reduction_rouge_defaults
+  name: "Atelier - Réduction Tempo Rouge"
+
+# pour Garçonnière
+radiateur_garconniere_consigne_calculee:
+  <<: *tempo_consigne_calculee_defaults
+  name: "Garçonnière - Consigne Calculée Tempo Eco"
+radiateur_garconniere_reduction_tempo_blanc:
+  <<: *tempo_reduction_blanc_defaults
+  name: "Garçonnière - Réduction Tempo Blanc"
+radiateur_garconniere_reduction_tempo_rouge:
+  <<: *tempo_reduction_rouge_defaults
+  name: "Garçonnière - Réduction Tempo Rouge"
+
+# pour Telmo
+radiateur_telmo_consigne_calculee:
+  <<: *tempo_consigne_calculee_defaults
+  name: "Telmo - Consigne Calculée Tempo Eco"
+radiateur_telmo_reduction_tempo_blanc:
+  <<: *tempo_reduction_blanc_defaults
+  name: "Telmo - Réduction Tempo Blanc"
+radiateur_telmo_reduction_tempo_rouge:
+  <<: *tempo_reduction_rouge_defaults
+  name: "Telmo - Réduction Tempo Rouge"
+
+# pour SdB Etg
+radiateur_sdb_etg_consigne_calculee:
+  <<: *tempo_consigne_calculee_defaults
+  name: "SdB Etg - Consigne Calculée Tempo Eco"
+radiateur_sdb_etg_reduction_tempo_blanc:
+  <<: *tempo_reduction_blanc_defaults
+  name: "SdB Etg - Réduction Tempo Blanc"
+radiateur_sdb_etg_reduction_tempo_rouge:
+  <<: *tempo_reduction_rouge_defaults
+  name: "SdB Etg - Réduction Tempo Rouge"
+
+# pour Boîtes
+radiateur_boites_consigne_calculee:
+  <<: *tempo_consigne_calculee_defaults
+  name: "Boîtes - Consigne Calculée Tempo Eco"
+radiateur_boites_reduction_tempo_blanc:
+  <<: *tempo_reduction_blanc_defaults
+  name: "Boîtes - Réduction Tempo Blanc"
+radiateur_boites_reduction_tempo_rouge:
+  <<: *tempo_reduction_rouge_defaults
+  name: "Boîtes - Réduction Tempo Rouge"
+
+# pour Couloir Etg
+radiateur_couloir_etg_consigne_calculee:
+  <<: *tempo_consigne_calculee_defaults
+  name: "Couloir Etg - Consigne Calculée Tempo Eco"
+radiateur_couloir_etg_reduction_tempo_blanc:
+  <<: *tempo_reduction_blanc_defaults
+  name: "Couloir Etg - Réduction Tempo Blanc"
+radiateur_couloir_etg_reduction_tempo_rouge:
+  <<: *tempo_reduction_rouge_defaults
+  name: "Couloir Etg - Réduction Tempo Rouge"

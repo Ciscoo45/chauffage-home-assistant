@@ -1,0 +1,40 @@
+
+Tempo Bleu Blanc Rouge:
+  # Bleu nuit: Tempo Bleu HC
+  energy-grid-consumption-color-0: "#0f056b"
+  # Bleu -magenta : Tempo Bleu HP
+  energy-grid-consumption-color-1: "#3737e9"
+  # Gris: Tempo Blanc HC
+  energy-grid-consumption-color-2: "#cccccc"
+  # Blanc : Tempo Blanc HP
+  energy-grid-consumption-color-3: "#fff"
+  # Rouge sang: Tempo Rouge HC
+  energy-grid-consumption-color-4: "#850606"
+  # Red : Tempo Rouge HP
+  energy-grid-consumption-color-5: "#E60000"
+  # Standard : Tarif Base
+  energy-grid-consumption-color-6: "#9eb75c"
+  modes:
+    light: {}
+    dark: {}
+
+
+
+Tempo Énergie:
+  # Bleu nuit: Tempo Bleu HC
+  energy-grid-consumption-color-0: "#1057C8"
+  # Bleu -magenta : Tempo Bleu HP
+  energy-grid-consumption-color-1: "#5F87C7"
+  # Gris: Tempo Blanc HC
+  energy-grid-consumption-color-2: "#BFBFBF"
+  # Blanc : Tempo Blanc HP
+  energy-grid-consumption-color-3: "#E8E8E8"
+  # Rouge sang: Tempo Rouge HC
+  energy-grid-consumption-color-4: "#E85130"
+  # Red : Tempo Rouge HP
+  energy-grid-consumption-color-5: "#E89E8E"
+  # Standard : Tarif Base
+  energy-grid-consumption-color-6: "#9eb75c"
+  modes:
+    light: {}
+    dark: {}

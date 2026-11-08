@@ -1,0 +1,1088 @@
+
+#################################################################
+### SENSORS TEMPO - AFFICHAGE UI
+#################################################################
+
+
+- sensor:
+
+
+## ============== par PIÈCE ==============
+
+
+# pour Chambre Ss-Sol
+
+    - name: "Tempo Chambre Ss-Sol Status"
+      unique_id: tempo_chambre_sssol_status
+      state: >-
+        {% set global_actif = is_state('input_boolean.tempo_global_actif', 'on') %}
+        {% set local_actif = is_state('input_boolean.radiateur_chambre_sssol_tempo_actif', 'on') %}
+        {% set boost_actif = is_state('input_boolean.boost_chambre_sssol', 'on') %}
+        {% set couleur = states('sensor.tempo_couleur_actuelle_texte') %}
+        {% set periode = states('sensor.tempo_periode_actuelle') %}
+        {% set hp = 'Pleine' in periode %}
+        {% set reduction_blanc = states('input_number.radiateur_chambre_sssol_reduction_tempo_blanc') | float(0) %}
+        {% set reduction_rouge = states('input_number.radiateur_chambre_sssol_reduction_tempo_rouge') | float(0) %}
+        
+        {% if not global_actif %}
+          GblOff
+        {% elif not local_actif %}
+          PiècOff
+        {% elif boost_actif %}
+          Boost
+        {% elif not hp %}
+          HC
+        {% elif couleur == 'Bleu' %}
+          Bleu
+        {% elif couleur == 'Blanc' and reduction_blanc > 0 %}
+          HP-{{ reduction_blanc | round(1) }}°
+        {% elif couleur == 'Rouge' and reduction_rouge > 0 %}
+          HP-{{ reduction_rouge | round(1) }}°
+        {% elif couleur == 'Blanc' %}
+          Blanc
+        {% elif couleur == 'Rouge' %}
+          Rouge
+        {% else %}
+          Off
+        {% endif %}
+      icon: mdi:transmission-tower
+
+    - name: "Tempo Chambre Ss-Sol Detail"
+      unique_id: tempo_chambre_sssol_detail
+      state: >-
+        {% set global_off = is_state('input_boolean.tempo_global_actif', 'off') %}
+        {% set local_off = is_state('input_boolean.radiateur_chambre_sssol_tempo_actif', 'off') %}
+        {% set boost_on = is_state('input_boolean.boost_chambre_sssol', 'on') %}
+        {% set couleur = states('sensor.tempo_couleur_actuelle_texte') %}
+        {% set periode = states('sensor.tempo_periode_actuelle') %}
+        {% set hp = 'Pleine' in periode %}
+        
+        {% if global_off %}
+          Gestion Tempo désactivée globalement
+        {% elif local_off %}
+          Gestion Tempo désactivée pour cette pièce
+        {% elif boost_on %}
+          Boost actif - réduction Tempo ignorée
+        {% elif not hp %}
+          Heures Creuses - pas de réduction
+        {% elif couleur == 'Bleu' %}
+          Jour Bleu - pas de réduction
+        {% elif couleur == 'Blanc' %}
+          {% set red = states('input_number.radiateur_chambre_sssol_reduction_tempo_blanc') | float(0) %}
+          Jour Blanc HP - réduction de {{ red }}°C appliquée
+        {% elif couleur == 'Rouge' %}
+          {% set red = states('input_number.radiateur_chambre_sssol_reduction_tempo_rouge') | float(0) %}
+          Jour Rouge HP - réduction de {{ red }}°C appliquée
+        {% else %}
+          Informations Tempo indisponibles
+        {% endif %}
+      icon: mdi:information-outline
+
+    - name: "Tempo Chambre Ss-Sol Consignes"
+      unique_id: tempo_chambre_sssol_consignes
+      state: >-
+        {% set base = states('input_number.radiateur_chambre_sssol_consigne') | float(0) %}
+        {% set calc = states('input_number.radiateur_chambre_sssol_consigne_calculee') | float(0) %}
+        {{ base }}°C → {{ calc }}°C
+      icon: mdi:arrow-right-thin
+
+
+# pour Bureau
+
+    - name: "Tempo Bureau Status"
+      unique_id: tempo_bureau_status
+      state: >-
+        {% set global_actif = is_state('input_boolean.tempo_global_actif', 'on') %}
+        {% set local_actif = is_state('input_boolean.radiateur_bureau_tempo_actif', 'on') %}
+        {% set boost_actif = is_state('input_boolean.boost_bureau', 'on') %}
+        {% set couleur = states('sensor.tempo_couleur_actuelle_texte') %}
+        {% set periode = states('sensor.tempo_periode_actuelle') %}
+        {% set hp = 'Pleine' in periode %}
+        {% set reduction_blanc = states('input_number.radiateur_bureau_reduction_tempo_blanc') | float(0) %}
+        {% set reduction_rouge = states('input_number.radiateur_bureau_reduction_tempo_rouge') | float(0) %}
+        
+        {% if not global_actif %}
+          GblOff
+        {% elif not local_actif %}
+          PiècOff
+        {% elif boost_actif %}
+          Boost
+        {% elif not hp %}
+          HC
+        {% elif couleur == 'Bleu' %}
+          Bleu
+        {% elif couleur == 'Blanc' and reduction_blanc > 0 %}
+          HP-{{ reduction_blanc | round(1) }}°
+        {% elif couleur == 'Rouge' and reduction_rouge > 0 %}
+          HP-{{ reduction_rouge | round(1) }}°
+        {% elif couleur == 'Blanc' %}
+          Blanc
+        {% elif couleur == 'Rouge' %}
+          Rouge
+        {% else %}
+          Off
+        {% endif %}
+      icon: mdi:transmission-tower
+
+    - name: "Tempo Bureau Detail"
+      unique_id: tempo_bureau_detail
+      state: >-
+        {% set global_off = is_state('input_boolean.tempo_global_actif', 'off') %}
+        {% set local_off = is_state('input_boolean.radiateur_bureau_tempo_actif', 'off') %}
+        {% set boost_on = is_state('input_boolean.boost_bureau', 'on') %}
+        {% set couleur = states('sensor.tempo_couleur_actuelle_texte') %}
+        {% set periode = states('sensor.tempo_periode_actuelle') %}
+        {% set hp = 'Pleine' in periode %}
+        
+        {% if global_off %}
+          Gestion Tempo désactivée globalement
+        {% elif local_off %}
+          Gestion Tempo désactivée pour cette pièce
+        {% elif boost_on %}
+          Boost actif - réduction Tempo ignorée
+        {% elif not hp %}
+          Heures Creuses - pas de réduction
+        {% elif couleur == 'Bleu' %}
+          Jour Bleu - pas de réduction
+        {% elif couleur == 'Blanc' %}
+          {% set red = states('input_number.radiateur_bureau_reduction_tempo_blanc') | float(0) %}
+          Jour Blanc HP - réduction de {{ red }}°C appliquée
+        {% elif couleur == 'Rouge' %}
+          {% set red = states('input_number.radiateur_bureau_reduction_tempo_rouge') | float(0) %}
+          Jour Rouge HP - réduction de {{ red }}°C appliquée
+        {% else %}
+          Informations Tempo indisponibles
+        {% endif %}
+      icon: mdi:information-outline
+
+    - name: "Tempo Bureau Consignes"
+      unique_id: tempo_bureau_consignes
+      state: >-
+        {% set base = states('input_number.radiateur_bureau_consigne') | float(0) %}
+        {% set calc = states('input_number.radiateur_bureau_consigne_calculee') | float(0) %}
+        {{ base }}°C → {{ calc }}°C
+      icon: mdi:arrow-right-thin
+
+
+# pour Cuisine
+
+    - name: "Tempo Cuisine Status"
+      unique_id: tempo_cuisine_status
+      state: >-
+        {% set global_actif = is_state('input_boolean.tempo_global_actif', 'on') %}
+        {% set local_actif = is_state('input_boolean.radiateur_cuisine_tempo_actif', 'on') %}
+        {% set boost_actif = is_state('input_boolean.boost_cuisine', 'on') %}
+        {% set couleur = states('sensor.tempo_couleur_actuelle_texte') %}
+        {% set periode = states('sensor.tempo_periode_actuelle') %}
+        {% set hp = 'Pleine' in periode %}
+        {% set reduction_blanc = states('input_number.radiateur_cuisine_reduction_tempo_blanc') | float(0) %}
+        {% set reduction_rouge = states('input_number.radiateur_cuisine_reduction_tempo_rouge') | float(0) %}
+        
+        {% if not global_actif %}
+          GblOff
+        {% elif not local_actif %}
+          PiècOff
+        {% elif boost_actif %}
+          Boost
+        {% elif not hp %}
+          HC
+        {% elif couleur == 'Bleu' %}
+          Bleu
+        {% elif couleur == 'Blanc' and reduction_blanc > 0 %}
+          HP-{{ reduction_blanc | round(1) }}°
+        {% elif couleur == 'Rouge' and reduction_rouge > 0 %}
+          HP-{{ reduction_rouge | round(1) }}°
+        {% elif couleur == 'Blanc' %}
+          Blanc
+        {% elif couleur == 'Rouge' %}
+          Rouge
+        {% else %}
+          Off
+        {% endif %}
+      icon: mdi:transmission-tower
+
+    - name: "Tempo Cuisine Detail"
+      unique_id: tempo_cuisine_detail
+      state: >-
+        {% set global_off = is_state('input_boolean.tempo_global_actif', 'off') %}
+        {% set local_off = is_state('input_boolean.radiateur_cuisine_tempo_actif', 'off') %}
+        {% set boost_on = is_state('input_boolean.boost_cuisine', 'on') %}
+        {% set couleur = states('sensor.tempo_couleur_actuelle_texte') %}
+        {% set periode = states('sensor.tempo_periode_actuelle') %}
+        {% set hp = 'Pleine' in periode %}
+        
+        {% if global_off %}
+          Gestion Tempo désactivée globalement
+        {% elif local_off %}
+          Gestion Tempo désactivée pour cette pièce
+        {% elif boost_on %}
+          Boost actif - réduction Tempo ignorée
+        {% elif not hp %}
+          Heures Creuses - pas de réduction
+        {% elif couleur == 'Bleu' %}
+          Jour Bleu - pas de réduction
+        {% elif couleur == 'Blanc' %}
+          {% set red = states('input_number.radiateur_cuisine_reduction_tempo_blanc') | float(0) %}
+          Jour Blanc HP - réduction de {{ red }}°C appliquée
+        {% elif couleur == 'Rouge' %}
+          {% set red = states('input_number.radiateur_cuisine_reduction_tempo_rouge') | float(0) %}
+          Jour Rouge HP - réduction de {{ red }}°C appliquée
+        {% else %}
+          Informations Tempo indisponibles
+        {% endif %}
+      icon: mdi:information-outline
+
+    - name: "Tempo Cuisine Consignes"
+      unique_id: tempo_cuisine_consignes
+      state: >-
+        {% set base = states('input_number.radiateur_cuisine_consigne') | float(0) %}
+        {% set calc = states('input_number.radiateur_cuisine_consigne_calculee') | float(0) %}
+        {{ base }}°C → {{ calc }}°C
+      icon: mdi:arrow-right-thin
+
+
+# pour Salon
+
+    - name: "Tempo Salon Status"
+      unique_id: tempo_salon_status
+      state: >-
+        {% set global_actif = is_state('input_boolean.tempo_global_actif', 'on') %}
+        {% set local_actif = is_state('input_boolean.radiateur_salon_tempo_actif', 'on') %}
+        {% set boost_actif = is_state('input_boolean.boost_salon', 'on') %}
+        {% set couleur = states('sensor.tempo_couleur_actuelle_texte') %}
+        {% set periode = states('sensor.tempo_periode_actuelle') %}
+        {% set hp = 'Pleine' in periode %}
+        {% set reduction_blanc = states('input_number.radiateur_salon_reduction_tempo_blanc') | float(0) %}
+        {% set reduction_rouge = states('input_number.radiateur_salon_reduction_tempo_rouge') | float(0) %}
+        
+        {% if not global_actif %}
+          GblOff
+        {% elif not local_actif %}
+          PiècOff
+        {% elif boost_actif %}
+          Boost
+        {% elif not hp %}
+          HC
+        {% elif couleur == 'Bleu' %}
+          Bleu
+        {% elif couleur == 'Blanc' and reduction_blanc > 0 %}
+          HP-{{ reduction_blanc | round(1) }}°
+        {% elif couleur == 'Rouge' and reduction_rouge > 0 %}
+          HP-{{ reduction_rouge | round(1) }}°
+        {% elif couleur == 'Blanc' %}
+          Blanc
+        {% elif couleur == 'Rouge' %}
+          Rouge
+        {% else %}
+          Off
+        {% endif %}
+      icon: mdi:transmission-tower
+
+    - name: "Tempo Salon Detail"
+      unique_id: tempo_salon_detail
+      state: >-
+        {% set global_off = is_state('input_boolean.tempo_global_actif', 'off') %}
+        {% set local_off = is_state('input_boolean.radiateur_salon_tempo_actif', 'off') %}
+        {% set boost_on = is_state('input_boolean.boost_salon', 'on') %}
+        {% set couleur = states('sensor.tempo_couleur_actuelle_texte') %}
+        {% set periode = states('sensor.tempo_periode_actuelle') %}
+        {% set hp = 'Pleine' in periode %}
+        
+        {% if global_off %}
+          Gestion Tempo désactivée globalement
+        {% elif local_off %}
+          Gestion Tempo désactivée pour cette pièce
+        {% elif boost_on %}
+          Boost actif - réduction Tempo ignorée
+        {% elif not hp %}
+          Heures Creuses - pas de réduction
+        {% elif couleur == 'Bleu' %}
+          Jour Bleu - pas de réduction
+        {% elif couleur == 'Blanc' %}
+          {% set red = states('input_number.radiateur_salon_reduction_tempo_blanc') | float(0) %}
+          Jour Blanc HP - réduction de {{ red }}°C appliquée
+        {% elif couleur == 'Rouge' %}
+          {% set red = states('input_number.radiateur_salon_reduction_tempo_rouge') | float(0) %}
+          Jour Rouge HP - réduction de {{ red }}°C appliquée
+        {% else %}
+          Informations Tempo indisponibles
+        {% endif %}
+      icon: mdi:information-outline
+
+    - name: "Tempo Salon Consignes"
+      unique_id: tempo_salon_consignes
+      state: >-
+        {% set base = states('input_number.radiateur_salon_consigne') | float(0) %}
+        {% set calc = states('input_number.radiateur_salon_consigne_calculee') | float(0) %}
+        {{ base }}°C → {{ calc }}°C
+      icon: mdi:arrow-right-thin
+
+
+# pour SdB
+
+    - name: "Tempo SdB Status"
+      unique_id: tempo_sdb_status
+      state: >-
+        {% set global_actif = is_state('input_boolean.tempo_global_actif', 'on') %}
+        {% set local_actif = is_state('input_boolean.radiateur_sdb_tempo_actif', 'on') %}
+        {% set boost_actif = is_state('input_boolean.boost_sdb', 'on') %}
+        {% set couleur = states('sensor.tempo_couleur_actuelle_texte') %}
+        {% set periode = states('sensor.tempo_periode_actuelle') %}
+        {% set hp = 'Pleine' in periode %}
+        {% set reduction_blanc = states('input_number.radiateur_sdb_reduction_tempo_blanc') | float(0) %}
+        {% set reduction_rouge = states('input_number.radiateur_sdb_reduction_tempo_rouge') | float(0) %}
+        
+        {% if not global_actif %}
+          GblOff
+        {% elif not local_actif %}
+          PiècOff
+        {% elif boost_actif %}
+          Boost
+        {% elif not hp %}
+          HC
+        {% elif couleur == 'Bleu' %}
+          Bleu
+        {% elif couleur == 'Blanc' and reduction_blanc > 0 %}
+          HP-{{ reduction_blanc | round(1) }}°
+        {% elif couleur == 'Rouge' and reduction_rouge > 0 %}
+          HP-{{ reduction_rouge | round(1) }}°
+        {% elif couleur == 'Blanc' %}
+          Blanc
+        {% elif couleur == 'Rouge' %}
+          Rouge
+        {% else %}
+          Off
+        {% endif %}
+      icon: mdi:transmission-tower
+
+    - name: "Tempo SdB Detail"
+      unique_id: tempo_sdb_detail
+      state: >-
+        {% set global_off = is_state('input_boolean.tempo_global_actif', 'off') %}
+        {% set local_off = is_state('input_boolean.radiateur_sdb_tempo_actif', 'off') %}
+        {% set boost_on = is_state('input_boolean.boost_sdb', 'on') %}
+        {% set couleur = states('sensor.tempo_couleur_actuelle_texte') %}
+        {% set periode = states('sensor.tempo_periode_actuelle') %}
+        {% set hp = 'Pleine' in periode %}
+        
+        {% if global_off %}
+          Gestion Tempo désactivée globalement
+        {% elif local_off %}
+          Gestion Tempo désactivée pour cette pièce
+        {% elif boost_on %}
+          Boost actif - réduction Tempo ignorée
+        {% elif not hp %}
+          Heures Creuses - pas de réduction
+        {% elif couleur == 'Bleu' %}
+          Jour Bleu - pas de réduction
+        {% elif couleur == 'Blanc' %}
+          {% set red = states('input_number.radiateur_sdb_reduction_tempo_blanc') | float(0) %}
+          Jour Blanc HP - réduction de {{ red }}°C appliquée
+        {% elif couleur == 'Rouge' %}
+          {% set red = states('input_number.radiateur_sdb_reduction_tempo_rouge') | float(0) %}
+          Jour Rouge HP - réduction de {{ red }}°C appliquée
+        {% else %}
+          Informations Tempo indisponibles
+        {% endif %}
+      icon: mdi:information-outline
+
+    - name: "Tempo SdB Consignes"
+      unique_id: tempo_sdb_consignes
+      state: >-
+        {% set base = states('input_number.radiateur_sdb_consigne') | float(0) %}
+        {% set calc = states('input_number.radiateur_sdb_consigne_calculee') | float(0) %}
+        {{ base }}°C → {{ calc }}°C
+      icon: mdi:arrow-right-thin
+
+
+# pour Michel
+
+    - name: "Tempo Michel Status"
+      unique_id: tempo_michel_status
+      state: >-
+        {% set global_actif = is_state('input_boolean.tempo_global_actif', 'on') %}
+        {% set local_actif = is_state('input_boolean.radiateur_michel_tempo_actif', 'on') %}
+        {% set boost_actif = is_state('input_boolean.boost_michel', 'on') %}
+        {% set couleur = states('sensor.tempo_couleur_actuelle_texte') %}
+        {% set periode = states('sensor.tempo_periode_actuelle') %}
+        {% set hp = 'Pleine' in periode %}
+        {% set reduction_blanc = states('input_number.radiateur_michel_reduction_tempo_blanc') | float(0) %}
+        {% set reduction_rouge = states('input_number.radiateur_michel_reduction_tempo_rouge') | float(0) %}
+        
+        {% if not global_actif %}
+          GblOff
+        {% elif not local_actif %}
+          PiècOff
+        {% elif boost_actif %}
+          Boost
+        {% elif not hp %}
+          HC
+        {% elif couleur == 'Bleu' %}
+          Bleu
+        {% elif couleur == 'Blanc' and reduction_blanc > 0 %}
+          HP-{{ reduction_blanc | round(1) }}°
+        {% elif couleur == 'Rouge' and reduction_rouge > 0 %}
+          HP-{{ reduction_rouge | round(1) }}°
+        {% elif couleur == 'Blanc' %}
+          Blanc
+        {% elif couleur == 'Rouge' %}
+          Rouge
+        {% else %}
+          Off
+        {% endif %}
+      icon: mdi:transmission-tower
+
+    - name: "Tempo Michel Detail"
+      unique_id: tempo_michel_detail
+      state: >-
+        {% set global_off = is_state('input_boolean.tempo_global_actif', 'off') %}
+        {% set local_off = is_state('input_boolean.radiateur_michel_tempo_actif', 'off') %}
+        {% set boost_on = is_state('input_boolean.boost_michel', 'on') %}
+        {% set couleur = states('sensor.tempo_couleur_actuelle_texte') %}
+        {% set periode = states('sensor.tempo_periode_actuelle') %}
+        {% set hp = 'Pleine' in periode %}
+        
+        {% if global_off %}
+          Gestion Tempo désactivée globalement
+        {% elif local_off %}
+          Gestion Tempo désactivée pour cette pièce
+        {% elif boost_on %}
+          Boost actif - réduction Tempo ignorée
+        {% elif not hp %}
+          Heures Creuses - pas de réduction
+        {% elif couleur == 'Bleu' %}
+          Jour Bleu - pas de réduction
+        {% elif couleur == 'Blanc' %}
+          {% set red = states('input_number.radiateur_michel_reduction_tempo_blanc') | float(0) %}
+          Jour Blanc HP - réduction de {{ red }}°C appliquée
+        {% elif couleur == 'Rouge' %}
+          {% set red = states('input_number.radiateur_michel_reduction_tempo_rouge') | float(0) %}
+          Jour Rouge HP - réduction de {{ red }}°C appliquée
+        {% else %}
+          Informations Tempo indisponibles
+        {% endif %}
+      icon: mdi:information-outline
+
+    - name: "Tempo Michel Consignes"
+      unique_id: tempo_michel_consignes
+      state: >-
+        {% set base = states('input_number.radiateur_michel_consigne') | float(0) %}
+        {% set calc = states('input_number.radiateur_michel_consigne_calculee') | float(0) %}
+        {{ base }}°C → {{ calc }}°C
+      icon: mdi:arrow-right-thin
+
+
+# pour Voitures
+
+    - name: "Tempo Voitures Status"
+      unique_id: tempo_voitures_status
+      state: >-
+        {% set global_actif = is_state('input_boolean.tempo_global_actif', 'on') %}
+        {% set local_actif = is_state('input_boolean.radiateur_voitures_tempo_actif', 'on') %}
+        {% set boost_actif = is_state('input_boolean.boost_voitures', 'on') %}
+        {% set couleur = states('sensor.tempo_couleur_actuelle_texte') %}
+        {% set periode = states('sensor.tempo_periode_actuelle') %}
+        {% set hp = 'Pleine' in periode %}
+        {% set reduction_blanc = states('input_number.radiateur_voitures_reduction_tempo_blanc') | float(0) %}
+        {% set reduction_rouge = states('input_number.radiateur_voitures_reduction_tempo_rouge') | float(0) %}
+        
+        {% if not global_actif %}
+          GblOff
+        {% elif not local_actif %}
+          PiècOff
+        {% elif boost_actif %}
+          Boost
+        {% elif not hp %}
+          HC
+        {% elif couleur == 'Bleu' %}
+          Bleu
+        {% elif couleur == 'Blanc' and reduction_blanc > 0 %}
+          HP-{{ reduction_blanc | round(1) }}°
+        {% elif couleur == 'Rouge' and reduction_rouge > 0 %}
+          HP-{{ reduction_rouge | round(1) }}°
+        {% elif couleur == 'Blanc' %}
+          Blanc
+        {% elif couleur == 'Rouge' %}
+          Rouge
+        {% else %}
+          Off
+        {% endif %}
+      icon: mdi:transmission-tower
+
+    - name: "Tempo Voitures Detail"
+      unique_id: tempo_voitures_detail
+      state: >-
+        {% set global_off = is_state('input_boolean.tempo_global_actif', 'off') %}
+        {% set local_off = is_state('input_boolean.radiateur_voitures_tempo_actif', 'off') %}
+        {% set boost_on = is_state('input_boolean.boost_voitures', 'on') %}
+        {% set couleur = states('sensor.tempo_couleur_actuelle_texte') %}
+        {% set periode = states('sensor.tempo_periode_actuelle') %}
+        {% set hp = 'Pleine' in periode %}
+        
+        {% if global_off %}
+          Gestion Tempo désactivée globalement
+        {% elif local_off %}
+          Gestion Tempo désactivée pour cette pièce
+        {% elif boost_on %}
+          Boost actif - réduction Tempo ignorée
+        {% elif not hp %}
+          Heures Creuses - pas de réduction
+        {% elif couleur == 'Bleu' %}
+          Jour Bleu - pas de réduction
+        {% elif couleur == 'Blanc' %}
+          {% set red = states('input_number.radiateur_voitures_reduction_tempo_blanc') | float(0) %}
+          Jour Blanc HP - réduction de {{ red }}°C appliquée
+        {% elif couleur == 'Rouge' %}
+          {% set red = states('input_number.radiateur_voitures_reduction_tempo_rouge') | float(0) %}
+          Jour Rouge HP - réduction de {{ red }}°C appliquée
+        {% else %}
+          Informations Tempo indisponibles
+        {% endif %}
+      icon: mdi:information-outline
+
+    - name: "Tempo Voitures Consignes"
+      unique_id: tempo_voitures_consignes
+      state: >-
+        {% set base = states('input_number.radiateur_voitures_consigne') | float(0) %}
+        {% set calc = states('input_number.radiateur_voitures_consigne_calculee') | float(0) %}
+        {{ base }}°C → {{ calc }}°C
+      icon: mdi:arrow-right-thin
+
+
+# pour Couloir
+
+    - name: "Tempo Couloir Status"
+      unique_id: tempo_couloir_status
+      state: >-
+        {% set global_actif = is_state('input_boolean.tempo_global_actif', 'on') %}
+        {% set local_actif = is_state('input_boolean.radiateur_couloir_tempo_actif', 'on') %}
+        {% set boost_actif = is_state('input_boolean.boost_couloir', 'on') %}
+        {% set couleur = states('sensor.tempo_couleur_actuelle_texte') %}
+        {% set periode = states('sensor.tempo_periode_actuelle') %}
+        {% set hp = 'Pleine' in periode %}
+        {% set reduction_blanc = states('input_number.radiateur_couloir_reduction_tempo_blanc') | float(0) %}
+        {% set reduction_rouge = states('input_number.radiateur_couloir_reduction_tempo_rouge') | float(0) %}
+        
+        {% if not global_actif %}
+          GblOff
+        {% elif not local_actif %}
+          PiècOff
+        {% elif boost_actif %}
+          Boost
+        {% elif not hp %}
+          HC
+        {% elif couleur == 'Bleu' %}
+          Bleu
+        {% elif couleur == 'Blanc' and reduction_blanc > 0 %}
+          HP-{{ reduction_blanc | round(1) }}°
+        {% elif couleur == 'Rouge' and reduction_rouge > 0 %}
+          HP-{{ reduction_rouge | round(1) }}°
+        {% elif couleur == 'Blanc' %}
+          Blanc
+        {% elif couleur == 'Rouge' %}
+          Rouge
+        {% else %}
+          Off
+        {% endif %}
+      icon: mdi:transmission-tower
+
+    - name: "Tempo Couloir Detail"
+      unique_id: tempo_couloir_detail
+      state: >-
+        {% set global_off = is_state('input_boolean.tempo_global_actif', 'off') %}
+        {% set local_off = is_state('input_boolean.radiateur_couloir_tempo_actif', 'off') %}
+        {% set boost_on = is_state('input_boolean.boost_couloir', 'on') %}
+        {% set couleur = states('sensor.tempo_couleur_actuelle_texte') %}
+        {% set periode = states('sensor.tempo_periode_actuelle') %}
+        {% set hp = 'Pleine' in periode %}
+        
+        {% if global_off %}
+          Gestion Tempo désactivée globalement
+        {% elif local_off %}
+          Gestion Tempo désactivée pour cette pièce
+        {% elif boost_on %}
+          Boost actif - réduction Tempo ignorée
+        {% elif not hp %}
+          Heures Creuses - pas de réduction
+        {% elif couleur == 'Bleu' %}
+          Jour Bleu - pas de réduction
+        {% elif couleur == 'Blanc' %}
+          {% set red = states('input_number.radiateur_couloir_reduction_tempo_blanc') | float(0) %}
+          Jour Blanc HP - réduction de {{ red }}°C appliquée
+        {% elif couleur == 'Rouge' %}
+          {% set red = states('input_number.radiateur_couloir_reduction_tempo_rouge') | float(0) %}
+          Jour Rouge HP - réduction de {{ red }}°C appliquée
+        {% else %}
+          Informations Tempo indisponibles
+        {% endif %}
+      icon: mdi:information-outline
+
+    - name: "Tempo Couloir Consignes"
+      unique_id: tempo_couloir_consignes
+      state: >-
+        {% set base = states('input_number.radiateur_couloir_consigne') | float(0) %}
+        {% set calc = states('input_number.radiateur_couloir_consigne_calculee') | float(0) %}
+        {{ base }}°C → {{ calc }}°C
+      icon: mdi:arrow-right-thin
+
+
+# pour Atelier
+
+    - name: "Tempo Atelier Status"
+      unique_id: tempo_atelier_status
+      state: >-
+        {% set global_actif = is_state('input_boolean.tempo_global_actif', 'on') %}
+        {% set local_actif = is_state('input_boolean.radiateur_atelier_tempo_actif', 'on') %}
+        {% set boost_actif = is_state('input_boolean.boost_atelier', 'on') %}
+        {% set couleur = states('sensor.tempo_couleur_actuelle_texte') %}
+        {% set periode = states('sensor.tempo_periode_actuelle') %}
+        {% set hp = 'Pleine' in periode %}
+        {% set reduction_blanc = states('input_number.radiateur_atelier_reduction_tempo_blanc') | float(0) %}
+        {% set reduction_rouge = states('input_number.radiateur_atelier_reduction_tempo_rouge') | float(0) %}
+        
+        {% if not global_actif %}
+          GblOff
+        {% elif not local_actif %}
+          PiècOff
+        {% elif boost_actif %}
+          Boost
+        {% elif not hp %}
+          HC
+        {% elif couleur == 'Bleu' %}
+          Bleu
+        {% elif couleur == 'Blanc' and reduction_blanc > 0 %}
+          HP-{{ reduction_blanc | round(1) }}°
+        {% elif couleur == 'Rouge' and reduction_rouge > 0 %}
+          HP-{{ reduction_rouge | round(1) }}°
+        {% elif couleur == 'Blanc' %}
+          Blanc
+        {% elif couleur == 'Rouge' %}
+          Rouge
+        {% else %}
+          Off
+        {% endif %}
+      icon: mdi:transmission-tower
+
+    - name: "Tempo Atelier Detail"
+      unique_id: tempo_atelier_detail
+      state: >-
+        {% set global_off = is_state('input_boolean.tempo_global_actif', 'off') %}
+        {% set local_off = is_state('input_boolean.radiateur_atelier_tempo_actif', 'off') %}
+        {% set boost_on = is_state('input_boolean.boost_atelier', 'on') %}
+        {% set couleur = states('sensor.tempo_couleur_actuelle_texte') %}
+        {% set periode = states('sensor.tempo_periode_actuelle') %}
+        {% set hp = 'Pleine' in periode %}
+        
+        {% if global_off %}
+          Gestion Tempo désactivée globalement
+        {% elif local_off %}
+          Gestion Tempo désactivée pour cette pièce
+        {% elif boost_on %}
+          Boost actif - réduction Tempo ignorée
+        {% elif not hp %}
+          Heures Creuses - pas de réduction
+        {% elif couleur == 'Bleu' %}
+          Jour Bleu - pas de réduction
+        {% elif couleur == 'Blanc' %}
+          {% set red = states('input_number.radiateur_atelier_reduction_tempo_blanc') | float(0) %}
+          Jour Blanc HP - réduction de {{ red }}°C appliquée
+        {% elif couleur == 'Rouge' %}
+          {% set red = states('input_number.radiateur_atelier_reduction_tempo_rouge') | float(0) %}
+          Jour Rouge HP - réduction de {{ red }}°C appliquée
+        {% else %}
+          Informations Tempo indisponibles
+        {% endif %}
+      icon: mdi:information-outline
+
+    - name: "Tempo Atelier Consignes"
+      unique_id: tempo_atelier_consignes
+      state: >-
+        {% set base = states('input_number.radiateur_atelier_consigne') | float(0) %}
+        {% set calc = states('input_number.radiateur_atelier_consigne_calculee') | float(0) %}
+        {{ base }}°C → {{ calc }}°C
+      icon: mdi:arrow-right-thin
+
+
+# pour Garçonnière
+
+    - name: "Tempo Garçonnière Status"
+      unique_id: tempo_garconniere_status
+      state: >-
+        {% set global_actif = is_state('input_boolean.tempo_global_actif', 'on') %}
+        {% set local_actif = is_state('input_boolean.radiateur_garconniere_tempo_actif', 'on') %}
+        {% set boost_actif = is_state('input_boolean.boost_garconniere', 'on') %}
+        {% set couleur = states('sensor.tempo_couleur_actuelle_texte') %}
+        {% set periode = states('sensor.tempo_periode_actuelle') %}
+        {% set hp = 'Pleine' in periode %}
+        {% set reduction_blanc = states('input_number.radiateur_garconniere_reduction_tempo_blanc') | float(0) %}
+        {% set reduction_rouge = states('input_number.radiateur_garconniere_reduction_tempo_rouge') | float(0) %}
+        
+        {% if not global_actif %}
+          GblOff
+        {% elif not local_actif %}
+          PiècOff
+        {% elif boost_actif %}
+          Boost
+        {% elif not hp %}
+          HC
+        {% elif couleur == 'Bleu' %}
+          Bleu
+        {% elif couleur == 'Blanc' and reduction_blanc > 0 %}
+          HP-{{ reduction_blanc | round(1) }}°
+        {% elif couleur == 'Rouge' and reduction_rouge > 0 %}
+          HP-{{ reduction_rouge | round(1) }}°
+        {% elif couleur == 'Blanc' %}
+          Blanc
+        {% elif couleur == 'Rouge' %}
+          Rouge
+        {% else %}
+          Off
+        {% endif %}
+      icon: mdi:transmission-tower
+
+    - name: "Tempo Garçonnière Detail"
+      unique_id: tempo_garconniere_detail
+      state: >-
+        {% set global_off = is_state('input_boolean.tempo_global_actif', 'off') %}
+        {% set local_off = is_state('input_boolean.radiateur_garconniere_tempo_actif', 'off') %}
+        {% set boost_on = is_state('input_boolean.boost_garconniere', 'on') %}
+        {% set couleur = states('sensor.tempo_couleur_actuelle_texte') %}
+        {% set periode = states('sensor.tempo_periode_actuelle') %}
+        {% set hp = 'Pleine' in periode %}
+        
+        {% if global_off %}
+          Gestion Tempo désactivée globalement
+        {% elif local_off %}
+          Gestion Tempo désactivée pour cette pièce
+        {% elif boost_on %}
+          Boost actif - réduction Tempo ignorée
+        {% elif not hp %}
+          Heures Creuses - pas de réduction
+        {% elif couleur == 'Bleu' %}
+          Jour Bleu - pas de réduction
+        {% elif couleur == 'Blanc' %}
+          {% set red = states('input_number.radiateur_garconniere_reduction_tempo_blanc') | float(0) %}
+          Jour Blanc HP - réduction de {{ red }}°C appliquée
+        {% elif couleur == 'Rouge' %}
+          {% set red = states('input_number.radiateur_garconniere_reduction_tempo_rouge') | float(0) %}
+          Jour Rouge HP - réduction de {{ red }}°C appliquée
+        {% else %}
+          Informations Tempo indisponibles
+        {% endif %}
+      icon: mdi:information-outline
+
+    - name: "Tempo Garçonnière Consignes"
+      unique_id: tempo_garconniere_consignes
+      state: >-
+        {% set base = states('input_number.radiateur_garconniere_consigne') | float(0) %}
+        {% set calc = states('input_number.radiateur_garconniere_consigne_calculee') | float(0) %}
+        {{ base }}°C → {{ calc }}°C
+      icon: mdi:arrow-right-thin
+
+
+# pour Telmo
+
+    - name: "Tempo Telmo Status"
+      unique_id: tempo_telmo_status
+      state: >-
+        {% set global_actif = is_state('input_boolean.tempo_global_actif', 'on') %}
+        {% set local_actif = is_state('input_boolean.radiateur_telmo_tempo_actif', 'on') %}
+        {% set boost_actif = is_state('input_boolean.boost_telmo', 'on') %}
+        {% set couleur = states('sensor.tempo_couleur_actuelle_texte') %}
+        {% set periode = states('sensor.tempo_periode_actuelle') %}
+        {% set hp = 'Pleine' in periode %}
+        {% set reduction_blanc = states('input_number.radiateur_telmo_reduction_tempo_blanc') | float(0) %}
+        {% set reduction_rouge = states('input_number.radiateur_telmo_reduction_tempo_rouge') | float(0) %}
+        
+        {% if not global_actif %}
+          GblOff
+        {% elif not local_actif %}
+          PiècOff
+        {% elif boost_actif %}
+          Boost
+        {% elif not hp %}
+          HC
+        {% elif couleur == 'Bleu' %}
+          Bleu
+        {% elif couleur == 'Blanc' and reduction_blanc > 0 %}
+          HP-{{ reduction_blanc | round(1) }}°
+        {% elif couleur == 'Rouge' and reduction_rouge > 0 %}
+          HP-{{ reduction_rouge | round(1) }}°
+        {% elif couleur == 'Blanc' %}
+          Blanc
+        {% elif couleur == 'Rouge' %}
+          Rouge
+        {% else %}
+          Off
+        {% endif %}
+      icon: mdi:transmission-tower
+
+    - name: "Tempo Telmo Detail"
+      unique_id: tempo_telmo_detail
+      state: >-
+        {% set global_off = is_state('input_boolean.tempo_global_actif', 'off') %}
+        {% set local_off = is_state('input_boolean.radiateur_telmo_tempo_actif', 'off') %}
+        {% set boost_on = is_state('input_boolean.boost_telmo', 'on') %}
+        {% set couleur = states('sensor.tempo_couleur_actuelle_texte') %}
+        {% set periode = states('sensor.tempo_periode_actuelle') %}
+        {% set hp = 'Pleine' in periode %}
+        
+        {% if global_off %}
+          Gestion Tempo désactivée globalement
+        {% elif local_off %}
+          Gestion Tempo désactivée pour cette pièce
+        {% elif boost_on %}
+          Boost actif - réduction Tempo ignorée
+        {% elif not hp %}
+          Heures Creuses - pas de réduction
+        {% elif couleur == 'Bleu' %}
+          Jour Bleu - pas de réduction
+        {% elif couleur == 'Blanc' %}
+          {% set red = states('input_number.radiateur_telmo_reduction_tempo_blanc') | float(0) %}
+          Jour Blanc HP - réduction de {{ red }}°C appliquée
+        {% elif couleur == 'Rouge' %}
+          {% set red = states('input_number.radiateur_telmo_reduction_tempo_rouge') | float(0) %}
+          Jour Rouge HP - réduction de {{ red }}°C appliquée
+        {% else %}
+          Informations Tempo indisponibles
+        {% endif %}
+      icon: mdi:information-outline
+
+    - name: "Tempo Telmo Consignes"
+      unique_id: tempo_telmo_consignes
+      state: >-
+        {% set base = states('input_number.radiateur_telmo_consigne') | float(0) %}
+        {% set calc = states('input_number.radiateur_telmo_consigne_calculee') | float(0) %}
+        {{ base }}°C → {{ calc }}°C
+      icon: mdi:arrow-right-thin
+
+
+# pour SdB Etg
+
+    - name: "Tempo SdB Etg Status"
+      unique_id: tempo_sdb_etg_status
+      state: >-
+        {% set global_actif = is_state('input_boolean.tempo_global_actif', 'on') %}
+        {% set local_actif = is_state('input_boolean.radiateur_sdb_etg_tempo_actif', 'on') %}
+        {% set boost_actif = is_state('input_boolean.boost_sdb_etg', 'on') %}
+        {% set couleur = states('sensor.tempo_couleur_actuelle_texte') %}
+        {% set periode = states('sensor.tempo_periode_actuelle') %}
+        {% set hp = 'Pleine' in periode %}
+        {% set reduction_blanc = states('input_number.radiateur_sdb_etg_reduction_tempo_blanc') | float(0) %}
+        {% set reduction_rouge = states('input_number.radiateur_sdb_etg_reduction_tempo_rouge') | float(0) %}
+        
+        {% if not global_actif %}
+          GblOff
+        {% elif not local_actif %}
+          PiècOff
+        {% elif boost_actif %}
+          Boost
+        {% elif not hp %}
+          HC
+        {% elif couleur == 'Bleu' %}
+          Bleu
+        {% elif couleur == 'Blanc' and reduction_blanc > 0 %}
+          HP-{{ reduction_blanc | round(1) }}°
+        {% elif couleur == 'Rouge' and reduction_rouge > 0 %}
+          HP-{{ reduction_rouge | round(1) }}°
+        {% elif couleur == 'Blanc' %}
+          Blanc
+        {% elif couleur == 'Rouge' %}
+          Rouge
+        {% else %}
+          Off
+        {% endif %}
+      icon: mdi:transmission-tower
+
+    - name: "Tempo SdB Etg Detail"
+      unique_id: tempo_sdb_etg_detail
+      state: >-
+        {% set global_off = is_state('input_boolean.tempo_global_actif', 'off') %}
+        {% set local_off = is_state('input_boolean.radiateur_sdb_etg_tempo_actif', 'off') %}
+        {% set boost_on = is_state('input_boolean.boost_sdb_etg', 'on') %}
+        {% set couleur = states('sensor.tempo_couleur_actuelle_texte') %}
+        {% set periode = states('sensor.tempo_periode_actuelle') %}
+        {% set hp = 'Pleine' in periode %}
+        
+        {% if global_off %}
+          Gestion Tempo désactivée globalement
+        {% elif local_off %}
+          Gestion Tempo désactivée pour cette pièce
+        {% elif boost_on %}
+          Boost actif - réduction Tempo ignorée
+        {% elif not hp %}
+          Heures Creuses - pas de réduction
+        {% elif couleur == 'Bleu' %}
+          Jour Bleu - pas de réduction
+        {% elif couleur == 'Blanc' %}
+          {% set red = states('input_number.radiateur_sdb_etg_reduction_tempo_blanc') | float(0) %}
+          Jour Blanc HP - réduction de {{ red }}°C appliquée
+        {% elif couleur == 'Rouge' %}
+          {% set red = states('input_number.radiateur_sdb_etg_reduction_tempo_rouge') | float(0) %}
+          Jour Rouge HP - réduction de {{ red }}°C appliquée
+        {% else %}
+          Informations Tempo indisponibles
+        {% endif %}
+      icon: mdi:information-outline
+
+    - name: "Tempo SdB Etg Consignes"
+      unique_id: tempo_sdb_etg_consignes
+      state: >-
+        {% set base = states('input_number.radiateur_sdb_etg_consigne') | float(0) %}
+        {% set calc = states('input_number.radiateur_sdb_etg_consigne_calculee') | float(0) %}
+        {{ base }}°C → {{ calc }}°C
+      icon: mdi:arrow-right-thin
+
+
+# pour Boîtes
+
+    - name: "Tempo Boîtes Status"
+      unique_id: tempo_boites_status
+      state: >-
+        {% set global_actif = is_state('input_boolean.tempo_global_actif', 'on') %}
+        {% set local_actif = is_state('input_boolean.radiateur_boites_tempo_actif', 'on') %}
+        {% set boost_actif = is_state('input_boolean.boost_boites', 'on') %}
+        {% set couleur = states('sensor.tempo_couleur_actuelle_texte') %}
+        {% set periode = states('sensor.tempo_periode_actuelle') %}
+        {% set hp = 'Pleine' in periode %}
+        {% set reduction_blanc = states('input_number.radiateur_boites_reduction_tempo_blanc') | float(0) %}
+        {% set reduction_rouge = states('input_number.radiateur_boites_reduction_tempo_rouge') | float(0) %}
+        
+        {% if not global_actif %}
+          GblOff
+        {% elif not local_actif %}
+          PiècOff
+        {% elif boost_actif %}
+          Boost
+        {% elif not hp %}
+          HC
+        {% elif couleur == 'Bleu' %}
+          Bleu
+        {% elif couleur == 'Blanc' and reduction_blanc > 0 %}
+          HP-{{ reduction_blanc | round(1) }}°
+        {% elif couleur == 'Rouge' and reduction_rouge > 0 %}
+          HP-{{ reduction_rouge | round(1) }}°
+        {% elif couleur == 'Blanc' %}
+          Blanc
+        {% elif couleur == 'Rouge' %}
+          Rouge
+        {% else %}
+          Off
+        {% endif %}
+      icon: mdi:transmission-tower
+
+    - name: "Tempo Boîtes Detail"
+      unique_id: tempo_boites_detail
+      state: >-
+        {% set global_off = is_state('input_boolean.tempo_global_actif', 'off') %}
+        {% set local_off = is_state('input_boolean.radiateur_boites_tempo_actif', 'off') %}
+        {% set boost_on = is_state('input_boolean.boost_boites', 'on') %}
+        {% set couleur = states('sensor.tempo_couleur_actuelle_texte') %}
+        {% set periode = states('sensor.tempo_periode_actuelle') %}
+        {% set hp = 'Pleine' in periode %}
+        
+        {% if global_off %}
+          Gestion Tempo désactivée globalement
+        {% elif local_off %}
+          Gestion Tempo désactivée pour cette pièce
+        {% elif boost_on %}
+          Boost actif - réduction Tempo ignorée
+        {% elif not hp %}
+          Heures Creuses - pas de réduction
+        {% elif couleur == 'Bleu' %}
+          Jour Bleu - pas de réduction
+        {% elif couleur == 'Blanc' %}
+          {% set red = states('input_number.radiateur_boites_reduction_tempo_blanc') | float(0) %}
+          Jour Blanc HP - réduction de {{ red }}°C appliquée
+        {% elif couleur == 'Rouge' %}
+          {% set red = states('input_number.radiateur_boites_reduction_tempo_rouge') | float(0) %}
+          Jour Rouge HP - réduction de {{ red }}°C appliquée
+        {% else %}
+          Informations Tempo indisponibles
+        {% endif %}
+      icon: mdi:information-outline
+
+    - name: "Tempo Boîtes Consignes"
+      unique_id: tempo_boites_consignes
+      state: >-
+        {% set base = states('input_number.radiateur_boites_consigne') | float(0) %}
+        {% set calc = states('input_number.radiateur_boites_consigne_calculee') | float(0) %}
+        {{ base }}°C → {{ calc }}°C
+      icon: mdi:arrow-right-thin
+
+
+# pour Couloir Etg
+
+    - name: "Tempo Couloir Etg Status"
+      unique_id: tempo_couloir_etg_status
+      state: >-
+        {% set global_actif = is_state('input_boolean.tempo_global_actif', 'on') %}
+        {% set local_actif = is_state('input_boolean.radiateur_couloir_etg_tempo_actif', 'on') %}
+        {% set boost_actif = is_state('input_boolean.boost_couloir_etg', 'on') %}
+        {% set couleur = states('sensor.tempo_couleur_actuelle_texte') %}
+        {% set periode = states('sensor.tempo_periode_actuelle') %}
+        {% set hp = 'Pleine' in periode %}
+        {% set reduction_blanc = states('input_number.radiateur_couloir_etg_reduction_tempo_blanc') | float(0) %}
+        {% set reduction_rouge = states('input_number.radiateur_couloir_etg_reduction_tempo_rouge') | float(0) %}
+        
+        {% if not global_actif %}
+          GblOff
+        {% elif not local_actif %}
+          PiècOff
+        {% elif boost_actif %}
+          Boost
+        {% elif not hp %}
+          HC
+        {% elif couleur == 'Bleu' %}
+          Bleu
+        {% elif couleur == 'Blanc' and reduction_blanc > 0 %}
+          HP-{{ reduction_blanc | round(1) }}°
+        {% elif couleur == 'Rouge' and reduction_rouge > 0 %}
+          HP-{{ reduction_rouge | round(1) }}°
+        {% elif couleur == 'Blanc' %}
+          Blanc
+        {% elif couleur == 'Rouge' %}
+          Rouge
+        {% else %}
+          Off
+        {% endif %}
+      icon: mdi:transmission-tower
+
+    - name: "Tempo Couloir Etg Detail"
+      unique_id: tempo_couloir_etg_detail
+      state: >-
+        {% set global_off = is_state('input_boolean.tempo_global_actif', 'off') %}
+        {% set local_off = is_state('input_boolean.radiateur_couloir_etg_tempo_actif', 'off') %}
+        {% set boost_on = is_state('input_boolean.boost_couloir_etg', 'on') %}
+        {% set couleur = states('sensor.tempo_couleur_actuelle_texte') %}
+        {% set periode = states('sensor.tempo_periode_actuelle') %}
+        {% set hp = 'Pleine' in periode %}
+        
+        {% if global_off %}
+          Gestion Tempo désactivée globalement
+        {% elif local_off %}
+          Gestion Tempo désactivée pour cette pièce
+        {% elif boost_on %}
+          Boost actif - réduction Tempo ignorée
+        {% elif not hp %}
+          Heures Creuses - pas de réduction
+        {% elif couleur == 'Bleu' %}
+          Jour Bleu - pas de réduction
+        {% elif couleur == 'Blanc' %}
+          {% set red = states('input_number.radiateur_couloir_etg_reduction_tempo_blanc') | float(0) %}
+          Jour Blanc HP - réduction de {{ red }}°C appliquée
+        {% elif couleur == 'Rouge' %}
+          {% set red = states('input_number.radiateur_couloir_etg_reduction_tempo_rouge') | float(0) %}
+          Jour Rouge HP - réduction de {{ red }}°C appliquée
+        {% else %}
+          Informations Tempo indisponibles
+        {% endif %}
+      icon: mdi:information-outline
+
+    - name: "Tempo Couloir Etg Consignes"
+      unique_id: tempo_couloir_etg_consignes
+      state: >-
+        {% set base = states('input_number.radiateur_couloir_etg_consigne') | float(0) %}
+        {% set calc = states('input_number.radiateur_couloir_etg_consigne_calculee') | float(0) %}
+        {{ base }}°C → {{ calc }}°C
+      icon: mdi:arrow-right-thin

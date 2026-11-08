@@ -1,0 +1,15 @@
+
+###################################################################################
+### input_boolean pour l'interupteur intersaison du chauffage (tous les radiateurs)
+###################################################################################
+
+
+## ---------------- au GLobal
+
+
+fenetre_virtuelle_onoff:
+  name: Fenêtre virtuelle
+  icon: mdi:window-closed-variant
+
+
+  

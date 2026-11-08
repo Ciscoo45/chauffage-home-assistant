@@ -1,0 +1,81 @@
+
+################################################################################
+### INPUT_TEXT – État ouverture portes / fenêtres par pièce
+################################################################################
+
+
+# =============== par PIECES ==================
+
+
+# pour Chambre Ss-Sol
+radiateur_chambre_sssol_etat_ouverture:  # input_text.radiateur_chambre_sssol_etat_ouverture
+  name: État ouverture Chambre Ss-Sol
+  initial: "fermee"
+
+
+# pour Bureau
+radiateur_bureau_etat_ouverture:         # input_text.radiateur_bureau_etat_ouverture
+  name: État ouverture Bureau
+  initial: "fermee"
+
+# pour Cuisine
+radiateur_cuisine_etat_ouverture:        # input_text.radiateur_cuisine_etat_ouverture
+  name: État ouverture Cuisine
+  initial: "fermee"
+
+# pour Salon
+radiateur_salon_etat_ouverture:          # input_text.radiateur_salon_etat_ouverture
+  name: État ouverture Salon
+  initial: "fermee"
+
+# pour SdB
+radiateur_sdb_etat_ouverture:            # input_text.radiateur_sdb_etat_ouverture
+  name: État ouverture SdB
+  initial: "fermee"
+
+# pour Michel
+radiateur_michel_etat_ouverture:         # input_text.radiateur_michel_etat_ouverture
+  name: État ouverture Michel
+  initial: "fermee"
+
+# pour Voitures
+radiateur_voitures_etat_ouverture:       # input_text.radiateur_voitures_etat_ouverture
+  name: État ouverture Voitures
+  initial: "fermee"
+
+# pour Couloir
+radiateur_couloir_etat_ouverture:        # input_text.radiateur_couloir_etat_ouverture
+  name: État ouverture Couloir
+  initial: "fermee"
+
+
+# pour Atelier
+radiateur_atelier_etat_ouverture:        # input_text.radiateur_atelier_etat_ouverture
+  name: État ouverture Atelier
+  initial: "fermee"
+
+# pour Garçonnière
+radiateur_garconniere_etat_ouverture:    # input_text.radiateur_garconniere_etat_ouverture
+  name: État ouverture Garçonnière
+  initial: "fermee"
+
+# pour Telmo
+radiateur_telmo_etat_ouverture:          # input_text.radiateur_telmo_etat_ouverture
+  name: État ouverture Telmo
+  initial: "fermee"
+
+# pour SdB Etg
+radiateur_sdb_etg_etat_ouverture:        # input_text.radiateur_sdb_etg_etat_ouverture
+  name: État ouverture SdB Etg
+  initial: "fermee"
+
+# pour Boîtes
+radiateur_boites_etat_ouverture:         # input_text.radiateur_boites_etat_ouverture
+  name: État ouverture Boîtes
+  initial: "fermee"
+
+# pour Couloir Etg
+radiateur_couloir_etg_etat_ouverture:    # input_text.radiateur_couloir_etg_etat_ouverture
+  name: État ouverture Couloir Etg
+  initial: "fermee"
+

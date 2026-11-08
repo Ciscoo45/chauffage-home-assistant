@@ -1,0 +1,25 @@
+
+#############################################
+### Groupe d'UTILISATEURS à Mell
+### Devices à déclarer dans le dossier NOTIFY + créer un compte HA pour chaque user
+### Utilisé notamment dans : Chauffage_by_C._-_Boost.yaml
+
+mell_utilisateurs:
+  name: Utilisateurs de Mell
+  icon: mdi:account-multiple
+  entities:
+    - person.michel
+    - person.ciscoo
+
+
+
+#############################################
+### Pour l'auto Absence et sa gestion :
+### ce group sera utilisé dans les scripts pour forcer tout le monde présent/absent/auto
+
+presence_overrides:
+  name: "Contrôles de présence"
+  entities: 
+    - input_select.presence_override_michel
+    - input_select.presence_override_francois
+    - input_select.presence_override_groupe

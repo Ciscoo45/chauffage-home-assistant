@@ -1,0 +1,32 @@
+
+#############################################################################
+### pour la gestion de l'éclairage dans la pièces Voitures via interupteur Ikea
+
+
+bandeaux:
+  name: "Bandeaux"
+  entities:
+    - light.ikea_ormanas_led_strip_w01_lumiere
+    - light.ikea_ormanas_led_strip_w02_lumiere
+    - light.ikea_ormanas_led_strip_n01_lumiere
+    - light.ikea_ormanas_led_strip_n02_lumiere
+    - light.ikea_ormanas_led_strip_n03_lumiere
+    - light.ikea_ormanas_led_strip_n04_lumiere
+    - light.ikea_ormanas_led_strip_e01_lumiere
+    - light.ikea_ormanas_led_strip_e02_lumiere
+    - light.ikea_ormanas_led_strip_e03_lumiere
+    - light.ikea_ormanas_led_strip_s01_lumiere
+    - light.ikea_ormanas_led_strip_s02_lumiere
+    - light.ikea_ormanas_led_strip_s03_lumiere
+    - light.ikea_ormanas_led_strip_s04_lumiere
+    - light.ikea_ormanas_led_strip_s05_lumiere
+    - light.ikea_ormanas_led_strip_s06_lumiere
+    - light.ikea_ormanas_led_strip_vitrines_bas_lumiere
+    - light.ikea_ormanas_led_strip_vitrines_haut_lumiere
+spots:
+  name: "Spots"
+  entities:
+    - light.ampoule_ikea_tradfri_voitures_plafond_01_lumiere
+    - light.ampoule_ikea_tradfri_voitures_plafond_02_lumiere
+    - light.ampoule_ikea_tradfri_voitures_plafond_03_lumiere
+    - light.ampoule_ikea_tradfri_voitures_plafond_04_lumiere

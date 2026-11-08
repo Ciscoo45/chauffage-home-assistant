@@ -1,0 +1,48 @@
+# yaml-language-server: $schema=null
+
+######################################################
+### GESTION ABSENCE - SCRIPTS CONTRÔLE PRÉSENCE RAPIDE
+######################################################
+
+
+## =============================== 
+## ========== au GLOBAL ==========
+
+
+
+# ========== DÉFINITION DES ENTITÉS PARTAGÉES ==========
+# voir dans le dossier Group
+
+
+
+# ========== SCRIPTS ==========
+
+presence_reset_all_auto: 
+  alias: "Présence - Tout repasser en Auto"
+  icon: mdi:autorenew
+  sequence:
+    - service: input_select.select_option
+      target:
+        entity_id: group.presence_overrides  
+      data: 
+        option: "Auto (GPS)"
+
+presence_force_all_present:
+  alias: "Présence - Forcer tous présents"
+  icon: mdi:home-account
+  sequence: 
+    - service: input_select.select_option
+      target: 
+        entity_id: group.presence_overrides
+      data: 
+        option: "Forcer Présent"
+
+presence_force_all_absent:
+  alias: "Présence - Forcer tous absents"
+  icon: mdi:home-export-outline
+  sequence:
+    - service: input_select.select_option
+      target:
+        entity_id: group.presence_overrides
+      data:
+        option: "Forcer Absent"

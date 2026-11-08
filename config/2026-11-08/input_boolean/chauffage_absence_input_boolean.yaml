@@ -1,0 +1,212 @@
+
+################################################################################
+### GESTION ABSENCE AUTO - ACTIVATION/DÉSACTIVATION
+################################################################################
+
+
+## =============================== 
+## ========== GLOBAL =============
+
+chauffage_absence_auto_global_actif:
+  name: "Gestion Absence Auto Globale"
+  icon: mdi:account-off
+  # initial: true
+
+  
+
+## =============================== 
+## ========== par PIÈCE ==========
+
+
+
+# ========================================
+# SENSORS GESTION ABSENCE AUTO - INPUT_BOLLEAN : EN PRESENCE AVANT ABSENCE
+# ========================================
+
+## ========== par PIÈCE ==========
+
+
+# pour Chambre ss-sol
+radiateur_chambre_sssol_absence_auto_actif:
+  name: "Chambre ss-sol - Gestion Absence Auto"
+  icon: mdi:home-account
+radiateur_chambre_sssol_show_absence_config:
+  name: "Chambre ss-sol - Afficher Config Absence"
+  icon: mdi:tune
+radiateur_chambre_sssol_absence_si_principal_absent:
+  name: "Chambre ss-sol - Absence si utilisateur principal absent"
+  icon: mdi:account-alert
+radiateur_chambre_sssol_etait_presence:
+  name: "Chambre Ss-Sol - Était en Presence avant absence"
+
+
+# pour Bureau
+radiateur_bureau_absence_auto_actif:
+  name: "Bureau - Gestion Absence Auto"
+  icon: mdi:home-account
+radiateur_bureau_show_absence_config:
+  name: "Bureau - Afficher Config Absence"
+  icon: mdi:tune
+radiateur_bureau_absence_si_principal_absent:
+  name: "Bureau - Absence si utilisateur principal absent"
+  icon: mdi:account-alert
+radiateur_bureau_etait_presence:
+  name: "Bureau - Était en Presence avant absence"
+
+# pour Cuisine
+radiateur_cuisine_absence_auto_actif:
+  name: "Cuisine - Gestion Absence Auto"
+  icon: mdi:home-account
+radiateur_cuisine_show_absence_config:
+  name: "Cuisine - Afficher Config Absence"
+  icon: mdi:tune
+radiateur_cuisine_absence_si_principal_absent:
+  name: "Cuisine - Absence si utilisateur principal absent"
+  icon: mdi:account-alert
+radiateur_cuisine_etait_presence:
+  name: "Cuisine - Était en Presence avant absence"
+
+# pour Salon
+radiateur_salon_absence_auto_actif:
+  name: "Salon - Gestion Absence Auto"
+  icon: mdi:home-account
+radiateur_salon_show_absence_config:
+  name: "Salon - Afficher Config Absence"
+  icon: mdi:tune
+radiateur_salon_absence_si_principal_absent:
+  name: "Salon - Absence si utilisateur principal absent"
+  icon: mdi:account-alert
+radiateur_salon_etait_presence:
+  name: "Salon - Était en Presence avant absence"
+
+
+# pour SdB
+radiateur_sdb_absence_auto_actif:
+  name: "SdB - Gestion Absence Auto"
+  icon: mdi:home-account
+radiateur_sdb_show_absence_config:
+  name: "SdB - Afficher Config Absence"
+  icon: mdi:tune
+radiateur_sdb_absence_si_principal_absent:
+  name: "SdB - Absence si utilisateur principal absent"
+  icon: mdi:account-alert
+radiateur_sdb_etait_presence:
+  name: "SdB - Était en Presence avant absence"
+
+# pour Michel
+radiateur_michel_absence_auto_actif:
+  name: "Michel - Gestion Absence Auto"
+  icon: mdi:home-account
+radiateur_michel_show_absence_config:
+  name: "Michel - Afficher Config Absence"
+  icon: mdi:tune
+radiateur_michel_absence_si_principal_absent:
+  name: "Michel - Absence si utilisateur principal absent"
+  icon: mdi:account-alert
+radiateur_michel_etait_presence:
+  name: "Michel - Était en Presence avant absence"
+
+# pour Voitures
+radiateur_voitures_absence_auto_actif:
+  name: "Voitures - Gestion Absence Auto"
+  icon: mdi:home-account
+radiateur_voitures_show_absence_config:
+  name: "Voitures - Afficher Config Absence"
+  icon: mdi:tune
+radiateur_voitures_absence_si_principal_absent:
+  name: "Voitures - Absence si utilisateur principal absent"
+  icon: mdi:account-alert
+radiateur_voitures_etait_presence:
+  name: "VOitures - Était en Presence avant absence"
+
+# pour Couloir
+radiateur_couloir_absence_auto_actif:
+  name: "Couloir - Gestion Absence Auto"
+  icon: mdi:home-account
+radiateur_couloir_show_absence_config:
+  name: "Couloir - Afficher Config Absence"
+  icon: mdi:tune
+radiateur_couloir_absence_si_principal_absent:
+  name: "Couloir - Absence si utilisateur principal absent"
+  icon: mdi:account-alert
+radiateur_couloir_etait_presence:
+  name: "Couloir - Était en Presence avant absence"
+
+
+# pour Atelier
+radiateur_atelier_absence_auto_actif:
+  name: "Atelier - Gestion Absence Auto"
+  icon: mdi:home-account
+radiateur_atelier_show_absence_config:
+  name: "Atelier - Afficher Config Absence"
+  icon: mdi:tune
+radiateur_atelier_absence_si_principal_absent:
+  name: "Atelier - Absence si utilisateur principal absent"
+  icon: mdi:account-alert
+radiateur_atelier_etait_presence:
+  name: "Atelier - Était en Presence avant absence"
+
+# pour Garçonnière
+radiateur_garconniere_absence_auto_actif:
+  name: "Garçonnière - Gestion Absence Auto"
+  icon: mdi:home-account
+radiateur_garconniere_show_absence_config:
+  name: "Garçonnière - Afficher Config Absence"
+  icon: mdi:tune
+radiateur_garconniere_absence_si_principal_absent:
+  name: "Garçonnière - Absence si utilisateur principal absent"
+  icon: mdi:account-alert
+radiateur_garconniere_etait_presence:
+  name: "Garçonnière - Était en Presence avant absence"
+
+# pour Telmo
+radiateur_telmo_absence_auto_actif:
+  name: "Telmo - Gestion Absence Auto"
+  icon: mdi:home-account
+radiateur_telmo_show_absence_config:
+  name: "Telmo - Afficher Config Absence"
+  icon: mdi:tune
+radiateur_telmo_absence_si_principal_absent:
+  name: "Telmo - Absence si utilisateur principal absent"
+  icon: mdi:account-alert
+radiateur_telmo_etait_presence:
+  name: "Telmo - Était en Presence avant absence"
+
+# pour SdB Etg
+radiateur_sdb_etg_absence_auto_actif:
+  name: "SdB Etg - Gestion Absence Auto"
+  icon: mdi:home-account
+radiateur_sdb_etg_show_absence_config:
+  name: "SdB Etg - Afficher Config Absence"
+  icon: mdi:tune
+radiateur_sdb_etg_absence_si_principal_absent:
+  name: "SdB Etg - Absence si utilisateur principal absent"
+  icon: mdi:account-alert
+radiateur_sdb_etg_etait_presence:
+  name: "SdB Etg - Était en Presence avant absence"
+
+# pour Boîtes
+radiateur_boites_absence_auto_actif:
+  name: "Boîtes - Gestion Absence Auto"
+  icon: mdi:home-account
+radiateur_boites_show_absence_config:
+  name: "Boîtes - Afficher Config Absence"
+  icon: mdi:tune
+radiateur_boites_absence_si_principal_absent:
+  name: "Boîtes - Absence si utilisateur principal absent"
+  icon: mdi:account-alert
+radiateur_boites_etait_presence:
+  name: "Boites - Était en Presence avant absence"
+
+# pour Couloir Etg
+radiateur_couloir_etg_absence_auto_actif:
+  name: "Couloir Etg - Gestion Absence Auto"
+  icon: mdi:home-account
+radiateur_couloir_etg_show_absence_config:
+  name: "Couloir Etg - Afficher Config Absence"
+  icon: mdi:tune
+radiateur_couloir_etg_absence_si_principal_absent:
+  name: "Couloir Etg - Absence si utilisateur principal absent"
+  icon: mdi:account-alert
+radiateur_couloir_etg_etait_presence:
+  name: "Couloir Etg - Était en Presence avant absence"

@@ -1,0 +1,233 @@
+
+#################################################################
+### Chauffage kWh - Sensors utility_meter (compteur de service, élec, gaz, etc.) pour le CHAUFFAGE TOTAL
+#################################################################
+
+
+# =============== GLOBAL ==================
+
+
+chauffage_total_kwh_jour:        # sensor.chauffage_total_kwh_jour
+  unique_id: chauffage_total_kwh_jour
+  source: sensor.chauffage_total_kwh
+  cycle: daily
+
+chauffage_total_kwh_semaine:     # sensor.chauffage_total_kwh_semaine
+  unique_id: chauffage_total_kwh_semaine
+  source: sensor.chauffage_total_kwh
+  cycle: weekly
+
+chauffage_total_kwh_mois:        # sensor.chauffage_total_kwh_mois
+  unique_id: chauffage_total_kwh_mois
+  source: sensor.chauffage_total_kwh
+  cycle: monthly
+
+
+
+
+
+#################################################################
+### Chauffage kWh - Sensors utility_meter (compteur de service, élec, gaz, etc.) par PIÈCE
+#################################################################
+
+
+# =============== par PIECE ==================
+
+
+# pour Chambre Ss-Sol
+radiateur_chambre_sssol_kwh_jour:      # sensor.radiateur_chambre_sssol_kwh_jour
+  unique_id: radiateur_chambre_sssol_kwh_jour
+  source: sensor.radiateur_chambre_sssol_kwh_total
+  cycle: daily
+radiateur_chambre_sssol_kwh_semaine:   # sensor.radiateur_chambre_sssol_kwh_semaine
+  unique_id: radiateur_chambre_sssol_kwh_semaine
+  source: sensor.radiateur_chambre_sssol_kwh_total
+  cycle: weekly
+radiateur_chambre_sssol_kwh_mois:      # sensor.radiateur_chambre_sssol_kwh_mois
+  unique_id: radiateur_chambre_sssol_kwh_mois
+  source: sensor.radiateur_chambre_sssol_kwh_total
+  cycle: monthly
+
+
+# pour Bureau
+radiateur_bureau_kwh_jour:              # sensor.radiateur_bureau_kwh_jour
+  unique_id: radiateur_bureau_kwh_jour
+  source: sensor.radiateur_bureau_kwh_total
+  cycle: daily
+radiateur_bureau_kwh_semaine:           # sensor.radiateur_bureau_kwh_semaine
+  unique_id: radiateur_bureau_kwh_semaine
+  source: sensor.radiateur_bureau_kwh_total
+  cycle: weekly
+radiateur_bureau_kwh_mois:              # sensor.radiateur_bureau_kwh_mois
+  unique_id: radiateur_bureau_kwh_mois
+  source: sensor.radiateur_bureau_kwh_total
+  cycle: monthly
+
+# pour Cuisine
+radiateur_cuisine_kwh_jour:             # sensor.radiateur_cuisine_kwh_jour
+  unique_id: radiateur_cuisine_kwh_jour
+  source: sensor.radiateur_cuisine_kwh_total
+  cycle: daily
+radiateur_cuisine_kwh_semaine:          # sensor.radiateur_cuisine_kwh_semaine
+  unique_id: radiateur_cuisine_kwh_semaine
+  source: sensor.radiateur_cuisine_kwh_total
+  cycle: weekly
+radiateur_cuisine_kwh_mois:             # sensor.radiateur_cuisine_kwh_mois
+  unique_id: radiateur_cuisine_kwh_mois
+  source: sensor.radiateur_cuisine_kwh_total
+  cycle: monthly
+
+# pour Salon
+radiateur_salon_kwh_jour:               # sensor.radiateur_salon_kwh_jour
+  unique_id: radiateur_salon_kwh_jour
+  source: sensor.radiateur_salon_kwh_total
+  cycle: daily
+radiateur_salon_kwh_semaine:            # sensor.radiateur_salon_kwh_semaine
+  unique_id: radiateur_salon_kwh_semaine
+  source: sensor.radiateur_salon_kwh_total
+  cycle: weekly
+radiateur_salon_kwh_mois:               # sensor.radiateur_salon_kwh_mois
+  unique_id: radiateur_salon_kwh_mois
+  source: sensor.radiateur_salon_kwh_total
+  cycle: monthly
+
+# pour SdB
+radiateur_sdb_kwh_jour:                 # sensor.radiateur_sdb_kwh_jour
+  unique_id: radiateur_sdb_kwh_jour
+  source: sensor.radiateur_sdb_kwh_total
+  cycle: daily
+radiateur_sdb_kwh_semaine:              # sensor.radiateur_sdb_kwh_semaine
+  unique_id: radiateur_sdb_kwh_semaine
+  source: sensor.radiateur_sdb_kwh_total
+  cycle: weekly
+radiateur_sdb_kwh_mois:                 # sensor.radiateur_sdb_kwh_mois
+  unique_id: radiateur_sdb_kwh_mois
+  source: sensor.radiateur_sdb_kwh_total
+  cycle: monthly
+
+# pour Michel
+radiateur_michel_kwh_jour:              # sensor.radiateur_michel_kwh_jour
+  unique_id: radiateur_michel_kwh_jour
+  source: sensor.radiateur_michel_kwh_total
+  cycle: daily
+radiateur_michel_kwh_semaine:           # sensor.radiateur_michel_kwh_semaine
+  unique_id: radiateur_michel_kwh_semaine
+  source: sensor.radiateur_michel_kwh_total
+  cycle: weekly
+radiateur_michel_kwh_mois:              # sensor.radiateur_michel_kwh_mois
+  unique_id: radiateur_michel_kwh_mois
+  source: sensor.radiateur_michel_kwh_total
+  cycle: monthly
+
+# pour Voitures
+radiateur_voitures_kwh_jour:            # sensor.radiateur_voitures_kwh_jour
+  unique_id: radiateur_voitures_kwh_jour
+  source: sensor.radiateur_voitures_kwh_total
+  cycle: daily
+radiateur_voitures_kwh_semaine:         # sensor.radiateur_voitures_kwh_semaine
+  unique_id: radiateur_voitures_kwh_semaine
+  source: sensor.radiateur_voitures_kwh_total
+  cycle: weekly
+radiateur_voitures_kwh_mois:            # sensor.radiateur_voitures_kwh_mois
+  unique_id: radiateur_voitures_kwh_mois
+  source: sensor.radiateur_voitures_kwh_total
+  cycle: monthly
+
+# pour Couloir
+radiateur_couloir_kwh_jour:             # sensor.radiateur_couloir_kwh_jour
+  unique_id: radiateur_couloir_kwh_jour
+  source: sensor.radiateur_couloir_kwh_total
+  cycle: daily
+radiateur_couloir_kwh_semaine:          # sensor.radiateur_couloir_kwh_semaine
+  unique_id: radiateur_couloir_kwh_semaine
+  source: sensor.radiateur_couloir_kwh_total
+  cycle: weekly
+radiateur_couloir_kwh_mois:             # sensor.radiateur_couloir_kwh_mois
+  unique_id: radiateur_couloir_kwh_mois
+  source: sensor.radiateur_couloir_kwh_total
+  cycle: monthly
+
+
+# pour Atelier
+radiateur_atelier_kwh_jour:             # sensor.radiateur_atelier_kwh_jour
+  unique_id: radiateur_atelier_kwh_jour
+  source: sensor.radiateur_atelier_kwh_total
+  cycle: daily
+radiateur_atelier_kwh_semaine:          # sensor.radiateur_atelier_kwh_semaine
+  unique_id: radiateur_atelier_kwh_semaine
+  source: sensor.radiateur_atelier_kwh_total
+  cycle: weekly
+radiateur_atelier_kwh_mois:             # sensor.radiateur_atelier_kwh_mois
+  unique_id: radiateur_atelier_kwh_mois
+  source: sensor.radiateur_atelier_kwh_total
+  cycle: monthly
+
+# pour Garçonnière
+radiateur_garconniere_kwh_jour:         # sensor.radiateur_garconniere_kwh_jour
+  unique_id: radiateur_garconniere_kwh_jour
+  source: sensor.radiateur_garconniere_kwh_total
+  cycle: daily
+radiateur_garconniere_kwh_semaine:      # sensor.radiateur_garconniere_kwh_semaine
+  unique_id: radiateur_garconniere_kwh_semaine
+  source: sensor.radiateur_garconniere_kwh_total
+  cycle: weekly
+radiateur_garconniere_kwh_mois:         # sensor.radiateur_garconniere_kwh_mois
+  unique_id: radiateur_garconniere_kwh_mois
+  source: sensor.radiateur_garconniere_kwh_total
+  cycle: monthly
+
+# pour Telmo
+radiateur_telmo_kwh_jour:               # sensor.radiateur_telmo_kwh_jour
+  unique_id: radiateur_telmo_kwh_jour
+  source: sensor.radiateur_telmo_kwh_total
+  cycle: daily
+radiateur_telmo_kwh_semaine:            # sensor.radiateur_telmo_kwh_semaine
+  unique_id: radiateur_telmo_kwh_semaine
+  source: sensor.radiateur_telmo_kwh_total
+  cycle: weekly
+radiateur_telmo_kwh_mois:               # sensor.radiateur_telmo_kwh_mois
+  unique_id: radiateur_telmo_kwh_mois
+  source: sensor.radiateur_telmo_kwh_total
+  cycle: monthly
+
+# pour SdB Etg
+radiateur_sdb_etg_kwh_jour:             # sensor.radiateur_sdb_etg_kwh_jour
+  unique_id: radiateur_sdb_etg_kwh_jour
+  source: sensor.radiateur_sdb_etg_kwh_total
+  cycle: daily
+radiateur_sdb_etg_kwh_semaine:          # sensor.radiateur_sdb_etg_kwh_semaine
+  unique_id: radiateur_sdb_etg_kwh_semaine
+  source: sensor.radiateur_sdb_etg_kwh_total
+  cycle: weekly
+radiateur_sdb_etg_kwh_mois:             # sensor.radiateur_sdb_etg_kwh_mois
+  unique_id: radiateur_sdb_etg_kwh_mois
+  source: sensor.radiateur_sdb_etg_kwh_total
+  cycle: monthly
+
+# pour Boîtes
+radiateur_boites_kwh_jour:              # sensor.radiateur_boites_kwh_jour
+  unique_id: radiateur_boites_kwh_jour
+  source: sensor.radiateur_boites_kwh_total
+  cycle: daily
+radiateur_boites_kwh_semaine:           # sensor.radiateur_boites_kwh_semaine
+  unique_id: radiateur_boites_kwh_semaine
+  source: sensor.radiateur_boites_kwh_total
+  cycle: weekly
+radiateur_boites_kwh_mois:              # sensor.radiateur_boites_kwh_mois
+  unique_id: radiateur_boites_kwh_mois
+  source: sensor.radiateur_boites_kwh_total
+  cycle: monthly
+
+# pour Couloir Etg
+radiateur_couloir_etg_kwh_jour:         # sensor.radiateur_couloir_etg_kwh_jour
+  unique_id: radiateur_couloir_etg_kwh_jour
+  source: sensor.radiateur_couloir_etg_kwh_total
+  cycle: daily
+radiateur_couloir_etg_kwh_semaine:      # sensor.radiateur_couloir_etg_kwh_semaine
+  unique_id: radiateur_couloir_etg_kwh_semaine
+  source: sensor.radiateur_couloir_etg_kwh_total
+  cycle: weekly
+radiateur_couloir_etg_kwh_mois:         # sensor.radiateur_couloir_etg_kwh_mois
+  unique_id: radiateur_couloir_etg_kwh_mois
+  source: sensor.radiateur_couloir_etg_kwh_total
+  cycle: monthly

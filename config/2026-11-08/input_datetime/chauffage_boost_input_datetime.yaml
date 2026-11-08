@@ -1,0 +1,90 @@
+
+################################################################################
+### Définition des Helpers INPUT_DATETIME pour le Blueprint Chauffage Boost by C. : Boost end par pièce
+################################################################################
+
+
+
+## ========== ANCRES ==========
+
+boost_end_defaults: &boost_end_defaults
+  has_date: true
+  has_time: true
+  icon: mdi:clock-end
+
+  
+
+## ========== par PIÈCE ==========
+
+
+# pour Chambre Ss-Sol
+boost_end_chambre_sssol:
+  <<: *boost_end_defaults
+  name: "Heure de fin du boost Chambre Ss-Sol"
+
+
+# pour Bureau
+boost_end_bureau:
+  <<: *boost_end_defaults
+  name: "Heure de fin du boost Bureau"
+
+# pour Cuisine
+boost_end_cuisine:
+  <<: *boost_end_defaults
+  name: "Heure de fin du boost Cuisine"
+
+# pour Salon
+boost_end_salon:
+  <<: *boost_end_defaults
+  name: "Heure de fin du boost Salon"
+
+# pour SdB
+boost_end_sdb:
+  <<: *boost_end_defaults
+  name: "Heure de fin du boost SdB"
+
+# pour Michel
+boost_end_michel:
+  <<: *boost_end_defaults
+  name: "Heure de fin du boost Michel"
+
+# pour Voitures
+boost_end_voitures:
+  <<: *boost_end_defaults
+  name: "Heure de fin du boost Voitures"
+
+# pour Couloir
+boost_end_couloir:
+  <<: *boost_end_defaults
+  name: "Heure de fin du boost Couloir"
+
+
+# pour Atelier
+boost_end_atelier:
+  <<: *boost_end_defaults
+  name: "Heure de fin du boost Atelier"
+
+# pour Garçonnière
+boost_end_garconniere:
+  <<: *boost_end_defaults
+  name: "Heure de fin du boost Garçonnière"
+
+# pour Telmo
+boost_end_telmo:
+  <<: *boost_end_defaults
+  name: "Heure de fin du boost Telmo"
+
+# pour SdB Etg
+boost_end_sdb_etg:
+  <<: *boost_end_defaults
+  name: "Heure de fin du boost SdB Etg"
+
+# pour Boîtes
+boost_end_boites:
+  <<: *boost_end_defaults
+  name: "Heure de fin du boost Boîtes"
+
+# pour Couloir Etg
+boost_end_couloir_etg:
+  <<: *boost_end_defaults
+  name: "Heure de fin du boost Couloir Etg"

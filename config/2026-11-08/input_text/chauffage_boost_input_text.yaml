@@ -1,0 +1,91 @@
+
+################################################################################
+### Définition des Helpers INPUT_TEXT pour le Blueprint Chauffage Boost by C. : Previous mode
+################################################################################
+
+
+
+## ========== ANCRES ==========
+
+previous_mode_defaults: &previous_mode_defaults
+  icon: mdi:memory
+  initial: "Presence"
+  max: 50
+
+
+
+  
+## ========== par PIÈCE ==========
+
+
+# pour Chambre Ss-Sol
+radiateur_chambre_sssol_previous_mode:
+  <<: *previous_mode_defaults
+  name: "Chambre Ss-Sol - Mode précédent mémorisé"
+
+
+# pour Bureau
+radiateur_bureau_previous_mode:
+  <<: *previous_mode_defaults
+  name: "Bureau - Mode précédent mémorisé"
+
+# pour Cuisine
+radiateur_cuisine_previous_mode:
+  <<: *previous_mode_defaults
+  name: "Cuisine - Mode précédent mémorisé"
+
+# pour Salon
+radiateur_salon_previous_mode:
+  <<: *previous_mode_defaults
+  name: "Salon - Mode précédent mémorisé"
+
+# pour SdB
+radiateur_sdb_previous_mode:
+  <<: *previous_mode_defaults
+  name: "SdB - Mode précédent mémorisé"
+
+# pour Michel
+radiateur_michel_previous_mode:
+  <<: *previous_mode_defaults
+  name: "Michel - Mode précédent mémorisé"
+
+# pour Voitures
+radiateur_voitures_previous_mode:
+  <<: *previous_mode_defaults
+  name: "Voitures - Mode précédent mémorisé"
+
+# pour Couloir
+radiateur_couloir_previous_mode:
+  <<: *previous_mode_defaults
+  name: "Couloir - Mode précédent mémorisé"
+
+
+# pour Atelier
+radiateur_atelier_previous_mode:
+  <<: *previous_mode_defaults
+  name: "Atelier - Mode précédent mémorisé"
+
+# pour Garçonnière
+radiateur_garconniere_previous_mode:
+  <<: *previous_mode_defaults
+  name: "Garçonnière - Mode précédent mémorisé"
+
+# pour Telmo
+radiateur_telmo_previous_mode:
+  <<: *previous_mode_defaults
+  name: "Telmo - Mode précédent mémorisé"
+
+# pour SdB Etg
+radiateur_sdb_etg_previous_mode:
+  <<: *previous_mode_defaults
+  name: "SdB Etg - Mode précédent mémorisé"
+
+# pour Boîtes
+radiateur_boites_previous_mode:
+  <<: *previous_mode_defaults
+  name: "Boîtes - Mode précédent mémorisé"
+
+# pour Couloir Etg
+radiateur_couloir_etg_previous_mode:
+  <<: *previous_mode_defaults
+  name: "Couloir Etg - Mode précédent mémorisé"

@@ -1,0 +1,270 @@
+# yaml-language-server: $schema=null
+
+#################################################################
+### binary_sensor pour le capteur virtuel d'ouverture de fenêtre 
+### nouvelle écriture pour 06-2026
+#################################################################
+
+- binary_sensor:
+
+
+  #  remplacé par un helper input_boolean et un template binary_sensor afin de le rendre utilisable dans le TdB Lovelace (interupteur intersaison) - voir ci-après
+  # # binary_sensor.fenetre_virtuelle_onoff :
+  # - device_class: opening
+  #   default_entity_id: binary_sensor.fenetre_virtuelle_onoff
+  #   name: Fenêtre virtuelle
+  #   state: 'off'
+  #   icon: mdi:window-closed-variant
+
+  - name: "Fenêtre virtuelle"
+    unique_id: fenetre_virtuelle_onoff
+    device_class: opening
+    state: "{{ is_state('input_boolean.fenetre_virtuelle_onoff', 'on') }}"
+    icon: >
+      {{ 'mdi:window-open-variant' if is_state('input_boolean.fenetre_virtuelle_onoff','on')
+        else 'mdi:window-closed-variant' }}
+
+
+
+  #####################################################
+  ### Groupes de programmation Présence (SEM + WE)
+  ### Permet d'afficher l'icône activée si l'une des programmations est active
+  #####################################################
+  
+  ## Atelier : binary_sensor.schedule_atelier_presence_any
+  - default_entity_id: binary_sensor.schedule_atelier_presence_any
+    name: "Programmation présence atelier"
+    state: >-
+      {{ is_state('switch.schedule_atelier_presence_sem', 'on')
+        or is_state('switch.schedule_atelier_presence_we', 'on') }}
+    icon: mdi:home-account
+  
+  ## Garçonnière : binary_sensor.schedule_garconniere_presence_any
+  - default_entity_id: binary_sensor.schedule_garconniere_presence_any
+    name: "Programmation présence garconniere"
+    state: >-
+      {{ is_state('switch.schedule_garconniere_presence_sem', 'on')
+        or is_state('switch.schedule_garconniere_presence_we', 'on') }}
+    icon: mdi:home-account
+
+
+
+
+- sensor:
+
+  #####################################################
+  # Sensors pour l'affichage sur les cartes Lovelace
+  # de l'état d'ouverture des portes et fenêtres
+  #####################################################
+
+
+
+  # =============== ANCRE COMMUNE =================
+
+
+  - &etat_ouverture_display
+    state: >-
+      {% set src = etat_ouverture_source | default('') %}
+      {% set etat = states(src) if src != '' else '' %}
+      {% if etat == 'chauffage_coupe' %}
+        Coupé
+      {% elif etat == 'ouverture_detectee' %}
+        Ouvert
+      {% else %}
+        Fermé
+      {% endif %}
+    icon: >-
+      {% set src = etat_ouverture_source | default('') %}
+      {% set etat = states(src) if src != '' else '' %}
+      {% if etat in ['chauffage_coupe', 'ouverture_detectee'] %}
+        mdi:window-open-variant
+      {% else %}
+        mdi:window-closed-variant
+      {% endif %}
+
+
+
+  # ================ par PIÈCE ===================
+
+
+  # Chambre Ss-Sol : sensor.chambre_sssol_etat_ouverture_display
+  - name: "Chambre Ss-Sol - État ouverture display"
+    unique_id: chambre_sssol_etat_ouverture_display
+    variables:
+      etat_ouverture_source: input_text.radiateur_chambre_sssol_etat_ouverture
+    <<: *etat_ouverture_display
+
+
+  # Bureau : sensor.bureau_etat_ouverture_display
+  - name: "Bureau - État ouverture display"
+    unique_id: bureau_etat_ouverture_display
+    variables:
+      etat_ouverture_source: input_text.radiateur_bureau_etat_ouverture
+    <<: *etat_ouverture_display
+
+  # Cuisine : sensor.cuisine_etat_ouverture_display
+  - name: "Cuisine - État ouverture display"
+    unique_id: cuisine_etat_ouverture_display
+    variables:
+      etat_ouverture_source: input_text.radiateur_cuisine_etat_ouverture
+    <<: *etat_ouverture_display
+
+  # Salon : sensor.salon_etat_ouverture_display
+  - name: "Salon - État ouverture display"
+    unique_id: salon_etat_ouverture_display
+    variables:
+      etat_ouverture_source: input_text.radiateur_salon_etat_ouverture
+    <<: *etat_ouverture_display
+
+  # SdB : sensor.sdb_etat_ouverture_display
+  - name: "SdB - État ouverture display"
+    unique_id: sdb_etat_ouverture_display
+    variables:
+      etat_ouverture_source: input_text.radiateur_sdb_etat_ouverture
+    <<: *etat_ouverture_display
+
+  # Michel : sensor.michel_etat_ouverture_display
+  - name: "Michel - État ouverture display"
+    unique_id: michel_etat_ouverture_display
+    variables:
+      etat_ouverture_source: input_text.radiateur_michel_etat_ouverture
+    <<: *etat_ouverture_display
+
+  # Voitures : sensor.voitures_etat_ouverture_display
+  - name: "Voitures - État ouverture display"
+    unique_id: voitures_etat_ouverture_display
+    variables:
+      etat_ouverture_source: input_text.radiateur_voitures_etat_ouverture
+    <<: *etat_ouverture_display
+
+  # Couloir : sensor.couloir_etat_ouverture_display
+  - name: "Couloir - État ouverture display"
+    unique_id: couloir_etat_ouverture_display
+    variables:
+      etat_ouverture_source: input_text.radiateur_couloir_etat_ouverture
+    <<: *etat_ouverture_display
+
+
+  # Atelier : sensor.atelier_etat_ouverture_display
+  - name: "Atelier - État ouverture display"
+    unique_id: atelier_etat_ouverture_display
+    variables:
+      etat_ouverture_source: input_text.radiateur_atelier_etat_ouverture
+    <<: *etat_ouverture_display
+
+  # Garçonnière : sensor.garconniere_etat_ouverture_display
+  - name: "Garçonnière - État ouverture display"
+    unique_id: garconniere_etat_ouverture_display
+    variables:
+      etat_ouverture_source: input_text.radiateur_garconniere_etat_ouverture
+    <<: *etat_ouverture_display
+
+  # Telmo : sensor.telmo_etat_ouverture_display
+  - name: "Telmo - État ouverture display"
+    unique_id: telmo_etat_ouverture_display
+    variables:
+      etat_ouverture_source: input_text.radiateur_telmo_etat_ouverture
+    <<: *etat_ouverture_display
+
+
+
+
+
+
+#  # SdB Etg : sensor.sdb_etg_etat_ouverture_display
+#  - name: "SdB Etg - État ouverture display"
+#    unique_id: sdb_etg_etat_ouverture_display
+#    variables:
+#      etat_ouverture_source: input_text.radiateur_sdb_etg_etat_ouverture
+#    <<: *etat_ouverture_display
+
+
+
+  # SdB Etg : sensor.sdb_etg_etat_ouverture_display
+  - name: "SdB Etg - État ouverture display"
+    unique_id: sdb_etg_etat_ouverture_display
+    variables:
+      etat_ouverture_source: input_text.radiateur_sdb_etg_etat_ouverture
+    <<: *etat_ouverture_display
+
+    # === ÉTAT RÉEL DES OUVRANTS ===
+    # Indépendant de l'activation du Thermostat TPI
+    state: >-
+      {% set porte = states('binary_sensor.magnet_sdb_etg_porte_ouverture') %}
+      {% set fenetre = states('binary_sensor.fenetre_virtuelle') %}
+      {% if porte == 'on' or fenetre == 'on' %}
+        Ouvert
+      {% elif porte == 'off' and fenetre == 'off' %}
+        Fermé
+      {% else %}
+        Indisponible
+      {% endif %}
+
+    # === ICÔNE SELON L'ÉTAT RÉEL ===
+    icon: >-
+      {% if is_state('binary_sensor.magnet_sdb_etg_porte_ouverture', 'on')
+        or is_state('binary_sensor.fenetre_virtuelle', 'on') %}
+        mdi:window-open-variant
+      {% else %}
+        mdi:window-closed-variant
+      {% endif %}
+
+    attributes:
+
+      # === OUVERTURE PRISE EN COMPTE PAR LE TPI ===
+      # Vrai uniquement si le TPI est actif,
+      # qu'un ouvrant est ouvert et que le TPI
+      # a enregistré la coupure du chauffage.
+      alerte_tpi: >-
+        {% set ouvert =
+          is_state('binary_sensor.magnet_sdb_etg_porte_ouverture', 'on')
+          or is_state('binary_sensor.fenetre_virtuelle', 'on') %}
+        {{
+          ouvert
+          and is_state('automation.chauffage_by_c_thermostat_tpi_sdb_etg', 'on')
+          and is_state(
+            'input_text.radiateur_sdb_etg_etat_ouverture',
+            'chauffage_coupe'
+          )
+        }}
+
+      # === COULEUR POUR L'UI ===
+      # Bleu-gris : fermé
+      # Bleu vif : ouvert sans coupure
+      # Orange : ouvert avec coupure TPI
+      rgb_color: >-
+        {% set ouvert =
+          is_state('binary_sensor.magnet_sdb_etg_porte_ouverture', 'on')
+          or is_state('binary_sensor.fenetre_virtuelle', 'on') %}
+        {% set alerte =
+          ouvert
+          and is_state('automation.chauffage_by_c_thermostat_tpi_sdb_etg', 'on')
+          and is_state(
+            'input_text.radiateur_sdb_etg_etat_ouverture',
+            'chauffage_coupe'
+          ) %}
+        {% if alerte %}
+          {{ [255, 165, 0] }}
+        {% elif ouvert %}
+          {{ [33, 150, 243] }}
+        {% else %}
+          {{ [68, 115, 158] }}
+        {% endif %}
+
+
+
+
+
+  # Boîtes : sensor.boites_etat_ouverture_display
+  - name: "Boîtes - État ouverture display"
+    unique_id: boites_etat_ouverture_display
+    variables:
+      etat_ouverture_source: input_text.radiateur_boites_etat_ouverture
+    <<: *etat_ouverture_display
+
+  # Couloir Etg : sensor.couloir_etg_etat_ouverture_display
+  - name: "Couloir Etg - État ouverture display"
+    unique_id: couloir_etg_etat_ouverture_display
+    variables:
+      etat_ouverture_source: input_text.radiateur_couloir_etg_etat_ouverture
+    <<: *etat_ouverture_display

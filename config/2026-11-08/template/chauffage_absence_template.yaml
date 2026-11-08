@@ -1,0 +1,1554 @@
+# yaml-language-server: $schema=null
+
+
+################################################################################
+### SENSORS GESTION ABSENCE AUTO
+################################################################################
+
+
+## =============================== 
+## ========== au GLOBAL ==========
+
+
+- binary_sensor:
+
+
+### ========================================
+### SENSORS GESTION ABSENCE AUTO - DYNAMIQUES
+### ========================================
+
+
+### ============== GLOBAL ===================
+
+## nvll version pour la détection effective des changements sur les sensors presence_effective
+
+    # # Utilisateur 1 absent (Michel) - MODIFIÉ pour utiliser presence_effective -> binary_sensor.chauffage_utilisateur1_absent
+    # - name: "Chauffage - Utilisateur1 Absent"
+    #   unique_id: chauffage_utilisateur1_absent
+    #   device_class: presence
+    #   state: >-
+    #     {{ not is_state('binary_sensor.michel_presence_effective','on') }}
+    #   availability: >-
+    #     {{ states('binary_sensor.michel_presence_effective') not in ['unknown','unavailable'] }}
+    #   icon:  >-
+    #     {% if is_state('binary_sensor.michel_presence_effective','on') %}
+    #       mdi:home-account
+    #     {% else %}
+    #       mdi:home-export-outline
+    #     {% endif %}
+
+    # # Utilisateur 2 absent (François) -> binary_sensor.chauffage_utilisateur2_absent
+    # - name: "Chauffage - Utilisateur2 Absent"
+    #   unique_id: chauffage_utilisateur2_absent
+    #   device_class: presence
+    #   state: >-
+    #     {{ not is_state('binary_sensor.francois_presence_effective','on') }}
+    #   availability: >-
+    #     {{ states('binary_sensor.francois_presence_effective') not in ['unknown','unavailable'] }}
+    #   icon: >-
+    #     {% if is_state('binary_sensor.francois_presence_effective','on') %}
+    #       mdi:home-account
+    #     {% else %}
+    #       mdi:home-export-outline
+    #     {% endif %}
+
+
+
+    # versions corrigées sans device_class: Presence car ce sont des capteurs d'absence
+
+    # Utilisateur 1 absent (Michel) -> binary_sensor.chauffage_utilisateur1_absent
+    - name: "Chauffage - Utilisateur1 Absent"
+      unique_id: chauffage_utilisateur1_absent
+      state: >-
+        {{ not is_state('binary_sensor.michel_presence_effective', 'on') }}
+      availability: >-
+        {{ states('binary_sensor.michel_presence_effective') not in ['unknown','unavailable'] }}
+      icon: >-
+        {% if is_state('binary_sensor.michel_presence_effective', 'on') %}
+          mdi:home-account
+        {% else %}
+          mdi:home-export-outline
+        {% endif %}
+
+    # Utilisateur 2 absent (François) -> binary_sensor.chauffage_utilisateur2_absent
+    - name: "Chauffage - Utilisateur2 Absent"
+      unique_id: chauffage_utilisateur2_absent
+      state: >-
+        {{ not is_state('binary_sensor.francois_presence_effective', 'on') }}
+      availability: >-
+        {{ states('binary_sensor.francois_presence_effective') not in ['unknown','unavailable'] }}
+      icon: >-
+        {% if is_state('binary_sensor.francois_presence_effective', 'on') %}
+          mdi:home-account
+        {% else %}
+          mdi:home-export-outline
+        {% endif %}
+
+
+
+    # Anciennes versions (à vérifier)
+
+    # Utilisateur 3 absent (optionnel)
+    - name: "Chauffage - Utilisateur3 Absent"
+      unique_id: chauffage_utilisateur3_absent
+      device_class: presence
+      state: >-
+        {% set entities = states('input_text.chauffage_absence_auto_utilisateurs_entities').split(',') %}
+        {% if entities|length >= 3 and entities[2] not in ['','unknown','unavailable'] %}
+          {% if entities[2].startswith('binary_sensor.') %}
+            {{ not is_state(entities[2],'on') }}
+          {% elif entities[2].startswith('person.') %}
+            {{ is_state(entities[2],'not_home') }}
+          {% else %}
+            false
+          {% endif %}
+        {% else %}
+          false
+        {% endif %}
+      availability: >-
+        {% set entities = states('input_text.chauffage_absence_auto_utilisateurs_entities').split(',') %}
+        {{ entities|length >= 3 and entities[2] not in ['','unknown','unavailable'] }}
+      icon: >-
+        {% set entities = states('input_text.chauffage_absence_auto_utilisateurs_entities').split(',') %}
+        {% if entities|length >= 3 and entities[2] not in ['','unknown','unavailable'] %}
+          {% if entities[2].startswith('binary_sensor.') %}
+            {% if is_state(entities[2],'on') %}
+              mdi:home-account
+            {% else %}
+              mdi:home-export-outline
+            {% endif %}
+          {% elif entities[2].startswith('person.') %}
+            {% if is_state(entities[2],'home') %}
+              mdi:home-account
+            {% else %}
+              mdi:home-export-outline
+            {% endif %}
+          {% else %}
+            mdi:account-off
+          {% endif %}
+        {% else %}
+          mdi:account-off
+        {% endif %}
+
+    # Utilisateur 4 absent (optionnel)
+    - name: "Chauffage - Utilisateur4 Absent"
+      unique_id: chauffage_utilisateur4_absent
+      device_class: presence
+      state: >-
+        {% set entities = states('input_text.chauffage_absence_auto_utilisateurs_entities').split(',') %}
+        {% if entities|length >= 4 and entities[3] not in ['','unknown','unavailable'] %}
+          {% if entities[3].startswith('binary_sensor.') %}
+            {{ not is_state(entities[3],'on') }}
+          {% elif entities[3].startswith('person.') %}
+            {{ is_state(entities[3],'not_home') }}
+          {% else %}
+            false
+          {% endif %}
+        {% else %}
+          false
+        {% endif %}
+      availability: >-
+        {% set entities = states('input_text.chauffage_absence_auto_utilisateurs_entities').split(',') %}
+        {{ entities|length >= 4 and entities[3] not in ['','unknown','unavailable'] }}
+      icon: >-
+        {% set entities = states('input_text.chauffage_absence_auto_utilisateurs_entities').split(',') %}
+        {% if entities|length >= 4 and entities[3] not in ['','unknown','unavailable'] %}
+          {% if entities[3].startswith('binary_sensor.') %}
+            {% if is_state(entities[3],'on') %}
+              mdi:home-account
+            {% else %}
+              mdi:home-export-outline
+            {% endif %}
+          {% elif entities[3].startswith('person.') %}
+            {% if is_state(entities[3],'home') %}
+              mdi:home-account
+            {% else %}
+              mdi:home-export-outline
+            {% endif %}
+          {% else %}
+            mdi:account-off
+          {% endif %}
+        {% else %}
+          mdi:account-off
+        {% endif %}
+
+    # Utilisateur 5 absent (optionnel)
+    - name: "Chauffage - Utilisateur5 Absent"
+      unique_id: chauffage_utilisateur5_absent
+      device_class: presence
+      state: >-
+        {% set entities = states('input_text.chauffage_absence_auto_utilisateurs_entities').split(',') %}
+        {% if entities|length >= 5 and entities[4] not in ['','unknown','unavailable'] %}
+          {% if entities[4].startswith('binary_sensor.') %}
+            {{ not is_state(entities[4],'on') }}
+          {% elif entities[4].startswith('person.') %}
+            {{ is_state(entities[4],'not_home') }}
+          {% else %}
+            false
+          {% endif %}
+        {% else %}
+          false
+        {% endif %}
+      availability: >-
+        {% set entities = states('input_text.chauffage_absence_auto_utilisateurs_entities').split(',') %}
+        {{ entities|length >= 5 and entities[4] not in ['','unknown','unavailable'] }}
+      icon:  >-
+        {% set entities = states('input_text.chauffage_absence_auto_utilisateurs_entities').split(',') %}
+        {% if entities|length >= 5 and entities[4] not in ['','unknown','unavailable'] %}
+          {% if entities[4].startswith('binary_sensor.') %}
+            {% if is_state(entities[4],'on') %}
+              mdi:home-account
+            {% else %}
+              mdi:home-export-outline
+            {% endif %}
+          {% elif entities[4].startswith('person.') %}
+            {% if is_state(entities[4],'home') %}
+              mdi:home-account
+            {% else %}
+              mdi:home-export-outline
+            {% endif %}
+          {% else %}
+            mdi:account-off
+          {% endif %}
+        {% else %}
+          mdi:account-off
+        {% endif %}
+
+    # Tous utilisateurs absents (réellement DYNAMIQUE pour x5 users)
+    - name: "Chauffage - Tous Utilisateurs Absents"
+      unique_id: chauffage_tous_utilisateurs_absents
+      state: >-
+        {% set entities = states('input_text.chauffage_absence_auto_utilisateurs_entities').replace(' ', '').split(',') %}
+        {% set entities = entities | reject('in', ['', 'unknown', 'unavailable']) | list %}
+        {% set nb_users = entities | select('match','^(binary_sensor|person)\\.') | list | length %}
+
+        {% if nb_users == 0 %}
+          false
+        {% else %}
+          {% set absents = namespace(count=0) %}
+          {% for i in range(1, nb_users + 1) %}
+            {% set sensor = 'binary_sensor.chauffage_utilisateur' ~ i ~ '_absent' %}
+            {% if is_state(sensor, 'on') %}
+              {% set absents.count = absents.count + 1 %}
+            {% endif %}
+          {% endfor %}
+          {{ absents.count == nb_users }}
+        {% endif %}
+      availability: >-
+        {% set entities = states('input_text.chauffage_absence_auto_utilisateurs_entities').replace(' ', '').split(',') %}
+        {% set entities = entities | reject('in', ['', 'unknown', 'unavailable']) | list %}
+        {% set nb_users = entities | select('match','^(binary_sensor|person)\\.') | list | length %}
+
+        {% if nb_users == 0 %}
+          false
+        {% else %}
+          {% set available = namespace(ok=true) %}
+          {% for i in range(1, nb_users + 1) %}
+            {% set sensor = 'binary_sensor.chauffage_utilisateur' ~ i ~ '_absent' %}
+            {% if states(sensor) in ['unknown','unavailable'] %}
+              {% set available.ok = false %}
+            {% endif %}
+          {% endfor %}
+          {{ available.ok }}
+        {% endif %}
+      icon: >-
+        {% if is_state('binary_sensor.chauffage_tous_utilisateurs_absents','on') %}
+          mdi:home-off-outline
+        {% else %}
+          mdi:home-group
+        {% endif %}
+
+
+
+
+
+
+
+# ========================================
+# SENSORS PRÉSENCE AVEC OVERRIDE MANUEL
+# ========================================
+# Ex. remplacez person.michel par binary_sensor.michel_presence_effective pour prendre en compte l'override manuel.
+
+## ============== GLOBAL =================
+
+    # pour group.mell : binary_sensor.groupe_mell_presence_effective
+    - name: "Groupe Mell Présence Effective"
+      unique_id: groupe_mell_presence_effective
+      device_class: presence
+      state: >-
+        {% set override = states('input_select.presence_override_groupe') %}
+        {% if override == 'Forcer Présent' %}
+          true
+        {% elif override == 'Forcer Absent' %}
+          false
+        {% else %}
+          {{ is_state('group.mell_utilisateurs', 'home') }}
+        {% endif %}
+      icon: >-
+        {% if is_state('binary_sensor.groupe_mell_presence_effective', 'on') %}
+          mdi:home-group
+        {% else %}
+          mdi:home-group-minus
+        {% endif %}
+
+    # pour Michel : binary_sensor.michel_presence_effective
+    - name: "Michel Présence Effective"
+      unique_id: michel_presence_effective
+      device_class: presence
+      state: >-
+        {% set override = states('input_select.presence_override_michel') %}
+        {% if override == 'Forcer Présent' %}
+          true
+        {% elif override == 'Forcer Absent' %}
+          false
+        {% else %}
+          {{ is_state('person.michel', 'home') }}
+        {% endif %}
+      icon: >-
+        {% if is_state('binary_sensor.michel_presence_effective', 'on') %}
+          mdi:home-account
+        {% else %}
+          mdi:home-outline
+        {% endif %}
+
+    # pour Francois : binary_sensor.francois_presence_effective
+    - name: "François Présence Effective"
+      unique_id: francois_presence_effective
+      device_class: presence
+      state: >-
+        {% set override = states('input_select.presence_override_francois') %}
+        {% if override == 'Forcer Présent' %}
+          true
+        {% elif override == 'Forcer Absent' %}
+          false
+        {% else %}
+          {{ is_state('person.ciscoo', 'home') }}
+        {% endif %}
+      icon: >-
+        {% if is_state('binary_sensor.francois_presence_effective', 'on') %}
+          mdi:home-account
+        {% else %}
+          mdi:home-outline
+        {% endif %}
+
+
+
+
+
+
+
+- sensor:
+
+
+# ========================================
+# SENSORS GESTION ABSENCE AUTO - DYNAMIQUES
+# ========================================
+
+## =================== GLOBAL ====================
+
+# État global de présence : sensor.chauffage_absence_auto_etat_global
+    - name: "Chauffage Absence Auto - État Global"
+      unique_id: chauffage_absence_auto_etat_global
+      state: >-
+        {% set tous_absents = is_state('binary_sensor.chauffage_tous_utilisateurs_absents', 'on') %}
+        {% if tous_absents %}
+          Tous absents
+        {% else %}
+          {# Liste des présents via presence_effective #}
+          {% set michel_present = is_state('binary_sensor.michel_presence_effective', 'on') %}
+          {% set francois_present = is_state('binary_sensor.francois_presence_effective', 'on') %}
+          {% set presents = [] %}
+          {% if michel_present %}
+            {% set presents = presents + ['Michel'] %}
+          {% endif %}
+          {% if francois_present %}
+            {% set presents = presents + ['François'] %}
+          {% endif %}
+          
+          {# Calcul état #}
+          {% set nb_total = 2 %}
+          {% set nb_presents = presents|length %}
+          {% set nb_absents = nb_total - nb_presents %}
+          
+          {% if nb_presents == nb_total %}
+            Tous présents
+          {% elif nb_presents == 0 %}
+            Tous absents
+          {% elif nb_absents == 1 %}
+            {% set absents = [] %}
+            {% if not michel_present %}{% set absents = absents + ['Michel'] %}{% endif %}
+            {% if not francois_present %}{% set absents = absents + ['François'] %}{% endif %}
+            {{ absents[0] }} absent
+          {% else %}
+            {{ presents|join(', ') }} présent{{ 's' if nb_presents > 1 else '' }}
+          {% endif %}
+        {% endif %}
+      icon: mdi:home-account
+
+
+
+
+
+# ========================================
+# SENSORS PRÉSENCE AVEC OVERRIDE MANUEL
+# ========================================
+# Remplacez person.michel par binary_sensor.michel_presence_effective pour prendre en compte l'override manuel.
+
+
+# ==================== au GLOBAL =============================
+
+    # sensor pour override group.mell : sensor.groupe_mell_statut_presence
+    - name: "Groupe Mell Statut Présence"
+      unique_id: groupe_mell_statut_presence
+      state: >-
+        {% set override = states('input_select.presence_override_groupe') %}
+        {% set gps = states('group.mell_utilisateurs') %}
+        {% if override == 'Forcer Présent' %}
+          Présent (Forcé)
+        {% elif override == 'Forcer Absent' %}
+          Absent (Forcé)
+        {% else %}
+          {{ 'Présent (GPS)' if gps == 'home' else 'Absent (GPS)' }}
+        {% endif %}
+      icon: mdi:home-analytics
+
+    # sensor pour override Michel : sensor.michel_statut_presence
+    - name: "Michel Statut Présence"
+      unique_id: michel_statut_presence
+      state: >-
+        {% set override = states('input_select.presence_override_michel') %}
+        {% set gps = states('person.michel') %}
+        {% if override == 'Forcer Présent' %}
+          Présent (Forcé)
+        {% elif override == 'Forcer Absent' %}
+          Absent (Forcé)
+        {% else %}
+          {{ 'Présent (GPS)' if gps == 'home' else 'Absent (GPS)' }}
+        {% endif %}
+      icon: mdi:map-marker-account
+
+    # sensor pour override Francois : sensor.francois_statut_presence
+    - name: "François Statut Présence"
+      unique_id: francois_statut_presence
+      state: >-
+        {% set override = states('input_select.presence_override_francois') %}
+        {% set gps = states('person.ciscoo') %}
+        {% if override == 'Forcer Présent' %}
+          Présent (Forcé)
+        {% elif override == 'Forcer Absent' %}
+          Absent (Forcé)
+        {% else %}
+          {{ 'Présent (GPS)' if gps == 'home' else 'Absent (GPS)' }}
+        {% endif %}
+      icon: mdi:map-marker-account
+
+
+
+
+## ========== par PIÈCE ==========
+
+
+    # -------------------------------------------------
+    # Chambre Ss-Sol -> chambre_sssol
+    # -------------------------------------------------
+    - name: "Chauffage Absence Auto - Chambre Ss-Sol Status"
+      unique_id: chauffage_absence_auto_chambre_sssol_status
+      state: >-
+        {% set global_off = is_state('input_boolean.chauffage_absence_auto_global_actif', 'off') %}
+        {% set local_off = is_state('input_boolean.radiateur_chambre_sssol_absence_auto_actif', 'off') %}
+        {% set boost_on = is_state('input_boolean.boost_chambre_sssol', 'on') if states('input_boolean.boost_chambre_sssol') not in ['unknown', 'unavailable'] else false %}
+        {% set tous_absents = is_state('binary_sensor.chauffage_tous_utilisateurs_absents', 'on') %}
+        {% set principal = states('input_select.radiateur_chambre_sssol_utilisateur_principal') %}
+        {% set si_principal = is_state('input_boolean.radiateur_chambre_sssol_absence_si_principal_absent', 'on') %}
+        {% set principal_absent =
+          (principal == 'Michel' and not is_state('binary_sensor.michel_presence_effective', 'on')) or
+          (principal == 'François' and not is_state('binary_sensor.francois_presence_effective', 'on'))
+        %}
+        {% if global_off or local_off %}
+          Off
+        {% elif boost_on %}
+          Boost
+        {% elif tous_absents %}
+          TousAbs
+        {% elif si_principal and principal_absent %}
+          Absence
+        {% else %}
+          Présent
+        {% endif %}
+      icon: mdi:account-off-outline
+
+    - name: "Chauffage Absence Auto - Chambre Ss-Sol Détail"
+      unique_id: chauffage_absence_auto_chambre_sssol_detail
+      state: >-
+        {% set global_off = is_state('input_boolean.chauffage_absence_auto_global_actif','off') %}
+        {% set local_off = is_state('input_boolean.radiateur_chambre_sssol_absence_auto_actif','off') %}
+        {% set boost_on = is_state('input_boolean.boost_chambre_sssol','on') if states('input_boolean.boost_chambre_sssol') not in ['unknown','unavailable'] else false %}
+        {% set tous_absents = is_state('binary_sensor.chauffage_tous_utilisateurs_absents','on') %}
+        {% set principal = states('input_select.radiateur_chambre_sssol_utilisateur_principal') %}
+        {% set si_principal = is_state('input_boolean.radiateur_chambre_sssol_absence_si_principal_absent','on') %}
+        {% set reduction = states('input_number.chauffage_absence_auto_reduction_degrees') | float(2) %}
+        {% set mode_actuel = states('input_select.radiateur_chambre_sssol_mode') %}
+
+        {% set etait_presence = is_state('input_boolean.radiateur_chambre_sssol_etait_presence','on') %}
+        {% set mode_inactif = mode_actuel in ['Hors-gel','Arret'] %}
+
+        {% set principal_absent =
+          (principal == 'Michel' and not is_state('binary_sensor.michel_presence_effective', 'on')) or
+          (principal == 'François' and not is_state('binary_sensor.francois_presence_effective', 'on'))
+        %}
+
+        {% set absence_active = tous_absents or (si_principal and principal_absent) %}
+
+        {% if global_off %}
+          Gestion Absence désactivée globalement
+        {% elif local_off %}
+          Gestion Absence désactivée pour cette pièce
+        {% elif mode_inactif %}
+          Mode {{ mode_actuel }} - pas de réduction
+        {% elif boost_on %}
+          Boost actif - réduction Absence ignorée
+        {% elif absence_active and mode_actuel == 'Absence' and etait_presence %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - passage en mode Absence
+        {% elif absence_active and mode_actuel in ['Absence','Manuel'] and (not etait_presence) %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - réduction de {{ reduction }}°C appliquée
+        {% elif absence_active and mode_actuel == 'Presence' %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - correction en cours
+        {% else %}
+          Présence détectée - pas de réduction
+        {% endif %}
+      icon: mdi:information-outline
+
+    - name: "Chauffage Absence Auto - Chambre Ss-Sol Consignes"
+      unique_id: chauffage_absence_auto_chambre_sssol_consignes
+      state: >-
+        {% set base = states('input_number.radiateur_chambre_sssol_consigne') | float(0) %}
+        {% set finale = states('input_number.radiateur_chambre_sssol_consigne_finale') | float(0) %}
+        {{ base }}°C → {{ finale }}°C
+      icon: mdi:arrow-right-thin
+
+
+    # -------------------------------------------------
+    # Bureau -> bureau
+    # -------------------------------------------------
+    - name: "Chauffage Absence Auto - Bureau Status"
+      unique_id: chauffage_absence_auto_bureau_status
+      state: >-
+        {% set global_off = is_state('input_boolean.chauffage_absence_auto_global_actif', 'off') %}
+        {% set local_off = is_state('input_boolean.radiateur_bureau_absence_auto_actif', 'off') %}
+        {% set boost_on = is_state('input_boolean.boost_bureau', 'on') if states('input_boolean.boost_bureau') not in ['unknown', 'unavailable'] else false %}
+        {% set tous_absents = is_state('binary_sensor.chauffage_tous_utilisateurs_absents', 'on') %}
+        {% set principal = states('input_select.radiateur_bureau_utilisateur_principal') %}
+        {% set si_principal = is_state('input_boolean.radiateur_bureau_absence_si_principal_absent', 'on') %}
+        {% set principal_absent =
+          (principal == 'Michel' and not is_state('binary_sensor.michel_presence_effective', 'on')) or
+          (principal == 'François' and not is_state('binary_sensor.francois_presence_effective', 'on'))
+        %}
+        {% if global_off or local_off %}
+          Off
+        {% elif boost_on %}
+          Boost
+        {% elif tous_absents %}
+          TousAbs
+        {% elif si_principal and principal_absent %}
+          Absence
+        {% else %}
+          Présent
+        {% endif %}
+      icon: mdi:account-off-outline
+
+    - name: "Chauffage Absence Auto - Bureau Détail"
+      unique_id: chauffage_absence_auto_bureau_detail
+      state: >-
+        {% set global_off = is_state('input_boolean.chauffage_absence_auto_global_actif','off') %}
+        {% set local_off = is_state('input_boolean.radiateur_bureau_absence_auto_actif','off') %}
+        {% set boost_on = is_state('input_boolean.boost_bureau','on') if states('input_boolean.boost_bureau') not in ['unknown','unavailable'] else false %}
+        {% set tous_absents = is_state('binary_sensor.chauffage_tous_utilisateurs_absents','on') %}
+        {% set principal = states('input_select.radiateur_bureau_utilisateur_principal') %}
+        {% set si_principal = is_state('input_boolean.radiateur_bureau_absence_si_principal_absent','on') %}
+        {% set reduction = states('input_number.chauffage_absence_auto_reduction_degrees') | float(2) %}
+        {% set mode_actuel = states('input_select.radiateur_bureau_mode') %}
+
+        {% set etait_presence = is_state('input_boolean.radiateur_bureau_etait_presence','on') %}
+        {% set mode_inactif = mode_actuel in ['Hors-gel','Arret'] %}
+
+        {% set principal_absent =
+          (principal == 'Michel' and not is_state('binary_sensor.michel_presence_effective', 'on')) or
+          (principal == 'François' and not is_state('binary_sensor.francois_presence_effective', 'on'))
+        %}
+
+        {% set absence_active = tous_absents or (si_principal and principal_absent) %}
+
+        {% if global_off %}
+          Gestion Absence désactivée globalement
+        {% elif local_off %}
+          Gestion Absence désactivée pour cette pièce
+        {% elif mode_inactif %}
+          Mode {{ mode_actuel }} - pas de réduction
+        {% elif boost_on %}
+          Boost actif - réduction Absence ignorée
+        {% elif absence_active and mode_actuel == 'Absence' and etait_presence %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - passage en mode Absence
+        {% elif absence_active and mode_actuel in ['Absence','Manuel'] and (not etait_presence) %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - réduction de {{ reduction }}°C appliquée
+        {% elif absence_active and mode_actuel == 'Presence' %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - correction en cours
+        {% else %}
+          Présence détectée - pas de réduction
+        {% endif %}
+      icon: mdi:information-outline
+
+    - name: "Chauffage Absence Auto - Bureau Consignes"
+      unique_id: chauffage_absence_auto_bureau_consignes
+      state: >-
+        {% set base = states('input_number.radiateur_bureau_consigne') | float(0) %}
+        {% set finale = states('input_number.radiateur_bureau_consigne_finale') | float(0) %}
+        {{ base }}°C → {{ finale }}°C
+      icon: mdi:arrow-right-thin
+
+
+    # -------------------------------------------------
+    # Cuisine -> cuisine
+    # -------------------------------------------------
+    - name: "Chauffage Absence Auto - Cuisine Status"
+      unique_id: chauffage_absence_auto_cuisine_status
+      state: >-
+        {% set global_off = is_state('input_boolean.chauffage_absence_auto_global_actif', 'off') %}
+        {% set local_off = is_state('input_boolean.radiateur_cuisine_absence_auto_actif', 'off') %}
+        {% set boost_on = is_state('input_boolean.boost_cuisine', 'on') if states('input_boolean.boost_cuisine') not in ['unknown', 'unavailable'] else false %}
+        {% set tous_absents = is_state('binary_sensor.chauffage_tous_utilisateurs_absents', 'on') %}
+        {% set principal = states('input_select.radiateur_cuisine_utilisateur_principal') %}
+        {% set si_principal = is_state('input_boolean.radiateur_cuisine_absence_si_principal_absent', 'on') %}
+        {% set principal_absent =
+          (principal == 'Michel' and not is_state('binary_sensor.michel_presence_effective', 'on')) or
+          (principal == 'François' and not is_state('binary_sensor.francois_presence_effective', 'on'))
+        %}
+        {% if global_off or local_off %}
+          Off
+        {% elif boost_on %}
+          Boost
+        {% elif tous_absents %}
+          TousAbs
+        {% elif si_principal and principal_absent %}
+          Absence
+        {% else %}
+          Présent
+        {% endif %}
+      icon: mdi:account-off-outline
+
+    - name: "Chauffage Absence Auto - Cuisine Détail"
+      unique_id: chauffage_absence_auto_cuisine_detail
+      state: >-
+        {% set global_off = is_state('input_boolean.chauffage_absence_auto_global_actif','off') %}
+        {% set local_off = is_state('input_boolean.radiateur_cuisine_absence_auto_actif','off') %}
+        {% set boost_on = is_state('input_boolean.boost_cuisine','on') if states('input_boolean.boost_cuisine') not in ['unknown','unavailable'] else false %}
+        {% set tous_absents = is_state('binary_sensor.chauffage_tous_utilisateurs_absents','on') %}
+        {% set principal = states('input_select.radiateur_cuisine_utilisateur_principal') %}
+        {% set si_principal = is_state('input_boolean.radiateur_cuisine_absence_si_principal_absent','on') %}
+        {% set reduction = states('input_number.chauffage_absence_auto_reduction_degrees') | float(2) %}
+        {% set mode_actuel = states('input_select.radiateur_cuisine_mode') %}
+
+        {% set etait_presence = is_state('input_boolean.radiateur_cuisine_etait_presence','on') %}
+        {% set mode_inactif = mode_actuel in ['Hors-gel','Arret'] %}
+
+        {% set principal_absent =
+          (principal == 'Michel' and not is_state('binary_sensor.michel_presence_effective', 'on')) or
+          (principal == 'François' and not is_state('binary_sensor.francois_presence_effective', 'on'))
+        %}
+
+        {% set absence_active = tous_absents or (si_principal and principal_absent) %}
+
+        {% if global_off %}
+          Gestion Absence désactivée globalement
+        {% elif local_off %}
+          Gestion Absence désactivée pour cette pièce
+        {% elif mode_inactif %}
+          Mode {{ mode_actuel }} - pas de réduction
+        {% elif boost_on %}
+          Boost actif - réduction Absence ignorée
+        {% elif absence_active and mode_actuel == 'Absence' and etait_presence %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - passage en mode Absence
+        {% elif absence_active and mode_actuel in ['Absence','Manuel'] and (not etait_presence) %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - réduction de {{ reduction }}°C appliquée
+        {% elif absence_active and mode_actuel == 'Presence' %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - correction en cours
+        {% else %}
+          Présence détectée - pas de réduction
+        {% endif %}
+      icon: mdi:information-outline
+
+    - name: "Chauffage Absence Auto - Cuisine Consignes"
+      unique_id: chauffage_absence_auto_cuisine_consignes
+      state: >-
+        {% set base = states('input_number.radiateur_cuisine_consigne') | float(0) %}
+        {% set finale = states('input_number.radiateur_cuisine_consigne_finale') | float(0) %}
+        {{ base }}°C → {{ finale }}°C
+      icon: mdi:arrow-right-thin
+
+
+    # -------------------------------------------------
+    # Salon -> salon
+    # -------------------------------------------------
+    - name: "Chauffage Absence Auto - Salon Status"
+      unique_id: chauffage_absence_auto_salon_status
+      state: >-
+        {% set global_off = is_state('input_boolean.chauffage_absence_auto_global_actif', 'off') %}
+        {% set local_off = is_state('input_boolean.radiateur_salon_absence_auto_actif', 'off') %}
+        {% set boost_on = is_state('input_boolean.boost_salon', 'on') if states('input_boolean.boost_salon') not in ['unknown', 'unavailable'] else false %}
+        {% set tous_absents = is_state('binary_sensor.chauffage_tous_utilisateurs_absents', 'on') %}
+        {% set principal = states('input_select.radiateur_salon_utilisateur_principal') %}
+        {% set si_principal = is_state('input_boolean.radiateur_salon_absence_si_principal_absent', 'on') %}
+        {% set principal_absent =
+          (principal == 'Michel' and not is_state('binary_sensor.michel_presence_effective', 'on')) or
+          (principal == 'François' and not is_state('binary_sensor.francois_presence_effective', 'on'))
+        %}
+        {% if global_off or local_off %}
+          Off
+        {% elif boost_on %}
+          Boost
+        {% elif tous_absents %}
+          TousAbs
+        {% elif si_principal and principal_absent %}
+          Absence
+        {% else %}
+          Présent
+        {% endif %}
+      icon: mdi:account-off-outline
+
+    - name: "Chauffage Absence Auto - Salon Détail"
+      unique_id: chauffage_absence_auto_salon_detail
+      state: >-
+        {% set global_off = is_state('input_boolean.chauffage_absence_auto_global_actif','off') %}
+        {% set local_off = is_state('input_boolean.radiateur_salon_absence_auto_actif','off') %}
+        {% set boost_on = is_state('input_boolean.boost_salon','on') if states('input_boolean.boost_salon') not in ['unknown','unavailable'] else false %}
+        {% set tous_absents = is_state('binary_sensor.chauffage_tous_utilisateurs_absents','on') %}
+        {% set principal = states('input_select.radiateur_salon_utilisateur_principal') %}
+        {% set si_principal = is_state('input_boolean.radiateur_salon_absence_si_principal_absent','on') %}
+        {% set reduction = states('input_number.chauffage_absence_auto_reduction_degrees') | float(2) %}
+        {% set mode_actuel = states('input_select.radiateur_salon_mode') %}
+
+        {% set etait_presence = is_state('input_boolean.radiateur_salon_etait_presence','on') %}
+        {% set mode_inactif = mode_actuel in ['Hors-gel','Arret'] %}
+
+        {% set principal_absent =
+          (principal == 'Michel' and not is_state('binary_sensor.michel_presence_effective', 'on')) or
+          (principal == 'François' and not is_state('binary_sensor.francois_presence_effective', 'on'))
+        %}
+
+        {% set absence_active = tous_absents or (si_principal and principal_absent) %}
+
+        {% if global_off %}
+          Gestion Absence désactivée globalement
+        {% elif local_off %}
+          Gestion Absence désactivée pour cette pièce
+        {% elif mode_inactif %}
+          Mode {{ mode_actuel }} - pas de réduction
+        {% elif boost_on %}
+          Boost actif - réduction Absence ignorée
+        {% elif absence_active and mode_actuel == 'Absence' and etait_presence %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - passage en mode Absence
+        {% elif absence_active and mode_actuel in ['Absence','Manuel'] and (not etait_presence) %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - réduction de {{ reduction }}°C appliquée
+        {% elif absence_active and mode_actuel == 'Presence' %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - correction en cours
+        {% else %}
+          Présence détectée - pas de réduction
+        {% endif %}
+      icon: mdi:information-outline
+
+    - name: "Chauffage Absence Auto - Salon Consignes"
+      unique_id: chauffage_absence_auto_salon_consignes
+      state: >-
+        {% set base = states('input_number.radiateur_salon_consigne') | float(0) %}
+        {% set finale = states('input_number.radiateur_salon_consigne_finale') | float(0) %}
+        {{ base }}°C → {{ finale }}°C
+      icon: mdi:arrow-right-thin
+
+
+    # -------------------------------------------------
+    # SdB -> sdb
+    # -------------------------------------------------
+    - name: "Chauffage Absence Auto - SdB Status"
+      unique_id: chauffage_absence_auto_sdb_status
+      state: >-
+        {% set global_off = is_state('input_boolean.chauffage_absence_auto_global_actif', 'off') %}
+        {% set local_off = is_state('input_boolean.radiateur_sdb_absence_auto_actif', 'off') %}
+        {% set boost_on = is_state('input_boolean.boost_sdb', 'on') if states('input_boolean.boost_sdb') not in ['unknown', 'unavailable'] else false %}
+        {% set tous_absents = is_state('binary_sensor.chauffage_tous_utilisateurs_absents', 'on') %}
+        {% set principal = states('input_select.radiateur_sdb_utilisateur_principal') %}
+        {% set si_principal = is_state('input_boolean.radiateur_sdb_absence_si_principal_absent', 'on') %}
+        {% set principal_absent =
+          (principal == 'Michel' and not is_state('binary_sensor.michel_presence_effective', 'on')) or
+          (principal == 'François' and not is_state('binary_sensor.francois_presence_effective', 'on'))
+        %}
+        {% if global_off or local_off %}
+          Off
+        {% elif boost_on %}
+          Boost
+        {% elif tous_absents %}
+          TousAbs
+        {% elif si_principal and principal_absent %}
+          Absence
+        {% else %}
+          Présent
+        {% endif %}
+      icon: mdi:account-off-outline
+
+    - name: "Chauffage Absence Auto - SdB Détail"
+      unique_id: chauffage_absence_auto_sdb_detail
+      state: >-
+        {% set global_off = is_state('input_boolean.chauffage_absence_auto_global_actif','off') %}
+        {% set local_off = is_state('input_boolean.radiateur_sdb_absence_auto_actif','off') %}
+        {% set boost_on = is_state('input_boolean.boost_sdb','on') if states('input_boolean.boost_sdb') not in ['unknown','unavailable'] else false %}
+        {% set tous_absents = is_state('binary_sensor.chauffage_tous_utilisateurs_absents','on') %}
+        {% set principal = states('input_select.radiateur_sdb_utilisateur_principal') %}
+        {% set si_principal = is_state('input_boolean.radiateur_sdb_absence_si_principal_absent','on') %}
+        {% set reduction = states('input_number.chauffage_absence_auto_reduction_degrees') | float(2) %}
+        {% set mode_actuel = states('input_select.radiateur_sdb_mode') %}
+
+        {% set etait_presence = is_state('input_boolean.radiateur_sdb_etait_presence','on') %}
+        {% set mode_inactif = mode_actuel in ['Hors-gel','Arret'] %}
+
+        {% set principal_absent =
+          (principal == 'Michel' and not is_state('binary_sensor.michel_presence_effective', 'on')) or
+          (principal == 'François' and not is_state('binary_sensor.francois_presence_effective', 'on'))
+        %}
+
+        {% set absence_active = tous_absents or (si_principal and principal_absent) %}
+
+        {% if global_off %}
+          Gestion Absence désactivée globalement
+        {% elif local_off %}
+          Gestion Absence désactivée pour cette pièce
+        {% elif mode_inactif %}
+          Mode {{ mode_actuel }} - pas de réduction
+        {% elif boost_on %}
+          Boost actif - réduction Absence ignorée
+        {% elif absence_active and mode_actuel == 'Absence' and etait_presence %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - passage en mode Absence
+        {% elif absence_active and mode_actuel in ['Absence','Manuel'] and (not etait_presence) %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - réduction de {{ reduction }}°C appliquée
+        {% elif absence_active and mode_actuel == 'Presence' %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - correction en cours
+        {% else %}
+          Présence détectée - pas de réduction
+        {% endif %}
+      icon: mdi:information-outline
+
+    - name: "Chauffage Absence Auto - SdB Consignes"
+      unique_id: chauffage_absence_auto_sdb_consignes
+      state: >-
+        {% set base = states('input_number.radiateur_sdb_consigne') | float(0) %}
+        {% set finale = states('input_number.radiateur_sdb_consigne_finale') | float(0) %}
+        {{ base }}°C → {{ finale }}°C
+      icon: mdi:arrow-right-thin
+
+
+    # -------------------------------------------------
+    # Michel -> michel
+    # -------------------------------------------------
+    - name: "Chauffage Absence Auto - Michel Status"
+      unique_id: chauffage_absence_auto_michel_status
+      state: >-
+        {% set global_off = is_state('input_boolean.chauffage_absence_auto_global_actif', 'off') %}
+        {% set local_off = is_state('input_boolean.radiateur_michel_absence_auto_actif', 'off') %}
+        {% set boost_on = is_state('input_boolean.boost_michel', 'on') if states('input_boolean.boost_michel') not in ['unknown', 'unavailable'] else false %}
+        {% set tous_absents = is_state('binary_sensor.chauffage_tous_utilisateurs_absents', 'on') %}
+        {% set principal = states('input_select.radiateur_michel_utilisateur_principal') %}
+        {% set si_principal = is_state('input_boolean.radiateur_michel_absence_si_principal_absent', 'on') %}
+        {% set principal_absent =
+          (principal == 'Michel' and not is_state('binary_sensor.michel_presence_effective', 'on')) or
+          (principal == 'François' and not is_state('binary_sensor.francois_presence_effective', 'on'))
+        %}
+        {% if global_off or local_off %}
+          Off
+        {% elif boost_on %}
+          Boost
+        {% elif tous_absents %}
+          TousAbs
+        {% elif si_principal and principal_absent %}
+          Absence
+        {% else %}
+          Présent
+        {% endif %}
+      icon: mdi:account-off-outline
+
+    - name: "Chauffage Absence Auto - Michel Détail"
+      unique_id: chauffage_absence_auto_michel_detail
+      state: >-
+        {% set global_off = is_state('input_boolean.chauffage_absence_auto_global_actif','off') %}
+        {% set local_off = is_state('input_boolean.radiateur_michel_absence_auto_actif','off') %}
+        {% set boost_on = is_state('input_boolean.boost_michel','on') if states('input_boolean.boost_michel') not in ['unknown','unavailable'] else false %}
+        {% set tous_absents = is_state('binary_sensor.chauffage_tous_utilisateurs_absents','on') %}
+        {% set principal = states('input_select.radiateur_michel_utilisateur_principal') %}
+        {% set si_principal = is_state('input_boolean.radiateur_michel_absence_si_principal_absent','on') %}
+        {% set reduction = states('input_number.chauffage_absence_auto_reduction_degrees') | float(2) %}
+        {% set mode_actuel = states('input_select.radiateur_michel_mode') %}
+
+        {% set etait_presence = is_state('input_boolean.radiateur_michel_etait_presence','on') %}
+        {% set mode_inactif = mode_actuel in ['Hors-gel','Arret'] %}
+
+        {% set principal_absent =
+          (principal == 'Michel' and not is_state('binary_sensor.michel_presence_effective', 'on')) or
+          (principal == 'François' and not is_state('binary_sensor.francois_presence_effective', 'on'))
+        %}
+
+        {% set absence_active = tous_absents or (si_principal and principal_absent) %}
+
+        {% if global_off %}
+          Gestion Absence désactivée globalement
+        {% elif local_off %}
+          Gestion Absence désactivée pour cette pièce
+        {% elif mode_inactif %}
+          Mode {{ mode_actuel }} - pas de réduction
+        {% elif boost_on %}
+          Boost actif - réduction Absence ignorée
+        {% elif absence_active and mode_actuel == 'Absence' and etait_presence %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - passage en mode Absence
+        {% elif absence_active and mode_actuel in ['Absence','Manuel'] and (not etait_presence) %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - réduction de {{ reduction }}°C appliquée
+        {% elif absence_active and mode_actuel == 'Presence' %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - correction en cours
+        {% else %}
+          Présence détectée - pas de réduction
+        {% endif %}
+      icon: mdi:information-outline
+
+    - name: "Chauffage Absence Auto - Michel Consignes"
+      unique_id: chauffage_absence_auto_michel_consignes
+      state: >-
+        {% set base = states('input_number.radiateur_michel_consigne') | float(0) %}
+        {% set finale = states('input_number.radiateur_michel_consigne_finale') | float(0) %}
+        {{ base }}°C → {{ finale }}°C
+      icon: mdi:arrow-right-thin
+
+
+    # -------------------------------------------------
+    # Voitures -> voitures
+    # -------------------------------------------------
+    - name: "Chauffage Absence Auto - Voitures Status"
+      unique_id: chauffage_absence_auto_voitures_status
+      state: >-
+        {% set global_off = is_state('input_boolean.chauffage_absence_auto_global_actif', 'off') %}
+        {% set local_off = is_state('input_boolean.radiateur_voitures_absence_auto_actif', 'off') %}
+        {% set boost_on = is_state('input_boolean.boost_voitures', 'on') if states('input_boolean.boost_voitures') not in ['unknown', 'unavailable'] else false %}
+        {% set tous_absents = is_state('binary_sensor.chauffage_tous_utilisateurs_absents', 'on') %}
+        {% set principal = states('input_select.radiateur_voitures_utilisateur_principal') %}
+        {% set si_principal = is_state('input_boolean.radiateur_voitures_absence_si_principal_absent', 'on') %}
+        {% set principal_absent =
+          (principal == 'Michel' and not is_state('binary_sensor.michel_presence_effective', 'on')) or
+          (principal == 'François' and not is_state('binary_sensor.francois_presence_effective', 'on'))
+        %}
+        {% if global_off or local_off %}
+          Off
+        {% elif boost_on %}
+          Boost
+        {% elif tous_absents %}
+          TousAbs
+        {% elif si_principal and principal_absent %}
+          Absence
+        {% else %}
+          Présent
+        {% endif %}
+      icon: mdi:account-off-outline
+
+    - name: "Chauffage Absence Auto - Voitures Détail"
+      unique_id: chauffage_absence_auto_voitures_detail
+      state: >-
+        {% set global_off = is_state('input_boolean.chauffage_absence_auto_global_actif','off') %}
+        {% set local_off = is_state('input_boolean.radiateur_voitures_absence_auto_actif','off') %}
+        {% set boost_on = is_state('input_boolean.boost_voitures','on') if states('input_boolean.boost_voitures') not in ['unknown','unavailable'] else false %}
+        {% set tous_absents = is_state('binary_sensor.chauffage_tous_utilisateurs_absents','on') %}
+        {% set principal = states('input_select.radiateur_voitures_utilisateur_principal') %}
+        {% set si_principal = is_state('input_boolean.radiateur_voitures_absence_si_principal_absent','on') %}
+        {% set reduction = states('input_number.chauffage_absence_auto_reduction_degrees') | float(2) %}
+        {% set mode_actuel = states('input_select.radiateur_voitures_mode') %}
+
+        {% set etait_presence = is_state('input_boolean.radiateur_voitures_etait_presence','on') %}
+        {% set mode_inactif = mode_actuel in ['Hors-gel','Arret'] %}
+
+        {% set principal_absent =
+          (principal == 'Michel' and not is_state('binary_sensor.michel_presence_effective', 'on')) or
+          (principal == 'François' and not is_state('binary_sensor.francois_presence_effective', 'on'))
+        %}
+
+        {% set absence_active = tous_absents or (si_principal and principal_absent) %}
+
+        {% if global_off %}
+          Gestion Absence désactivée globalement
+        {% elif local_off %}
+          Gestion Absence désactivée pour cette pièce
+        {% elif mode_inactif %}
+          Mode {{ mode_actuel }} - pas de réduction
+        {% elif boost_on %}
+          Boost actif - réduction Absence ignorée
+        {% elif absence_active and mode_actuel == 'Absence' and etait_presence %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - passage en mode Absence
+        {% elif absence_active and mode_actuel in ['Absence','Manuel'] and (not etait_presence) %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - réduction de {{ reduction }}°C appliquée
+        {% elif absence_active and mode_actuel == 'Presence' %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - correction en cours
+        {% else %}
+          Présence détectée - pas de réduction
+        {% endif %}
+      icon: mdi:information-outline
+
+    - name: "Chauffage Absence Auto - Voitures Consignes"
+      unique_id: chauffage_absence_auto_voitures_consignes
+      state: >-
+        {% set base = states('input_number.radiateur_voitures_consigne') | float(0) %}
+        {% set finale = states('input_number.radiateur_voitures_consigne_finale') | float(0) %}
+        {{ base }}°C → {{ finale }}°C
+      icon: mdi:arrow-right-thin
+
+
+    # -------------------------------------------------
+    # Couloir -> couloir
+    # -------------------------------------------------
+    - name: "Chauffage Absence Auto - Couloir Status"
+      unique_id: chauffage_absence_auto_couloir_status
+      state: >-
+        {% set global_off = is_state('input_boolean.chauffage_absence_auto_global_actif', 'off') %}
+        {% set local_off = is_state('input_boolean.radiateur_couloir_absence_auto_actif', 'off') %}
+        {% set boost_on = is_state('input_boolean.boost_couloir', 'on') if states('input_boolean.boost_couloir') not in ['unknown', 'unavailable'] else false %}
+        {% set tous_absents = is_state('binary_sensor.chauffage_tous_utilisateurs_absents', 'on') %}
+        {% set principal = states('input_select.radiateur_couloir_utilisateur_principal') %}
+        {% set si_principal = is_state('input_boolean.radiateur_couloir_absence_si_principal_absent', 'on') %}
+        {% set principal_absent =
+          (principal == 'Michel' and not is_state('binary_sensor.michel_presence_effective', 'on')) or
+          (principal == 'François' and not is_state('binary_sensor.francois_presence_effective', 'on'))
+        %}
+        {% if global_off or local_off %}
+          Off
+        {% elif boost_on %}
+          Boost
+        {% elif tous_absents %}
+          TousAbs
+        {% elif si_principal and principal_absent %}
+          Absence
+        {% else %}
+          Présent
+        {% endif %}
+      icon: mdi:account-off-outline
+
+    - name: "Chauffage Absence Auto - Couloir Détail"
+      unique_id: chauffage_absence_auto_couloir_detail
+      state: >-
+        {% set global_off = is_state('input_boolean.chauffage_absence_auto_global_actif','off') %}
+        {% set local_off = is_state('input_boolean.radiateur_couloir_absence_auto_actif','off') %}
+        {% set boost_on = is_state('input_boolean.boost_couloir','on') if states('input_boolean.boost_couloir') not in ['unknown','unavailable'] else false %}
+        {% set tous_absents = is_state('binary_sensor.chauffage_tous_utilisateurs_absents','on') %}
+        {% set principal = states('input_select.radiateur_couloir_utilisateur_principal') %}
+        {% set si_principal = is_state('input_boolean.radiateur_couloir_absence_si_principal_absent','on') %}
+        {% set reduction = states('input_number.chauffage_absence_auto_reduction_degrees') | float(2) %}
+        {% set mode_actuel = states('input_select.radiateur_couloir_mode') %}
+
+        {% set etait_presence = is_state('input_boolean.radiateur_couloir_etait_presence','on') %}
+        {% set mode_inactif = mode_actuel in ['Hors-gel','Arret'] %}
+
+        {% set principal_absent =
+          (principal == 'Michel' and not is_state('binary_sensor.michel_presence_effective', 'on')) or
+          (principal == 'François' and not is_state('binary_sensor.francois_presence_effective', 'on'))
+        %}
+
+        {% set absence_active = tous_absents or (si_principal and principal_absent) %}
+
+        {% if global_off %}
+          Gestion Absence désactivée globalement
+        {% elif local_off %}
+          Gestion Absence désactivée pour cette pièce
+        {% elif mode_inactif %}
+          Mode {{ mode_actuel }} - pas de réduction
+        {% elif boost_on %}
+          Boost actif - réduction Absence ignorée
+        {% elif absence_active and mode_actuel == 'Absence' and etait_presence %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - passage en mode Absence
+        {% elif absence_active and mode_actuel in ['Absence','Manuel'] and (not etait_presence) %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - réduction de {{ reduction }}°C appliquée
+        {% elif absence_active and mode_actuel == 'Presence' %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - correction en cours
+        {% else %}
+          Présence détectée - pas de réduction
+        {% endif %}
+      icon: mdi:information-outline
+
+    - name: "Chauffage Absence Auto - Couloir Consignes"
+      unique_id: chauffage_absence_auto_couloir_consignes
+      state: >-
+        {% set base = states('input_number.radiateur_couloir_consigne') | float(0) %}
+        {% set finale = states('input_number.radiateur_couloir_consigne_finale') | float(0) %}
+        {{ base }}°C → {{ finale }}°C
+      icon: mdi:arrow-right-thin
+
+
+    # -------------------------------------------------
+    # Atelier -> atelier
+    # -------------------------------------------------
+    - name: "Chauffage Absence Auto - Atelier Status"
+      unique_id: chauffage_absence_auto_atelier_status
+      state: >-
+        {% set global_off = is_state('input_boolean.chauffage_absence_auto_global_actif', 'off') %}
+        {% set local_off = is_state('input_boolean.radiateur_atelier_absence_auto_actif', 'off') %}
+        {% set boost_on = is_state('input_boolean.boost_atelier', 'on') if states('input_boolean.boost_atelier') not in ['unknown', 'unavailable'] else false %}
+        {% set tous_absents = is_state('binary_sensor.chauffage_tous_utilisateurs_absents', 'on') %}
+        {% set principal = states('input_select.radiateur_atelier_utilisateur_principal') %}
+        {% set si_principal = is_state('input_boolean.radiateur_atelier_absence_si_principal_absent', 'on') %}
+        {% set principal_absent =
+          (principal == 'Michel' and not is_state('binary_sensor.michel_presence_effective', 'on')) or
+          (principal == 'François' and not is_state('binary_sensor.francois_presence_effective', 'on'))
+        %}
+        {% if global_off or local_off %}
+          Off
+        {% elif boost_on %}
+          Boost
+        {% elif tous_absents %}
+          TousAbs
+        {% elif si_principal and principal_absent %}
+          Absence
+        {% else %}
+          Présent
+        {% endif %}
+      icon: mdi:account-off-outline
+
+    - name: "Chauffage Absence Auto - Atelier Détail"
+      unique_id: chauffage_absence_auto_atelier_detail
+      state: >-
+        {% set global_off = is_state('input_boolean.chauffage_absence_auto_global_actif','off') %}
+        {% set local_off = is_state('input_boolean.radiateur_atelier_absence_auto_actif','off') %}
+        {% set boost_on = is_state('input_boolean.boost_atelier','on') if states('input_boolean.boost_atelier') not in ['unknown','unavailable'] else false %}
+        {% set tous_absents = is_state('binary_sensor.chauffage_tous_utilisateurs_absents','on') %}
+        {% set principal = states('input_select.radiateur_atelier_utilisateur_principal') %}
+        {% set si_principal = is_state('input_boolean.radiateur_atelier_absence_si_principal_absent','on') %}
+        {% set reduction = states('input_number.chauffage_absence_auto_reduction_degrees') | float(2) %}
+        {% set mode_actuel = states('input_select.radiateur_atelier_mode') %}
+
+        {% set etait_presence = is_state('input_boolean.radiateur_atelier_etait_presence','on') %}
+        {% set mode_inactif = mode_actuel in ['Hors-gel','Arret'] %}
+
+        {% set principal_absent =
+          (principal == 'Michel' and not is_state('binary_sensor.michel_presence_effective', 'on')) or
+          (principal == 'François' and not is_state('binary_sensor.francois_presence_effective', 'on'))
+        %}
+
+        {% set absence_active = tous_absents or (si_principal and principal_absent) %}
+
+        {% if global_off %}
+          Gestion Absence désactivée globalement
+        {% elif local_off %}
+          Gestion Absence désactivée pour cette pièce
+        {% elif mode_inactif %}
+          Mode {{ mode_actuel }} - pas de réduction
+        {% elif boost_on %}
+          Boost actif - réduction Absence ignorée
+        {% elif absence_active and mode_actuel == 'Absence' and etait_presence %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - passage en mode Absence
+        {% elif absence_active and mode_actuel in ['Absence','Manuel'] and (not etait_presence) %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - réduction de {{ reduction }}°C appliquée
+        {% elif absence_active and mode_actuel == 'Presence' %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - correction en cours
+        {% else %}
+          Présence détectée - pas de réduction
+        {% endif %}
+      icon: mdi:information-outline
+
+    - name: "Chauffage Absence Auto - Atelier Consignes"
+      unique_id: chauffage_absence_auto_atelier_consignes
+      state: >-
+        {% set base = states('input_number.radiateur_atelier_consigne') | float(0) %}
+        {% set finale = states('input_number.radiateur_atelier_consigne_finale') | float(0) %}
+        {{ base }}°C → {{ finale }}°C
+      icon: mdi:arrow-right-thin
+
+
+    # -------------------------------------------------
+    # Garçonnière -> garconniere
+    # -------------------------------------------------
+    - name: "Chauffage Absence Auto - Garçonnière Status"
+      unique_id: chauffage_absence_auto_garconniere_status
+      state: >-
+        {% set global_off = is_state('input_boolean.chauffage_absence_auto_global_actif', 'off') %}
+        {% set local_off = is_state('input_boolean.radiateur_garconniere_absence_auto_actif', 'off') %}
+        {% set boost_on = is_state('input_boolean.boost_garconniere', 'on') if states('input_boolean.boost_garconniere') not in ['unknown', 'unavailable'] else false %}
+        {% set tous_absents = is_state('binary_sensor.chauffage_tous_utilisateurs_absents', 'on') %}
+        {% set principal = states('input_select.radiateur_garconniere_utilisateur_principal') %}
+        {% set si_principal = is_state('input_boolean.radiateur_garconniere_absence_si_principal_absent', 'on') %}
+        {% set principal_absent =
+          (principal == 'Michel' and not is_state('binary_sensor.michel_presence_effective', 'on')) or
+          (principal == 'François' and not is_state('binary_sensor.francois_presence_effective', 'on'))
+        %}
+        {% if global_off or local_off %}
+          Off
+        {% elif boost_on %}
+          Boost
+        {% elif tous_absents %}
+          TousAbs
+        {% elif si_principal and principal_absent %}
+          Absence
+        {% else %}
+          Présent
+        {% endif %}
+      icon: mdi:account-off-outline
+
+    - name: "Chauffage Absence Auto - Garçonnière Détail"
+      unique_id: chauffage_absence_auto_garconniere_detail
+      state: >-
+        {% set global_off = is_state('input_boolean.chauffage_absence_auto_global_actif','off') %}
+        {% set local_off = is_state('input_boolean.radiateur_garconniere_absence_auto_actif','off') %}
+        {% set boost_on = is_state('input_boolean.boost_garconniere','on') if states('input_boolean.boost_garconniere') not in ['unknown','unavailable'] else false %}
+        {% set tous_absents = is_state('binary_sensor.chauffage_tous_utilisateurs_absents','on') %}
+        {% set principal = states('input_select.radiateur_garconniere_utilisateur_principal') %}
+        {% set si_principal = is_state('input_boolean.radiateur_garconniere_absence_si_principal_absent','on') %}
+        {% set reduction = states('input_number.chauffage_absence_auto_reduction_degrees') | float(2) %}
+        {% set mode_actuel = states('input_select.radiateur_garconniere_mode') %}
+
+        {% set etait_presence = is_state('input_boolean.radiateur_garconniere_etait_presence','on') %}
+        {% set mode_inactif = mode_actuel in ['Hors-gel','Arret'] %}
+
+        {% set principal_absent =
+          (principal == 'Michel' and not is_state('binary_sensor.michel_presence_effective', 'on')) or
+          (principal == 'François' and not is_state('binary_sensor.francois_presence_effective', 'on'))
+        %}
+
+        {% set absence_active = tous_absents or (si_principal and principal_absent) %}
+
+        {% if global_off %}
+          Gestion Absence désactivée globalement
+        {% elif local_off %}
+          Gestion Absence désactivée pour cette pièce
+        {% elif mode_inactif %}
+          Mode {{ mode_actuel }} - pas de réduction
+        {% elif boost_on %}
+          Boost actif - réduction Absence ignorée
+        {% elif absence_active and mode_actuel == 'Absence' and etait_presence %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - passage en mode Absence
+        {% elif absence_active and mode_actuel in ['Absence','Manuel'] and (not etait_presence) %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - réduction de {{ reduction }}°C appliquée
+        {% elif absence_active and mode_actuel == 'Presence' %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - correction en cours
+        {% else %}
+          Présence détectée - pas de réduction
+        {% endif %}
+      icon: mdi:information-outline
+
+    - name: "Chauffage Absence Auto - Garçonnière Consignes"
+      unique_id: chauffage_absence_auto_garconniere_consignes
+      state: >-
+        {% set base = states('input_number.radiateur_garconniere_consigne') | float(0) %}
+        {% set finale = states('input_number.radiateur_garconniere_consigne_finale') | float(0) %}
+        {{ base }}°C → {{ finale }}°C
+      icon: mdi:arrow-right-thin
+
+
+    # -------------------------------------------------
+    # Telmo -> telmo
+    # -------------------------------------------------
+    - name: "Chauffage Absence Auto - Telmo Status"
+      unique_id: chauffage_absence_auto_telmo_status
+      state: >-
+        {% set global_off = is_state('input_boolean.chauffage_absence_auto_global_actif', 'off') %}
+        {% set local_off = is_state('input_boolean.radiateur_telmo_absence_auto_actif', 'off') %}
+        {% set boost_on = is_state('input_boolean.boost_telmo', 'on') if states('input_boolean.boost_telmo') not in ['unknown', 'unavailable'] else false %}
+        {% set tous_absents = is_state('binary_sensor.chauffage_tous_utilisateurs_absents', 'on') %}
+        {% set principal = states('input_select.radiateur_telmo_utilisateur_principal') %}
+        {% set si_principal = is_state('input_boolean.radiateur_telmo_absence_si_principal_absent', 'on') %}
+        {% set principal_absent =
+          (principal == 'Michel' and not is_state('binary_sensor.michel_presence_effective', 'on')) or
+          (principal == 'François' and not is_state('binary_sensor.francois_presence_effective', 'on'))
+        %}
+        {% if global_off or local_off %}
+          Off
+        {% elif boost_on %}
+          Boost
+        {% elif tous_absents %}
+          TousAbs
+        {% elif si_principal and principal_absent %}
+          Absence
+        {% else %}
+          Présent
+        {% endif %}
+      icon: mdi:account-off-outline
+
+    - name: "Chauffage Absence Auto - Telmo Détail"
+      unique_id: chauffage_absence_auto_telmo_detail
+      state: >-
+        {% set global_off = is_state('input_boolean.chauffage_absence_auto_global_actif','off') %}
+        {% set local_off = is_state('input_boolean.radiateur_telmo_absence_auto_actif','off') %}
+        {% set boost_on = is_state('input_boolean.boost_telmo','on') if states('input_boolean.boost_telmo') not in ['unknown','unavailable'] else false %}
+        {% set tous_absents = is_state('binary_sensor.chauffage_tous_utilisateurs_absents','on') %}
+        {% set principal = states('input_select.radiateur_telmo_utilisateur_principal') %}
+        {% set si_principal = is_state('input_boolean.radiateur_telmo_absence_si_principal_absent','on') %}
+        {% set reduction = states('input_number.chauffage_absence_auto_reduction_degrees') | float(2) %}
+        {% set mode_actuel = states('input_select.radiateur_telmo_mode') %}
+
+        {% set etait_presence = is_state('input_boolean.radiateur_telmo_etait_presence','on') %}
+        {% set mode_inactif = mode_actuel in ['Hors-gel','Arret'] %}
+
+        {% set principal_absent =
+          (principal == 'Michel' and not is_state('binary_sensor.michel_presence_effective', 'on')) or
+          (principal == 'François' and not is_state('binary_sensor.francois_presence_effective', 'on'))
+        %}
+
+        {% set absence_active = tous_absents or (si_principal and principal_absent) %}
+
+        {% if global_off %}
+          Gestion Absence désactivée globalement
+        {% elif local_off %}
+          Gestion Absence désactivée pour cette pièce
+        {% elif mode_inactif %}
+          Mode {{ mode_actuel }} - pas de réduction
+        {% elif boost_on %}
+          Boost actif - réduction Absence ignorée
+        {% elif absence_active and mode_actuel == 'Absence' and etait_presence %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - passage en mode Absence
+        {% elif absence_active and mode_actuel in ['Absence','Manuel'] and (not etait_presence) %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - réduction de {{ reduction }}°C appliquée
+        {% elif absence_active and mode_actuel == 'Presence' %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - correction en cours
+        {% else %}
+          Présence détectée - pas de réduction
+        {% endif %}
+      icon: mdi:information-outline
+
+    - name: "Chauffage Absence Auto - Telmo Consignes"
+      unique_id: chauffage_absence_auto_telmo_consignes
+      state: >-
+        {% set base = states('input_number.radiateur_telmo_consigne') | float(0) %}
+        {% set finale = states('input_number.radiateur_telmo_consigne_finale') | float(0) %}
+        {{ base }}°C → {{ finale }}°C
+      icon: mdi:arrow-right-thin
+
+
+    # -------------------------------------------------
+    # SdB Etg -> sdb_etg
+    # -------------------------------------------------
+    - name: "Chauffage Absence Auto - SdB Etg Status"
+      unique_id: chauffage_absence_auto_sdb_etg_status
+      state: >-
+        {% set global_off = is_state('input_boolean.chauffage_absence_auto_global_actif', 'off') %}
+        {% set local_off = is_state('input_boolean.radiateur_sdb_etg_absence_auto_actif', 'off') %}
+        {% set boost_on = is_state('input_boolean.boost_sdb_etg', 'on') if states('input_boolean.boost_sdb_etg') not in ['unknown', 'unavailable'] else false %}
+        {% set tous_absents = is_state('binary_sensor.chauffage_tous_utilisateurs_absents', 'on') %}
+        {% set principal = states('input_select.radiateur_sdb_etg_utilisateur_principal') %}
+        {% set si_principal = is_state('input_boolean.radiateur_sdb_etg_absence_si_principal_absent', 'on') %}
+        {% set principal_absent =
+          (principal == 'Michel' and not is_state('binary_sensor.michel_presence_effective', 'on')) or
+          (principal == 'François' and not is_state('binary_sensor.francois_presence_effective', 'on'))
+        %}
+        {% if global_off or local_off %}
+          Off
+        {% elif boost_on %}
+          Boost
+        {% elif tous_absents %}
+          TousAbs
+        {% elif si_principal and principal_absent %}
+          Absence
+        {% else %}
+          Présent
+        {% endif %}
+      icon: mdi:account-off-outline
+
+    - name: "Chauffage Absence Auto - SdB Etg Détail"
+      unique_id: chauffage_absence_auto_sdb_etg_detail
+      state: >-
+        {% set global_off = is_state('input_boolean.chauffage_absence_auto_global_actif','off') %}
+        {% set local_off = is_state('input_boolean.radiateur_sdb_etg_absence_auto_actif','off') %}
+        {% set boost_on = is_state('input_boolean.boost_sdb_etg','on') if states('input_boolean.boost_sdb_etg') not in ['unknown','unavailable'] else false %}
+        {% set tous_absents = is_state('binary_sensor.chauffage_tous_utilisateurs_absents','on') %}
+        {% set principal = states('input_select.radiateur_sdb_etg_utilisateur_principal') %}
+        {% set si_principal = is_state('input_boolean.radiateur_sdb_etg_absence_si_principal_absent','on') %}
+        {% set reduction = states('input_number.chauffage_absence_auto_reduction_degrees') | float(2) %}
+        {% set mode_actuel = states('input_select.radiateur_sdb_etg_mode') %}
+
+        {% set etait_presence = is_state('input_boolean.radiateur_sdb_etg_etait_presence','on') %}
+        {% set mode_inactif = mode_actuel in ['Hors-gel','Arret'] %}
+
+        {% set principal_absent =
+          (principal == 'Michel' and not is_state('binary_sensor.michel_presence_effective', 'on')) or
+          (principal == 'François' and not is_state('binary_sensor.francois_presence_effective', 'on'))
+        %}
+
+        {% set absence_active = tous_absents or (si_principal and principal_absent) %}
+
+        {% if global_off %}
+          Gestion Absence désactivée globalement
+        {% elif local_off %}
+          Gestion Absence désactivée pour cette pièce
+        {% elif mode_inactif %}
+          Mode {{ mode_actuel }} - pas de réduction
+        {% elif boost_on %}
+          Boost actif - réduction Absence ignorée
+        {% elif absence_active and mode_actuel == 'Absence' and etait_presence %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - passage en mode Absence
+        {% elif absence_active and mode_actuel in ['Absence','Manuel'] and (not etait_presence) %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - réduction de {{ reduction }}°C appliquée
+        {% elif absence_active and mode_actuel == 'Presence' %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - correction en cours
+        {% else %}
+          Présence détectée - pas de réduction
+        {% endif %}
+      icon: mdi:information-outline
+
+    - name: "Chauffage Absence Auto - SdB Etg Consignes"
+      unique_id: chauffage_absence_auto_sdb_etg_consignes
+      state: >-
+        {% set base = states('input_number.radiateur_sdb_etg_consigne') | float(0) %}
+        {% set finale = states('input_number.radiateur_sdb_etg_consigne_finale') | float(0) %}
+        {{ base }}°C → {{ finale }}°C
+      icon: mdi:arrow-right-thin
+
+
+    # -------------------------------------------------
+    # Boîtes -> boites
+    # -------------------------------------------------
+    - name: "Chauffage Absence Auto - Boîtes Status"
+      unique_id: chauffage_absence_auto_boites_status
+      state: >-
+        {% set global_off = is_state('input_boolean.chauffage_absence_auto_global_actif', 'off') %}
+        {% set local_off = is_state('input_boolean.radiateur_boites_absence_auto_actif', 'off') %}
+        {% set boost_on = is_state('input_boolean.boost_boites', 'on') if states('input_boolean.boost_boites') not in ['unknown', 'unavailable'] else false %}
+        {% set tous_absents = is_state('binary_sensor.chauffage_tous_utilisateurs_absents', 'on') %}
+        {% set principal = states('input_select.radiateur_boites_utilisateur_principal') %}
+        {% set si_principal = is_state('input_boolean.radiateur_boites_absence_si_principal_absent', 'on') %}
+        {% set principal_absent =
+          (principal == 'Michel' and not is_state('binary_sensor.michel_presence_effective', 'on')) or
+          (principal == 'François' and not is_state('binary_sensor.francois_presence_effective', 'on'))
+        %}
+        {% if global_off or local_off %}
+          Off
+        {% elif boost_on %}
+          Boost
+        {% elif tous_absents %}
+          TousAbs
+        {% elif si_principal and principal_absent %}
+          Absence
+        {% else %}
+          Présent
+        {% endif %}
+      icon: mdi:account-off-outline
+
+    - name: "Chauffage Absence Auto - Boîtes Détail"
+      unique_id: chauffage_absence_auto_boites_detail
+      state: >-
+        {% set global_off = is_state('input_boolean.chauffage_absence_auto_global_actif','off') %}
+        {% set local_off = is_state('input_boolean.radiateur_boites_absence_auto_actif','off') %}
+        {% set boost_on = is_state('input_boolean.boost_boites','on') if states('input_boolean.boost_boites') not in ['unknown','unavailable'] else false %}
+        {% set tous_absents = is_state('binary_sensor.chauffage_tous_utilisateurs_absents','on') %}
+        {% set principal = states('input_select.radiateur_boites_utilisateur_principal') %}
+        {% set si_principal = is_state('input_boolean.radiateur_boites_absence_si_principal_absent','on') %}
+        {% set reduction = states('input_number.chauffage_absence_auto_reduction_degrees') | float(2) %}
+        {% set mode_actuel = states('input_select.radiateur_boites_mode') %}
+
+        {% set etait_presence = is_state('input_boolean.radiateur_boites_etait_presence','on') %}
+        {% set mode_inactif = mode_actuel in ['Hors-gel','Arret'] %}
+
+        {% set principal_absent =
+          (principal == 'Michel' and not is_state('binary_sensor.michel_presence_effective', 'on')) or
+          (principal == 'François' and not is_state('binary_sensor.francois_presence_effective', 'on'))
+        %}
+
+        {% set absence_active = tous_absents or (si_principal and principal_absent) %}
+
+        {% if global_off %}
+          Gestion Absence désactivée globalement
+        {% elif local_off %}
+          Gestion Absence désactivée pour cette pièce
+        {% elif mode_inactif %}
+          Mode {{ mode_actuel }} - pas de réduction
+        {% elif boost_on %}
+          Boost actif - réduction Absence ignorée
+        {% elif absence_active and mode_actuel == 'Absence' and etait_presence %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - passage en mode Absence
+        {% elif absence_active and mode_actuel in ['Absence','Manuel'] and (not etait_presence) %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - réduction de {{ reduction }}°C appliquée
+        {% elif absence_active and mode_actuel == 'Presence' %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - correction en cours
+        {% else %}
+          Présence détectée - pas de réduction
+        {% endif %}
+      icon: mdi:information-outline
+
+    - name: "Chauffage Absence Auto - Boîtes Consignes"
+      unique_id: chauffage_absence_auto_boites_consignes
+      state: >-
+        {% set base = states('input_number.radiateur_boites_consigne') | float(0) %}
+        {% set finale = states('input_number.radiateur_boites_consigne_finale') | float(0) %}
+        {{ base }}°C → {{ finale }}°C
+      icon: mdi:arrow-right-thin
+
+
+    # -------------------------------------------------
+    # Couloir Etg -> couloir_etg
+    # -------------------------------------------------
+    - name: "Chauffage Absence Auto - Couloir Etg Status"
+      unique_id: chauffage_absence_auto_couloir_etg_status
+      state: >-
+        {% set global_off = is_state('input_boolean.chauffage_absence_auto_global_actif', 'off') %}
+        {% set local_off = is_state('input_boolean.radiateur_couloir_etg_absence_auto_actif', 'off') %}
+        {% set boost_on = is_state('input_boolean.boost_couloir_etg', 'on') if states('input_boolean.boost_couloir_etg') not in ['unknown', 'unavailable'] else false %}
+        {% set tous_absents = is_state('binary_sensor.chauffage_tous_utilisateurs_absents', 'on') %}
+        {% set principal = states('input_select.radiateur_couloir_etg_utilisateur_principal') %}
+        {% set si_principal = is_state('input_boolean.radiateur_couloir_etg_absence_si_principal_absent', 'on') %}
+        {% set principal_absent =
+          (principal == 'Michel' and not is_state('binary_sensor.michel_presence_effective', 'on')) or
+          (principal == 'François' and not is_state('binary_sensor.francois_presence_effective', 'on'))
+        %}
+        {% if global_off or local_off %}
+          Off
+        {% elif boost_on %}
+          Boost
+        {% elif tous_absents %}
+          TousAbs
+        {% elif si_principal and principal_absent %}
+          Absence
+        {% else %}
+          Présent
+        {% endif %}
+      icon: mdi:account-off-outline
+
+    - name: "Chauffage Absence Auto - Couloir Etg Détail"
+      unique_id: chauffage_absence_auto_couloir_etg_detail
+      state: >-
+        {% set global_off = is_state('input_boolean.chauffage_absence_auto_global_actif','off') %}
+        {% set local_off = is_state('input_boolean.radiateur_couloir_etg_absence_auto_actif','off') %}
+        {% set boost_on = is_state('input_boolean.boost_couloir_etg','on') if states('input_boolean.boost_couloir_etg') not in ['unknown','unavailable'] else false %}
+        {% set tous_absents = is_state('binary_sensor.chauffage_tous_utilisateurs_absents','on') %}
+        {% set principal = states('input_select.radiateur_couloir_etg_utilisateur_principal') %}
+        {% set si_principal = is_state('input_boolean.radiateur_couloir_etg_absence_si_principal_absent','on') %}
+        {% set reduction = states('input_number.chauffage_absence_auto_reduction_degrees') | float(2) %}
+        {% set mode_actuel = states('input_select.radiateur_couloir_etg_mode') %}
+
+        {% set etait_presence = is_state('input_boolean.radiateur_couloir_etg_etait_presence','on') %}
+        {% set mode_inactif = mode_actuel in ['Hors-gel','Arret'] %}
+
+        {% set principal_absent =
+          (principal == 'Michel' and not is_state('binary_sensor.michel_presence_effective', 'on')) or
+          (principal == 'François' and not is_state('binary_sensor.francois_presence_effective', 'on'))
+        %}
+
+        {% set absence_active = tous_absents or (si_principal and principal_absent) %}
+
+        {% if global_off %}
+          Gestion Absence désactivée globalement
+        {% elif local_off %}
+          Gestion Absence désactivée pour cette pièce
+        {% elif mode_inactif %}
+          Mode {{ mode_actuel }} - pas de réduction
+        {% elif boost_on %}
+          Boost actif - réduction Absence ignorée
+        {% elif absence_active and mode_actuel == 'Absence' and etait_presence %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - passage en mode Absence
+        {% elif absence_active and mode_actuel in ['Absence','Manuel'] and (not etait_presence) %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - réduction de {{ reduction }}°C appliquée
+        {% elif absence_active and mode_actuel == 'Presence' %}
+          {% if tous_absents %}Tous absents{% else %}{{ principal }} absent{% endif %} - correction en cours
+        {% else %}
+          Présence détectée - pas de réduction
+        {% endif %}
+      icon: mdi:information-outline
+
+    - name: "Chauffage Absence Auto - Couloir Etg Consignes"
+      unique_id: chauffage_absence_auto_couloir_etg_consignes
+      state: >-
+        {% set base = states('input_number.radiateur_couloir_etg_consigne') | float(0) %}
+        {% set finale = states('input_number.radiateur_couloir_etg_consigne_finale') | float(0) %}
+        {{ base }}°C → {{ finale }}°C
+      icon: mdi:arrow-right-thin
