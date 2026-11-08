@@ -2,10 +2,18 @@ blueprint:
   name: Chauffage by C. - Absence Auto
   description: |
 
-    version Absence Auto – par Pièce : v2.56 – 2026-01-02
+    version Absence Auto – par Pièce : v2.60 – 2026-11-08
     auteur : Ciscoo45
 
     ___
+
+    ## Correctif v2.60
+
+    - Retour différé après le Boost : la mémoire Presence est conservée tant que le mode reste Manuel.
+    - Recalcul sur changement de mode et du témoin etait_presence.
+    - Consigne finale actualisée aussi lorsque l'absence se poursuit après un départ en Presence.
+    - État relu au traitement de chaque exécution en file ; recalcul sur évolution de Tempo sans attente bloquante.
+
 
     ## Gestion Auto de l'Absence
 
@@ -64,7 +72,7 @@ blueprint:
     5. **Normal** → `consigne_finale = consigne_tempo`
 
 
-  source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/main/blueprint/Chauffage_by_C._-_Absence_Auto.yaml
+  source_url: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/blueprint/Chauffage_by_C._-_Absence_Auto.yaml
   domain: automation
 
 
@@ -249,55 +257,7 @@ variables:
   utilisateur_entity: !input utilisateur_principal
   etait_presence_input: !input etait_presence
 
-  mode_actuel_valeur: "{{ states(mode_actuel) }}"
-  etait_en_presence: "{{ is_state(etait_presence_input,'on') }}"
 
-  # Détection absence
-  everybody_absent: "{{ is_state(binary_sensor_tous_absents,'on') }}"
-
-  # Détection principal absent
-  # Mapping via package global :
-  # - input_select.chauffage_absence_auto_liste_utilisateurs (options : 'Aucun', 'Michel', ...)
-  # - input_text.chauffage_absence_auto_utilisateurs_entities (liste d'entités dans le même ordre, sans 'Aucun')
-  #
-  # Convention implémentée :
-  # - person.xxx : absent si not_home
-  # - binary_sensor.xxx : capteur de PRESENCE (on=présent) -> absent si off
-  principal_absent: >-
-    {% set opts = state_attr('input_select.chauffage_absence_auto_liste_utilisateurs','options') or [] %}
-    {% set noms = opts[1:] %}
-    {% set raw = states('input_text.chauffage_absence_auto_utilisateurs_entities') %}
-    {% set entities = (raw.split(',') if raw not in ['unknown','unavailable',''] else []) %}
-    {% set principal_name = states(utilisateur_entity) %}
-
-    {% set ns = namespace(value=false) %}
-
-    {% if principal_name in ['Aucun','unknown','unavailable',''] %}
-      {% set ns.value = false %}
-    {% elif principal_name in noms %}
-      {% set idx = noms.index(principal_name) %}
-      {% if idx < entities|length %}
-        {% set ent = (entities[idx] | trim) | replace(' ','') %}
-        {% if ent in ['', 'unknown', 'unavailable'] %}
-          {% set ns.value = false %}
-        {% elif ent.startswith('person.') %}
-          {% set ns.value = is_state(ent, 'not_home') %}
-        {% elif ent.startswith('binary_sensor.') %}
-          {% set ns.value = not is_state(ent, 'on') %}
-        {% endif %}
-      {% endif %}
-    {% endif %}
-
-    {{ ns.value }}
-
-  principal_feature_enabled: >-
-    {{ is_state(switch_si_principal_absent,'on')
-       and states(utilisateur_entity) not in ['Aucun','unknown','unavailable',''] }}
-
-  auto_absence_active: >-
-    {{ everybody_absent or (principal_feature_enabled and (principal_absent | bool)) }}
-
-  consigne_tempo_val: "{{ states(consigne_tempo_input) | float(19) }}"
 
 
 
@@ -339,6 +299,13 @@ trigger:
   - platform: state
     entity_id: !input boost_actif
 
+  # La restauration du Boost peut arriver après son passage à OFF.
+  # Le mode restauré relance alors le traitement avec la mémoire intacte.
+  - platform: state
+    entity_id:
+      - !input mode_actuel
+      - !input etait_presence
+
   # Démarrage / reload
   - platform: homeassistant
     event: start
@@ -357,6 +324,57 @@ condition: []
 
 # ========= ACTIONS =========
 action:
+  # Les exécutions en file doivent lire les états au moment de leur traitement.
+  - variables:
+      mode_actuel_valeur: "{{ states(mode_actuel) }}"
+      etait_en_presence: "{{ is_state(etait_presence_input,'on') }}"
+
+      # Détection absence
+      everybody_absent: "{{ is_state(binary_sensor_tous_absents,'on') }}"
+
+      # Détection principal absent
+      # Mapping via package global :
+      # - input_select.chauffage_absence_auto_liste_utilisateurs (options : 'Aucun', 'Michel', ...)
+      # - input_text.chauffage_absence_auto_utilisateurs_entities (liste d'entités dans le même ordre, sans 'Aucun')
+      #
+      # Convention implémentée :
+      # - person.xxx : absent si not_home
+      # - binary_sensor.xxx : capteur de PRESENCE (on=présent) -> absent si off
+      principal_absent: >-
+        {% set opts = state_attr('input_select.chauffage_absence_auto_liste_utilisateurs','options') or [] %}
+        {% set noms = opts[1:] %}
+        {% set raw = states('input_text.chauffage_absence_auto_utilisateurs_entities') %}
+        {% set entities = (raw.split(',') if raw not in ['unknown','unavailable',''] else []) %}
+        {% set principal_name = states(utilisateur_entity) %}
+
+        {% set ns = namespace(value=false) %}
+
+        {% if principal_name in ['Aucun','unknown','unavailable',''] %}
+          {% set ns.value = false %}
+        {% elif principal_name in noms %}
+          {% set idx = noms.index(principal_name) %}
+          {% if idx < entities|length %}
+            {% set ent = (entities[idx] | trim) | replace(' ','') %}
+            {% if ent in ['', 'unknown', 'unavailable'] %}
+              {% set ns.value = false %}
+            {% elif ent.startswith('person.') %}
+              {% set ns.value = is_state(ent, 'not_home') %}
+            {% elif ent.startswith('binary_sensor.') %}
+              {% set ns.value = not is_state(ent, 'on') %}
+            {% endif %}
+          {% endif %}
+        {% endif %}
+
+        {{ ns.value }}
+
+      principal_feature_enabled: >-
+        {{ is_state(switch_si_principal_absent,'on')
+           and states(utilisateur_entity) not in ['Aucun','unknown','unavailable',''] }}
+
+      auto_absence_active: >-
+        {{ everybody_absent or (principal_feature_enabled and (principal_absent | bool)) }}
+
+      consigne_tempo_val: "{{ states(consigne_tempo_input) | float(19) }}"
 
 
   # === 1. BOOST (PRIORITAIRE) ===
@@ -378,24 +396,23 @@ action:
   - choose:
       - conditions:
           - condition: template
-            value_template: "{{ (not auto_absence_active) and etait_en_presence }}"
+            value_template: >-
+              {{ (not auto_absence_active) and etait_en_presence
+                 and states(mode_actuel) in ['Absence', 'Presence'] }}
         sequence:
-          - service: input_boolean.turn_off
-            target:
-              entity_id: !input etait_presence
-
           - service: input_select.select_option
             target:
               entity_id: !input mode_actuel
             data:
               option: "Presence"
 
-          # Attendre que Scheduler/Tempo ait appliqué la consigne du mode Presence
-          - wait_for_trigger:
-              - platform: state
-                entity_id: !input consigne_tempo
-            timeout: "00:00:10"
-            continue_on_timeout: true
+          # Ne consommer la mémoire qu'après la restauration du mode.
+          - service: input_boolean.turn_off
+            target:
+              entity_id: !input etait_presence
+
+          # Si Scheduler/Tempo change ensuite la source, son déclencheur
+          # actualisera à nouveau la finale. Aucune attente ne bloque la file.
 
           - service: input_number.set_value
             target:
@@ -466,12 +483,8 @@ action:
             data:
               option: "Absence"
 
-          # Attendre que Scheduler/Tempo ait appliqué la consigne du mode Absence
-          - wait_for_trigger:
-              - platform: state
-                entity_id: !input consigne_tempo
-            timeout: "00:00:10"
-            continue_on_timeout: true
+          # La source disponible est recopiée maintenant ; toute nouvelle
+          # consigne Scheduler/Tempo redéclenchera le calcul.
 
           - service: input_number.set_value
             target:
@@ -501,6 +514,16 @@ action:
 
 
 
+  # Cas restant : l'absence continue après Presence -> Absence, ou une
+  # restauration est différée tant que Boost laisse le mode en Manuel.
+  # Sans cette recopie, la finale conservait la dernière consigne du Boost,
+  # même lorsque Scheduler/Tempo avait déjà actualisé la source.
+  - service: input_number.set_value
+    target:
+      entity_id: !input consigne_finale
+    data:
+      value: "{{ states(consigne_tempo_input) | float(19) }}"
+
   # === 7. LOG DEBUG ===
   - service: logbook.log
     data:
@@ -521,3 +544,4 @@ action:
 
 mode: queued
 max: 5
+
