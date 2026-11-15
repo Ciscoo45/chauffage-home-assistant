@@ -1,57 +1,77 @@
-Home Assistant - Electric radiator management :
+## Ciscoo45 - Chauffage Home Assistant
 
-Complete implementation of a heating management system for Home Assistant:
+This README file is available in: [English](README.md) | [Français](README-fr.md)
 
-    Proportional thermostat
-    Window opening management
-    Heating modes (Présence, Absence...)
-    Time zones for heating shedule
+Complete implementation of a heating management system for Home Assistant
     
-Available forks here:
+## Notes
 
-[Based on] Presence-Absence: [ProdOk]
+- Currently supports electric radiators only.
+- A "simple" integration in terms of technologies used (YAML files organized into subfolders + blueprints for specific features): requires manual installation but makes the code easy to understand, maintain, and extend.
 
-    Based on Argonaute work (thanks for this work!), plus:
-    - different mode names (Presence-Absence, instead of AutoConfort-AutoEco)
-    - single Absence mode
-    - 'radiateur' switch name instead of 'chauffage'
+## Implemented Features
 
-[Actual branch] Week-Vs-WE: [ProdOk]
+- **Time-based scheduling** for Home and Away modes (via Scheduler).
+- **Separate weekday and weekend schedules**, with the option to use weekend schedules during holidays and public holidays (also suitable for working from home).
+- **Manual mode** with a fixed target temperature, overriding Home / Away schedules.
+- **Frost Protection mode**, with an optional maximum humidity threshold to control heating.
+- **Temporary override (Boost)** with the option to return to the previous state or switch to another mode. Supports physical switches and mobile notifications sent to people currently at home, allowing them to extend or stop the Boost period.
+- **Automatic absence detection**, supporting both whole-home absence and a primary occupant assigned to a specific room. When that person is away, only the relevant rooms have their temperature reduced, while shared rooms remain unaffected. Presence can also be manually forced (e.g., when guests are staying).
+- **EDF Tempo tariff management**, with configurable automatic temperature reductions on White and/or Red days. Day colors and electricity rates are retrieved via api-couleur-tempo.fr (avoiding any reliability issues with the RTE API).
+- **Door and window opening detection**, with automatic heating suspension after a configurable delay, optional heating restart when the opening is closed, and support for multiple doors/windows per room.
+- **Multiple radiators per room**, controlled together.
+- **Pilot wire control**, with an optional inverted mode (e.g., Sonoff ZBMINI relay + diode).
+- **RF control** for radiators equipped with Delta Dore X2D modules.
+- **Electricity consumption tracking** for radiators (kWh), integrated with the Home Assistant Energy Dashboard.
+- **Control switches** for heating, absence detection, and Tempo management, with both centralized master switches and individual radiator controls.
+- **Lovelace dashboard cards**:
+  - **Basic**: essential features.
+  - **Advanced**: all features, including the currently active schedule, time remaining until the next scheduled temperature change, and daily energy consumption for the room.
+  - **Heating diagnostics**: regulation graphs and direct access to schedules via Scheduler.
+- **One-time event scheduling** via Scheduler (e.g., activate Home mode for a specific room in X hours).
+- **Battery level monitoring** for temperature and humidity sensors.
+- **Simple tuning guidance** for the two main room-specific parameters: heating power and room heat loss. Default values are provided, and users can fine-tune these settings to achieve faster heating and reduce temperature oscillations simply by analyzing the regulation graphs.
+- **Consolidated outdoor temperature sensor**, with a fallback priority order: apparent temperature (OWM) > Météo-France temperature > local outdoor temperature sensor. A standalone local outdoor temperature sensor can also be used, provided it is properly positioned.
 
-    Based on Presence-Absence branch, plus:
-    - multiple schedules for Presence (or Absence) modes if needed (ex. different Week & Weekend temp targets)
-    - fixed: heater do not cut in Stop mode
-    - better explanations for coef c and coef t to easy set each room
-    - adjustable temperature for frost protection mode (blueprint selector)
-    - multi-heaters for a same room, thermostat and temperature sensor
-    - optional Climate mode, to drive Climate entities in HA instead of relays
-        (ex. thru GCE RFplayer 1000 to drive heaters with Delta Dore X2D receiver)
-    - optional inverted mode (ex. for SonOff ZBmini relay + diode)
-    - limited time boost period with restore mode choice
-    - note: still need to create a group of sensors in case of multi open-windows sensors per room
+## Planned Features
 
-[Later] To do
+- **Grid demand response (load reduction)**: use signals such as RTE EcoWatt (similar to services offered by Voltalis) to temporarily reduce electricity demand during grid stress events, within configurable time and temperature limits (e.g., a maximum temperature reduction of 1°C for up to 1 hour).
+- **Vacation mode**, with progressive preheating before returning home.
+- **Staggered heating control for rooms with multiple radiators** (`over_switch` mode), allowing radiator activation times to be offset to smooth electricity consumption.
+- **Local load shedding**, automatically reducing electricity consumption when measured power approaches or exceeds a configured limit, prioritizing radiators closest to their target temperature.
+- **Safety monitoring**: detection of heating failures, overheating due to unavailable or faulty sensors/relays, etc., with automatic safety measures and/or alerts.
+- **Global open-window/door alert badge** on the main dashboard, displaying the number of doors or windows left open.
 
-    - add support for target temperature auto-change option in case of EDF Tempo Red day
-    - delay so every Thermostat doesn't start at the same moment (load optimization)
-    - auto-absence mode thru location sharing in case nobody's home, with last status remembered for return
-    - auto-hygro: humidity threshold not to be exceeded
-    - maybe: option to accept optional load shedding during peak demand, as a civic act (Voltalis like)
-
-[Doc] Install
+## Installation
 
     2 ways :
     - config files and directories to merge to your HA config dir, then edit to change entities names
-    - step by step from full documentation XLSX:
+    - step by step from full documentation XLSX (needs update)
 
-Doc struture: https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/Structure%20de%20la%20documentation%20-%20xlsx.png
+Doc structure:
 
+https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/Structure%20de%20la%20documentation%20-%20xlsx.png
 
-###################################### ORIGINAL WORK ##############################
+<br>
+<br>
 
-Home Assistant - Gestion de bout en bout du chauffage
+## Original Work
 
-by Argonaute
+**Home Assistant – Gestion de bout en bout du chauffage**
 
-Please see https://forum.hacf.fr/t/gestion-de-bout-en-bout-du-chauffage/4897
+**Author:** Argonaute
+
+**Source:** [Forum HACF – Gestion de bout en bout du chauffage](https://forum.hacf.fr/t/gestion-de-bout-en-bout-du-chauffage/4897)
+
+<br>
+
+## Related Project – Versatile Thermostat
+
+A very comprehensive project for controlling electric radiators, thermostatic radiator valves, and air conditioning systems:
+
+**Versatile Thermostat for Home Assistant**
+
+**Author:** jmcollin78
+
+**Source:** [GitHub – Versatile Thermostat](https://github.com/jmcollin78/versatile_thermostat)
 
