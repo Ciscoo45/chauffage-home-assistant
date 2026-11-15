@@ -69,9 +69,11 @@ https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/Structure%2
 
 A very comprehensive project for controlling electric radiators, thermostatic radiator valves, and air conditioning systems:
 
-**Versatile Thermostat for Home Assistant**
+Integration and Lovelace card available on HA Marketplace.
 
-**Author:** jmcollin78
+**Versatile Thermostat pour Home Assistant**
 
-**Source:** [GitHub – Versatile Thermostat](https://github.com/jmcollin78/versatile_thermostat)
+**Auteur :** jmcollin78
+
+**Source :** [Versatile Thermostat](https://www.versatile-thermostat.org/fr/)
 
