@@ -55,7 +55,7 @@ https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/Structure%2
 <br>
 <br>
 
-## Original Work
+## Original work
 
 **Home Assistant – Gestion de bout en bout du chauffage**
 
@@ -65,7 +65,7 @@ https://github.com/Ciscoo45/chauffage-home-assistant/blob/Week-Vs-WE/Structure%2
 
 <br>
 
-## Related Project – Versatile Thermostat
+## Related project – Versatile Thermostat
 
 A very comprehensive project for controlling electric radiators, thermostatic radiator valves, and air conditioning systems:
 
