@@ -23,7 +23,7 @@ Solution complète de gestion du chauffage pour Home Assistant.
 - **Gestion de plusieurs radiateurs dans une même pièce**, pilotés ensemble.
 - **Pilotage par fil pilote**, avec option de mode inversé (ex. : relais Sonoff ZBMINI + diode).
 - **Pilotage RF** des radiateurs équipés de modules Delta Dore X2D.
-- **Suivi de la consommation électrique** des radiateurs (kWh), intégré au tableau de bord Énergie de Home Assistant.
+- **Suivi de la consommation électrique** des radiateurs (kWh), intégré au tableau de bord Énergie de Home Assistant, à partir du temps d'activation et de la puissance nominale du radiateur
 - **Interrupteurs de contrôle** pour la gestion du chauffage, des absences et de Tempo, avec des interrupteurs généraux centralisés ainsi que des commandes individuelles par radiateur.
 - **Cartes Lovelace pour les tableaux de bord** :
   - **Simple** : fonctionnalités essentielles.
