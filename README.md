@@ -22,7 +22,7 @@ Complete implementation of a heating management system for Home Assistant
 - **Multiple radiators per room**, controlled together.
 - **Pilot wire control**, with an optional inverted mode (e.g., Sonoff ZBMINI relay + diode).
 - **RF control** for radiators equipped with Delta Dore X2D modules.
-- **Electricity consumption tracking** for radiators (kWh), integrated with the Home Assistant Energy Dashboard.
+- **Electricity consumption tracking** for radiators (kWh), integrated with the Home Assistant Energy Dashboard, based on the radiator's operating time and rated power.
 - **Control switches** for heating, absence detection, and Tempo management, with both centralized master switches and individual radiator controls.
 - **Lovelace dashboard cards**:
   - **Basic**: essential features.
