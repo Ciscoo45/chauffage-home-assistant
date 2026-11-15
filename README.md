@@ -45,7 +45,7 @@ Complete implementation of a heating management system for Home Assistant
 ## Installation
 
     2 ways :
-    - config files and directories to merge to your HA config dir, then edit to change entities names
+    - [prefered] config files and directories to merge to your HA config dir, then edit to change entities names
     - step by step from full documentation XLSX (needs update)
 
 Doc structure:
